@@ -365,6 +365,7 @@ $settings['file_chmod_file'] = 0664;
 **Recommended Actions for Drupal 11 (2025):**
 
 **Primary Recommendation: `actions/cache@v4`**
+
 - **Status**: Required upgrade by February 1, 2025 (v3 and below deprecated)
 - **Performance**: Up to 80% faster cache uploads with GitHub Hosted Runners
 - **Reliability**: Rewritten backend service for improved performance and reliability
@@ -383,6 +384,7 @@ $settings['file_chmod_file'] = 0664;
 ```
 
 **Alternative: `ramsey/composer-install@v3`**
+
 - **Features**: Automatic cache management, no separate caching step needed
 - **Cache Key**: Auto-generates based on OS, PHP version, composer files, and options
 - **Performance**: ~30 seconds without cache, ~20 seconds with cache
@@ -396,6 +398,7 @@ $settings['file_chmod_file'] = 0664;
 ```
 
 **PHP Setup: `shivammathur/setup-php@v2`**
+
 - **2025 Updates**: Support for windows-2025 and macos-15 environments
 - **Drupal Integration**: Built-in Composer support with extensive tool ecosystem
 - **Coverage**: Xdebug and PCOV support for testing workflows
@@ -411,6 +414,7 @@ $settings['file_chmod_file'] = 0664;
 ```
 
 **Best Practices:**
+
 - Always use `actions/cache@v4` (v3 and below fail after February 1, 2025)
 - Include `composer.lock` in cache key hash for dependency accuracy
 - Use `--prefer-dist --no-progress` for faster, quieter Composer installs
@@ -420,6 +424,7 @@ $settings['file_chmod_file'] = 0664;
 ### NPM/Node.js Dependency Caching
 
 **Primary Recommendation: `actions/setup-node@v4`**
+
 - **Built-in Caching**: Uses `actions/cache` under the hood with optimized configuration
 - **Package Manager Support**: npm, yarn, pnpm (v6.10+)
 - **Global Cache Strategy**: Caches package manager's global cache, not `node_modules`
@@ -436,6 +441,7 @@ $settings['file_chmod_file'] = 0664;
 **Package Manager Specific Best Practices:**
 
 **NPM:**
+
 ```yaml
 - uses: actions/setup-node@v4
   with:
@@ -445,6 +451,7 @@ $settings['file_chmod_file'] = 0664;
 ```
 
 **Yarn:**
+
 ```yaml
 - uses: actions/setup-node@v4
   with:
@@ -454,6 +461,7 @@ $settings['file_chmod_file'] = 0664;
 ```
 
 **PNPM:**
+
 ```yaml
 - uses: pnpm/action-setup@v4
   with:
@@ -466,6 +474,7 @@ $settings['file_chmod_file'] = 0664;
 ```
 
 **Monorepo Support:**
+
 ```yaml
 - uses: actions/setup-node@v4
   with:
@@ -477,6 +486,7 @@ $settings['file_chmod_file'] = 0664;
 ### Docker Layer Caching
 
 **Primary Recommendation: `docker/build-push-action@v6` with GHA Cache**
+
 - **2025 Update**: GitHub Cache API v1 shutdown April 15, 2025 - upgrade required
 - **Auto-Configuration**: URL and token parameters automatically populated
 - **Performance**: Best integration with GitHub Actions environment
@@ -492,7 +502,8 @@ $settings['file_chmod_file'] = 0664;
     cache-to: type=gha,mode=max
 ```
 
-**Alternative: Registry Cache (Better Performance)**
+**Alternative:** Registry Cache (Better Performance)
+
 ```yaml
 - name: Build and push Docker image
   uses: docker/build-push-action@v6
@@ -505,12 +516,14 @@ $settings['file_chmod_file'] = 0664;
 ```
 
 **Docker Cache Best Practices:**
+
 - Use `mode=max` for better cache coverage when possible
 - Specify cache scope for multi-image builds: `scope=myapp-frontend`
 - Consider registry cache for complex builds with better network performance
 - Upgrade to Docker Engine >= v28.0.0 for containerd image store support
 
 **Combined Node.js + Docker Workflow:**
+
 ```yaml
 - uses: actions/setup-node@v4
   with:
@@ -533,6 +546,7 @@ $settings['file_chmod_file'] = 0664;
 To eliminate duplication between staging and production workflows, use GitHub's reusable workflow feature with environment-specific parameters:
 
 **Main Workflow (stage-deploy.yml):**
+
 ```yaml
 name: Stage and Production Deployment
 
@@ -569,6 +583,7 @@ jobs:
 ```
 
 **Reusable Workflow (reusable-build.yml):**
+
 ```yaml
 name: Reusable Build and Deploy
 
@@ -623,6 +638,7 @@ runs:
 ```
 
 **DRY Benefits:**
+
 - **Single Source of Truth**: Build logic defined once, reused across environments
 - **Consistent Behavior**: Identical steps for staging and production with environment-specific parameters
 - **Easier Maintenance**: Updates to build process only require changes in one place
@@ -630,6 +646,7 @@ runs:
 - **Better Testing**: Reusable workflows can be tested independently
 
 **Best Practices for DRY Workflows:**
+
 - Use reusable workflows for complete job sequences (build, test, deploy)
 - Use composite actions for repeated step sequences (setup, security audits)
 - Parameterize environment-specific values (registry URLs, environment names)
@@ -660,6 +677,7 @@ runs:
 Azure App Service automatically passes App Settings to containers as environment variables using the `--env` flag. These are immediately accessible in PHP via `getenv()` function.
 
 **Configuration Process:**
+
 1. **Azure Portal**: Navigate to Configuration → Application settings
 2. **Add Settings**: Create key-value pairs for each environment variable
 3. **Automatic Injection**: Azure passes these to container on startup
@@ -729,6 +747,7 @@ if (getenv('DRUPAL_ENVIRONMENT') === 'production') {
 - **File Storage**: Configure Azure Storage for private files and media uploads
 
 **Security Considerations:**
+
 - Never commit environment-specific values to version control
 - Use Azure Key Vault for secrets like database passwords and API keys
 - Configure slot settings to maintain environment separation
@@ -738,7 +757,8 @@ if (getenv('DRUPAL_ENVIRONMENT') === 'production') {
 
 **Supported Methods for Running Post-Deploy Drush Commands:**
 
-**1. Azure DevOps Pipelines (Most Reliable & Intuitive - 2025)**
+**1. Azure DevOps Pipelines** (Most Reliable & Intuitive - 2025)
+
 - **Method**: Execute Drush commands as part of CI/CD pipeline after container deployment
 - **Reliability**: High - Full control over execution order and error handling
 - **Configuration**: Azure Pipeline YAML with `AzureWebAppContainer@1` task followed by script execution
@@ -760,7 +780,8 @@ if (getenv('DRUPAL_ENVIRONMENT') === 'production') {
       az webapp ssh --resource-group myResourceGroup --name myApp --instance 0 --command "drush deploy"
 ```
 
-**2. Azure Container Instances with Init Containers**
+**2. Azure Container Instances** with Init Containers
+
 - **Method**: Use init containers to run deployment tasks before main container starts
 - **Reliability**: Medium - Limited by ACI sandbox restrictions
 - **Use Case**: Better suited for Azure Container Apps than Azure App Service
@@ -776,7 +797,8 @@ initContainers:
     mountPath: /var/www/html
 ```
 
-**3. Startup Command Scripts (Legacy - Avoid for Production)**
+**3. Startup Command Scripts** (Legacy - Avoid for Production)
+
 - **Method**: Configure startup command in Azure App Service to run deployment script
 - **Reliability**: Low - Executes on every container restart, not just deployments
 - **Issues**: May cause performance problems and inconsistent state
@@ -784,19 +806,21 @@ initContainers:
 **Recommended Drush Command Sequence (2025):**
 
 Modern Drush 12+ provides the standardized `drush deploy` command:
+
 ```bash
 # Single command that handles complete deployment sequence
 drush deploy
 
 # Equivalent to running manually:
 # drush updatedb --no-cache-clear
-# drush cache:rebuild  
+# drush cache:rebuild
 # drush config:import
 # drush cache:rebuild
 # drush deploy:hook
 ```
 
 **Manual Deployment Sequence (if needed):**
+
 ```bash
 # Enable maintenance mode
 drush state:set system.maintenance_mode 1
@@ -827,8 +851,9 @@ drush state:set system.maintenance_mode 0
 
 **Most Reliable Approach (2025):**
 Azure DevOps Pipelines with post-deployment script execution provides the most reliable and intuitive method. This approach offers:
+
 - Full control over execution timing
-- Proper error handling and rollback capabilities  
+- Proper error handling and rollback capabilities
 - Integration with Azure monitoring and alerting
 - Support for deployment slots and blue/green deployments
 
