@@ -202,6 +202,58 @@ Use `.ddev/config.<service>.yaml` for service-specific configuration
 - Use multi-stage builds to exclude build-time dependencies from final image
 - Consider vulnerability scanning with tools like Snyk for ongoing security assessment
 
+### Secure File Permissions & Ownership
+
+**Core Security Principle:**
+Web server should not have write permissions to executable code files. All Drupal files should be read-only for the web server process, with write permissions only for a dedicated deployment user.
+
+**Recommended Ownership Structure:**
+```dockerfile
+# Create non-root user for secure file ownership
+RUN groupadd -r www-data && useradd -r -g www-data www-data
+RUN groupadd -r deploy && useradd -r -g deploy -G www-data deploy
+
+# Set ownership: deploy user owns files, www-data group can read
+RUN chown -R deploy:www-data /var/www/html
+```
+
+**File Permissions (Dockerfile-compatible):**
+```dockerfile
+# Drupal root directory and files: 640 (owner: rw, group: r, other: none)
+RUN find /var/www/html -type f -exec chmod 640 {} \;
+
+# Drupal directories: 750 (owner: rwx, group: rx, other: none)  
+RUN find /var/www/html -type d -exec chmod 750 {} \;
+
+# Files directory: 770 (both owner and group: rwx, other: none)
+RUN chmod 770 /var/www/html/web/sites/default/files
+
+# Settings files: 640 (contains sensitive database credentials)
+RUN chmod 640 /var/www/html/web/sites/default/settings.php
+```
+
+**Docker User Configuration:**
+```dockerfile
+# Run container as non-root user
+USER deploy:www-data
+
+# Ensure web server can write to files directory only
+RUN chgrp www-data /var/www/html/web/sites/default/files
+RUN chmod g+w /var/www/html/web/sites/default/files
+```
+
+**settings.php Security Configuration:**
+```php
+// Set secure default file creation permissions
+$settings['file_chmod_directory'] = 0775;
+$settings['file_chmod_file'] = 0664;
+```
+
+**Key Permission Values:**
+- **640**: Files (owner: read/write, group: read, other: none)
+- **750**: Directories (owner: read/write/execute, group: read/execute, other: none)
+- **770**: Files directory only (owner+group: read/write/execute, other: none)
+
 ---
 
 ## CI/CD and GitHub Actions
