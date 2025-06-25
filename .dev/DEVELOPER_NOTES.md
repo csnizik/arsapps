@@ -623,6 +623,104 @@ if (getenv('DRUPAL_ENVIRONMENT') === 'production') {
 - Configure slot settings to maintain environment separation
 - Set appropriate trusted host patterns to prevent host header attacks
 
+### Post-Deploy Hooks and Drush Commands
+
+**Supported Methods for Running Post-Deploy Drush Commands:**
+
+**1. Azure DevOps Pipelines (Most Reliable & Intuitive - 2025)**
+- **Method**: Execute Drush commands as part of CI/CD pipeline after container deployment
+- **Reliability**: High - Full control over execution order and error handling
+- **Configuration**: Azure Pipeline YAML with `AzureWebAppContainer@1` task followed by script execution
+
+```yaml
+- task: AzureWebAppContainer@1
+  inputs:
+    azureSubscription: 'your-subscription'
+    appName: 'your-app-name'
+    containers: 'your-registry/drupal:latest'
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'your-subscription'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      # Execute Drush commands via az webapp ssh
+      az webapp ssh --resource-group myResourceGroup --name myApp --instance 0 --command "drush deploy"
+```
+
+**2. Azure Container Instances with Init Containers**
+- **Method**: Use init containers to run deployment tasks before main container starts
+- **Reliability**: Medium - Limited by ACI sandbox restrictions
+- **Use Case**: Better suited for Azure Container Apps than Azure App Service
+
+```yaml
+initContainers:
+- name: drupal-deploy
+  image: your-registry/drupal:latest
+  command: ["/bin/bash", "-c"]
+  args: ["drush deploy"]
+  volumeMounts:
+  - name: shared-data
+    mountPath: /var/www/html
+```
+
+**3. Startup Command Scripts (Legacy - Avoid for Production)**
+- **Method**: Configure startup command in Azure App Service to run deployment script
+- **Reliability**: Low - Executes on every container restart, not just deployments
+- **Issues**: May cause performance problems and inconsistent state
+
+**Recommended Drush Command Sequence (2025):**
+
+Modern Drush 12+ provides the standardized `drush deploy` command:
+```bash
+# Single command that handles complete deployment sequence
+drush deploy
+
+# Equivalent to running manually:
+# drush updatedb --no-cache-clear
+# drush cache:rebuild  
+# drush config:import
+# drush cache:rebuild
+# drush deploy:hook
+```
+
+**Manual Deployment Sequence (if needed):**
+```bash
+# Enable maintenance mode
+drush state:set system.maintenance_mode 1
+
+# Update database schema
+drush updb
+
+# Import configuration (with retry logic)
+drush cim sync -y || drush cim sync -y
+
+# Clear all caches
+drush cr
+
+# Run deployment hooks
+drush deploy:hook
+
+# Disable maintenance mode
+drush state:set system.maintenance_mode 0
+```
+
+**Azure-Specific Best Practices:**
+
+- **Environment Variables**: Use Azure App Settings for Drush configuration
+- **Database Access**: Ensure container has proper Azure MySQL connectivity
+- **File Permissions**: Configure `/home` directory persistence for Drush cache
+- **Error Handling**: Implement retry logic for config import operations
+- **Monitoring**: Use Azure Application Insights to track deployment success
+
+**Most Reliable Approach (2025):**
+Azure DevOps Pipelines with post-deployment script execution provides the most reliable and intuitive method. This approach offers:
+- Full control over execution timing
+- Proper error handling and rollback capabilities  
+- Integration with Azure monitoring and alerting
+- Support for deployment slots and blue/green deployments
+
 ---
 
 ## Prompt history index (optional)
