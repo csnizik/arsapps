@@ -1,0 +1,70 @@
+name: 'Setup Drupal Build Environment'
+description: 'Sets up PHP, Composer, Node.js and caches dependencies for Drupal builds'
+branding:
+  icon: 'package'
+  color: 'blue'
+
+inputs:
+  php-version:
+    description: 'PHP version to setup'
+    required: false
+    default: '8.3'
+  node-version:
+    description: 'Node.js version to setup'
+    required: false
+    default: '20'
+  composer-options:
+    description: 'Additional Composer install options'
+    required: false
+    default: '--prefer-dist --no-progress --no-dev --optimize-autoloader'
+  enable-security-audit:
+    description: 'Enable Composer security audit'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+        tools: composer:v2
+
+    - name: Get Composer cache directory
+      id: composer-cache
+      shell: bash
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache Composer dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+
+    - name: Install Composer dependencies
+      uses: ramsey/composer-install@v3
+      with:
+        dependency-versions: "locked"
+        composer-options: ${{ inputs.composer-options }}
+
+    - name: Run Composer security audit
+      if: inputs.enable-security-audit == 'true'
+      shell: bash
+      run: composer audit
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+
+    - name: Install Node.js dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Build frontend assets
+      shell: bash
+      run: npm run build

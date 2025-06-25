@@ -2,18 +2,43 @@
 
 This directory contains GitHub Actions workflows for automated CI/CD of the Drupal 11 project.
 
-## Stage Branch Deployment
+## DRY Architecture (2025)
 
-The `stage-deploy.yml` workflow runs automatically when code is pushed to the `stage` branch.
+The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable workflows and composite actions:
+
+- **`stage-deploy.yml`**: Main workflow handling both staging and production triggers
+- **`reusable-build.yml`**: Shared build and deployment logic for all environments
+- **`.github/actions/setup-drupal-build/`**: Composite action for Drupal build environment setup
+
+### Workflow Structure
+
+```
+.github/
+├── workflows/
+│   ├── stage-deploy.yml          # Main workflow (stage + production triggers)
+│   └── reusable-build.yml        # Shared build logic
+└── actions/
+    └── setup-drupal-build/
+        └── action.yml            # Composite action for build setup
+```
+
+## Stage and Production Deployment
+
+The `stage-deploy.yml` workflow runs automatically when:
+- Code is pushed to the `stage` branch (staging deployment)
+- Git tags prefixed with `prod_*` are created (production deployment)
 
 ### Workflow Features
 
+- **DRY Architecture**: Shared build logic eliminates duplication
+- **Environment-Specific Logic**: Conditional behavior for staging vs production
 - **Multi-stage Docker build** following DEVELOPER_NOTES.md guidelines
-- **Composer dependency caching** using `actions/cache@v4` and `ramsey/composer-install@v3`
-- **Node.js dependency caching** using `actions/setup-node@v4`
+- **Composite Actions**: Reusable build environment setup
+- **Enhanced Security**: Production-specific validation and auditing
+- **Dependency Caching**: Optimized caching for Composer and Node.js
 - **Docker layer caching** using GitHub Actions cache
 - **Security scanning** with Trivy vulnerability scanner
-- **Azure Container Registry** push with multiple tags
+- **Azure Container Registry** push with environment-specific tags
 
 ### Required Secrets
 
@@ -31,11 +56,19 @@ Update these variables in the workflow file:
 
 ### Tags Generated
 
-The workflow generates the following Docker image tags:
+The workflow generates environment-specific Docker image tags:
 
+**Stage Branch Builds:**
 - `stage`: Always applied for stage branch builds
-- `latest`: Applied when building the default branch
 - `stage-<commit-sha>`: Unique tag with branch and commit SHA
+
+**Production Tag Builds:**
+- `production`: Always applied for production tag builds
+- `prod-<commit-sha>`: Unique tag with commit SHA
+- Original tag name (e.g., `prod_v1.2.3`)
+
+**All Builds:**
+- `latest`: Applied when building the default branch
 
 ### Security Features
 
@@ -52,6 +85,54 @@ The workflow generates the following Docker image tags:
 - Follows multi-stage build pattern for optimal caching
 - Uses latest GitHub Actions versions (cache@v4, build-push-action@v6)
 - Includes Composer security audit step
+
+## Reusable Components
+
+### Composite Action: setup-drupal-build
+
+Reusable action that handles common Drupal build environment setup:
+
+```yaml
+- name: Setup Drupal build environment
+  uses: ./.github/actions/setup-drupal-build
+  with:
+    php-version: '8.3'
+    node-version: '20'
+    composer-options: '--prefer-dist --no-progress --no-dev'
+    enable-security-audit: 'true'
+```
+
+**Features:**
+- PHP environment setup with extensions
+- Composer dependency caching and installation
+- Node.js environment setup with npm caching
+- Security audit execution
+- Frontend asset compilation
+
+### Reusable Workflow: reusable-build.yml
+
+Centralized build and deployment logic that can be called from multiple workflows:
+
+**Usage:**
+```yaml
+jobs:
+  deploy:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      environment: 'staging'
+      registry: 'your-registry.azurecr.io'
+      image_name: 'drupal-app'
+      enable_security_scan: true
+    secrets:
+      acr_username: ${{ secrets.ACR_USERNAME }}
+      acr_password: ${{ secrets.ACR_PASSWORD }}
+```
+
+**Benefits:**
+- Single source of truth for build logic
+- Environment-specific parameter injection
+- Consistent behavior across staging and production
+- Easier maintenance and updates
 
 ### Local Testing
 

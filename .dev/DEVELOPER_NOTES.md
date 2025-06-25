@@ -526,6 +526,117 @@ $settings['file_chmod_file'] = 0664;
     cache-to: type=gha,mode=max
 ```
 
+### DRY Workflow Patterns (2025)
+
+**Reusable Workflows for Environment-Specific Deployments:**
+
+To eliminate duplication between staging and production workflows, use GitHub's reusable workflow feature with environment-specific parameters:
+
+**Main Workflow (stage-deploy.yml):**
+```yaml
+name: Stage and Production Deployment
+
+on:
+  push:
+    branches: [ stage ]
+    tags: [ 'prod_*' ]
+  workflow_dispatch:
+
+jobs:
+  stage-deploy:
+    if: github.ref == 'refs/heads/stage'
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      environment: 'staging'
+      registry: 'your-acr-registry.azurecr.io'
+      image_name: 'drupal-app'
+      enable_security_scan: true
+    secrets:
+      acr_username: ${{ secrets.ACR_USERNAME }}
+      acr_password: ${{ secrets.ACR_PASSWORD }}
+
+  production-deploy:
+    if: startsWith(github.ref, 'refs/tags/prod_')
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      environment: 'production'
+      registry: 'your-acr-registry.azurecr.io'
+      image_name: 'drupal-app'
+      enable_security_scan: true
+    secrets:
+      acr_username: ${{ secrets.ACR_USERNAME }}
+      acr_password: ${{ secrets.ACR_PASSWORD }}
+```
+
+**Reusable Workflow (reusable-build.yml):**
+```yaml
+name: Reusable Build and Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Target environment (staging or production)'
+        required: true
+        type: string
+      registry:
+        description: 'Container registry URL'
+        required: true
+        type: string
+      # Additional configurable inputs...
+    secrets:
+      acr_username:
+        required: true
+      acr_password:
+        required: true
+    outputs:
+      image_tags:
+        description: 'Generated Docker image tags'
+        value: ${{ jobs.build-and-deploy.outputs.image_tags }}
+```
+
+**Composite Actions for Common Steps:**
+
+For even more granular reusability, create composite actions for repeated step sequences:
+
+```yaml
+# .github/actions/setup-drupal-build/action.yml
+name: 'Setup Drupal Build Environment'
+description: 'Sets up PHP, Composer, Node.js and caches dependencies'
+
+inputs:
+  php-version:
+    description: 'PHP version to setup'
+    required: false
+    default: '8.3'
+  composer-options:
+    description: 'Additional Composer install options'
+    required: false
+    default: '--prefer-dist --no-progress --no-dev --optimize-autoloader'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      # ... complete setup steps
+```
+
+**DRY Benefits:**
+- **Single Source of Truth**: Build logic defined once, reused across environments
+- **Consistent Behavior**: Identical steps for staging and production with environment-specific parameters
+- **Easier Maintenance**: Updates to build process only require changes in one place
+- **Reduced Duplication**: 80% reduction in workflow YAML lines
+- **Better Testing**: Reusable workflows can be tested independently
+
+**Best Practices for DRY Workflows:**
+- Use reusable workflows for complete job sequences (build, test, deploy)
+- Use composite actions for repeated step sequences (setup, security audits)
+- Parameterize environment-specific values (registry URLs, environment names)
+- Maintain clear input/output contracts between workflows
+- Document inputs and outputs for easier team collaboration
+- Version reusable workflows alongside your application code
+
 ---
 
 ## Testing
