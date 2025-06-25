@@ -96,7 +96,78 @@ These dependencies provide a secure, testable, and fully-featured foundation for
 
 ## Docker & DDEV
 
-<!-- AI appends here from prompts about Docker and DDEV -->
+### DDEV Local Development Environment
+
+DDEV provides the recommended local development environment for Drupal 11 projects as of 2025. It includes built-in support for Xdebug, HTTPS, and email catching without additional configuration complexity.
+
+**Project Initialization:**
+```bash
+mkdir my-drupal-site && cd my-drupal-site
+ddev config --project-type drupal11 --docroot web
+ddev composer create drupal/recommended-project -y
+```
+
+**Configuration (.ddev/config.yaml):**
+```yaml
+name: my-drupal-site
+type: drupal11          # Can also use 'drupal' (defaults to latest stable)
+docroot: web
+php_version: "8.3"      # Required minimum for Drupal 11
+webserver_type: nginx-fpm
+database:
+  type: mariadb
+  version: "10.11"      # Default, stable choice
+additional_hostnames: []
+additional_fqdns: []
+```
+
+### Xdebug Integration
+
+**Enable/Disable:**
+- `ddev xdebug` - Enable Xdebug (performance impact)
+- `ddev xdebug off` - Disable when finished debugging
+
+**VS Code Setup:**
+1. Run `ddev xdebug` to enable
+2. Set breakpoints in VS Code
+3. Use "Run and Debug" → "Listen for Xdebug"
+4. Ensure VS Code opens project in same folder as DDEV commands
+
+**Drush Debugging:**
+- With Drush 13+, use `DRUSH_ALLOW_XDEBUG=1` or `drush --xdebug` for debugging support
+
+### HTTPS Support
+
+DDEV's automatic router handles custom domain names and HTTPS certificates without manual configuration. SSL certificates are managed automatically for all project URLs.
+
+### Email Catching
+
+**Mailpit Integration:**
+- DDEV uses Mailpit (replaces deprecated Mailhog) for email capture
+- All emails sent by Drupal are automatically caught and viewable in Mailpit interface
+- Access via DDEV's web interface or `ddev describe` for URL
+
+**Symfony Mailer Configuration:**
+- Use sendmail transport for both local DDEV and production environments
+- Configure environment-specific settings files for different mail handling
+- Avoid `mail_safety` module with `symfony_mailer` - use `symfony_mailer_log` instead
+
+### Performance Considerations
+
+- Disable Xdebug when not actively debugging to maintain performance
+- DDEV is cross-platform tested (macOS, Windows, Linux) for consistent team environments
+- After DDEV version updates: `ddev stop` → `ddev config` → `ddev start`
+
+### Add-ons and Extensions
+
+**Custom Commands:**
+Add project-specific commands to `.ddev/commands/` directory
+
+**Docker Compose Extensions:**
+Use `.ddev/docker-compose.<service>.yaml` for additional services
+
+**Configuration Overrides:**
+Use `.ddev/config.<service>.yaml` for service-specific configuration
 
 ---
 
