@@ -360,7 +360,62 @@ $settings['file_chmod_file'] = 0664;
 
 ## CI/CD and GitHub Actions
 
-<!-- AI appends here from all CI/CD related prompts -->
+### Composer Dependency Caching
+
+**Recommended Actions for Drupal 11 (2025):**
+
+**Primary Recommendation: `actions/cache@v4`**
+- **Status**: Required upgrade by February 1, 2025 (v3 and below deprecated)
+- **Performance**: Up to 80% faster cache uploads with GitHub Hosted Runners
+- **Reliability**: Rewritten backend service for improved performance and reliability
+
+```yaml
+- name: Get Composer cache directory
+  id: composer-cache
+  run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+- name: Cache Composer dependencies
+  uses: actions/cache@v4
+  with:
+    path: ${{ steps.composer-cache.outputs.dir }}
+    key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+    restore-keys: ${{ runner.os }}-composer-
+```
+
+**Alternative: `ramsey/composer-install@v3`**
+- **Features**: Automatic cache management, no separate caching step needed
+- **Cache Key**: Auto-generates based on OS, PHP version, composer files, and options
+- **Performance**: ~30 seconds without cache, ~20 seconds with cache
+
+```yaml
+- name: Install Composer dependencies
+  uses: ramsey/composer-install@v3
+  with:
+    dependency-versions: "locked"
+    composer-options: "--prefer-dist --no-progress"
+```
+
+**PHP Setup: `shivammathur/setup-php@v2`**
+- **2025 Updates**: Support for windows-2025 and macos-15 environments
+- **Drupal Integration**: Built-in Composer support with extensive tool ecosystem
+- **Coverage**: Xdebug and PCOV support for testing workflows
+
+```yaml
+- name: Setup PHP
+  uses: shivammathur/setup-php@v2
+  with:
+    php-version: '8.3'
+    extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+    tools: composer:v2
+    coverage: xdebug
+```
+
+**Best Practices:**
+- Always use `actions/cache@v4` (v3 and below fail after February 1, 2025)
+- Include `composer.lock` in cache key hash for dependency accuracy
+- Use `--prefer-dist --no-progress` for faster, quieter Composer installs
+- Cache both Composer dependencies and tools for optimal performance
+- Set `COMPOSER_NO_INTERACTION=1` for automated workflows
 
 ---
 
