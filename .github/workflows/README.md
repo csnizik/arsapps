@@ -25,6 +25,7 @@ The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable wo
 ## Stage and Production Deployment
 
 The `stage-deploy.yml` workflow runs automatically when:
+
 - Code is pushed to the `stage` branch (staging deployment)
 - Git tags prefixed with `prod_*` are created (production deployment)
 
@@ -60,15 +61,18 @@ Update these variables in the workflow file:
 The workflow generates environment-specific Docker image tags:
 
 **Stage Branch Builds:**
+
 - `stage`: Always applied for stage branch builds
 - `stage-<commit-sha>`: Unique tag with branch and commit SHA
 
 **Production Tag Builds:**
+
 - `production`: Always applied for production tag builds
 - `prod-<commit-sha>`: Unique tag with commit SHA
 - Original tag name (e.g., `prod_v1.2.3`)
 
 **All Builds:**
+
 - `latest`: Applied when building the default branch
 
 ### Security Features
@@ -104,6 +108,7 @@ Reusable action that handles common Drupal build environment setup:
 ```
 
 **Features:**
+
 - PHP environment setup with extensions
 - Composer dependency caching and installation
 - Node.js environment setup with npm caching
@@ -115,6 +120,7 @@ Reusable action that handles common Drupal build environment setup:
 Centralized build and deployment logic that can be called from multiple workflows:
 
 **Usage:**
+
 ```yaml
 jobs:
   deploy:
@@ -130,6 +136,7 @@ jobs:
 ```
 
 **Benefits:**
+
 - Single source of truth for build logic
 - Environment-specific parameter injection
 - Consistent behavior across staging and production
