@@ -1,0 +1,7 @@
+example_text: 'Default placeholder text'
+example_number: 42
+example_boolean: true
+example_array:
+  - 'Item 1'
+  - 'Item 2'
+  - 'Item 3'
