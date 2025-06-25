@@ -169,6 +169,39 @@ Use `.ddev/docker-compose.<service>.yaml` for additional services
 **Configuration Overrides:**
 Use `.ddev/config.<service>.yaml` for service-specific configuration
 
+### Production Docker Images
+
+**Recommended Base Images for Drupal 11 Production (2025):**
+
+**Primary Recommendation:**
+- `drupal:11.1.5-php8.3-fpm-bookworm` - Most stable for production
+- `drupal:11.1.5-php8.3-apache-bookworm` - Alternative for Apache-based deployments
+
+**Alternative Options:**
+- `drupal:11.1.5-php8.4-fpm-bookworm` - For newer PHP features (Drupal 11.1+ only)
+- `drupal:11.1.5-php8.3-fpm-alpine` - Lightweight Alpine variant
+
+**PHP Version Recommendations:**
+- **PHP 8.3**: Recommended for production stability and ecosystem compatibility
+- **PHP 8.4**: Supported in Drupal 11.1+, but less mature ecosystem
+- **Minimum**: PHP 8.3 required for Drupal 11
+
+**Image Architecture Choices:**
+1. **Nginx + PHP-FPM**: Use `drupal:*-fpm` with separate Nginx container
+2. **Apache**: Use `drupal:*-apache` for simpler single-container deployments
+
+**Production Best Practices:**
+- Use specific version tags (e.g., `11.1.5`) rather than `latest` for reproducible builds
+- Prefer Debian-based images (`bookworm`) over Alpine for production stability
+- Alpine images are 95% smaller but may require custom binary compilation
+- Implement multi-stage builds to separate build dependencies from runtime
+
+**Security Considerations:**
+- Regular base image updates for security patches
+- Minimize installed packages to reduce attack surface
+- Use multi-stage builds to exclude build-time dependencies from final image
+- Consider vulnerability scanning with tools like Snyk for ongoing security assessment
+
 ---
 
 ## CI/CD and GitHub Actions
