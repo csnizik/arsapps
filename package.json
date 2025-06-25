@@ -1,0 +1,19 @@
+{
+  "name": "drupal-project",
+  "version": "1.0.0",
+  "description": "Drupal 11 project with frontend build tools",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Frontend build completed - replace with actual build commands'",
+    "dev": "echo 'Development build - replace with actual dev commands'",
+    "lint": "echo 'Linting - replace with actual lint commands'"
+  },
+  "devDependencies": {
+    "webpack": "^5.0.0",
+    "webpack-cli": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}
