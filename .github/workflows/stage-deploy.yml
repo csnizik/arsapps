@@ -1,8 +1,10 @@
-name: Stage Branch Deployment
+name: Stage and Production Deployment
 
 on:
   push:
     branches: [ stage ]
+    tags:
+      - 'prod_*'
   workflow_dispatch:
 
 env:
@@ -13,6 +15,9 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     
+    env:
+      IS_PRODUCTION: ${{ startsWith(github.ref, 'refs/tags/prod_') }}
+      
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -44,6 +49,32 @@ jobs:
     - name: Run Composer security audit
       run: composer audit
       
+    - name: Enhanced security audit for production
+      if: env.IS_PRODUCTION == 'true'
+      run: |
+        echo "Running enhanced security checks for production deployment..."
+        
+        # Verify no development dependencies
+        if [ -d "vendor/phpunit" ] || [ -d "vendor/behat" ]; then
+          echo "Error: Development dependencies found in production build"
+          exit 1
+        fi
+        
+        # Check for debug configurations
+        if grep -r "xdebug" web/ --exclude-dir=vendor 2>/dev/null; then
+          echo "Warning: Xdebug references found in codebase"
+        fi
+        
+        # Ensure settings.php is production-ready
+        if [ -f "web/sites/default/settings.php" ]; then
+          if grep -q "assert_options.*ASSERT_ACTIVE.*1" web/sites/default/settings.php; then
+            echo "Error: Assertions enabled in production settings"
+            exit 1
+          fi
+        fi
+        
+        echo "Production security audit completed successfully"
+      
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -73,9 +104,12 @@ jobs:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: |
           type=ref,event=branch
+          type=ref,event=tag
           type=raw,value=latest,enable={{is_default_branch}}
-          type=raw,value=stage
-          type=sha,prefix={{branch}}-
+          type=raw,value=stage,enable=${{ github.ref == 'refs/heads/stage' }}
+          type=raw,value=production,enable=${{ startsWith(github.ref, 'refs/tags/prod_') }}
+          type=sha,prefix={{branch}}-,enable=${{ github.ref == 'refs/heads/stage' }}
+          type=sha,prefix=prod-,enable=${{ startsWith(github.ref, 'refs/tags/prod_') }}
           
     - name: Build and push Docker image
       id: build
@@ -91,6 +125,9 @@ jobs:
         platforms: linux/amd64
         build-args: |
           BUILDKIT_INLINE_CACHE=1
+          ENVIRONMENT=${{ env.IS_PRODUCTION == 'true' && 'production' || 'staging' }}
+          BUILD_DATE=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+          VCS_REF=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
           
     - name: Run security scan on built image
       uses: aquasecurity/trivy-action@master
