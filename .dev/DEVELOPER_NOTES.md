@@ -542,7 +542,86 @@ $settings['file_chmod_file'] = 0664;
 
 ## Deployment environments
 
-<!-- AI appends here based on deployment prompts -->
+### Azure App Service Container Configuration
+
+**Environment Variables via App Settings:**
+
+Azure App Service automatically passes App Settings to containers as environment variables using the `--env` flag. These are immediately accessible in PHP via `getenv()` function.
+
+**Configuration Process:**
+1. **Azure Portal**: Navigate to Configuration → Application settings
+2. **Add Settings**: Create key-value pairs for each environment variable
+3. **Automatic Injection**: Azure passes these to container on startup
+4. **Container Restart**: Changes trigger automatic restart to apply new variables
+
+**Recommended Drupal 11 Environment Variables:**
+
+```bash
+# Database Configuration
+DRUPAL_DB_HOST=your-azure-mysql-server.mysql.database.azure.com
+DRUPAL_DB_NAME=drupal_db
+DRUPAL_DB_USER=drupal_admin
+DRUPAL_DB_PASSWORD=secure_password
+DRUPAL_DB_PORT=3306
+
+# Security Settings
+DRUPAL_HASH_SALT=random_64_character_string
+DRUPAL_TRUSTED_HOST_PATTERNS=^your-app\.azurewebsites\.net$
+
+# Configuration Management
+DRUPAL_CONFIG_SYNC_DIRECTORY=../config/sync
+DRUPAL_ENVIRONMENT=production
+
+# File Storage (Azure-specific)
+DRUPAL_PRIVATE_FILES_PATH=/home/private
+DRUPAL_TEMP_PATH=/tmp
+```
+
+**settings.php Configuration Pattern:**
+
+```php
+// Database configuration using environment variables
+$databases['default']['default'] = [
+  'database' => getenv('DRUPAL_DB_NAME'),
+  'username' => getenv('DRUPAL_DB_USER'),
+  'password' => getenv('DRUPAL_DB_PASSWORD'),
+  'host' => getenv('DRUPAL_DB_HOST'),
+  'port' => getenv('DRUPAL_DB_PORT') ?: '3306',
+  'driver' => 'mysql',
+  'prefix' => '',
+];
+
+// Security settings
+$settings['hash_salt'] = getenv('DRUPAL_HASH_SALT');
+
+// Trusted host patterns for Azure App Service
+$settings['trusted_host_patterns'] = [
+  '^' . preg_quote(getenv('DRUPAL_TRUSTED_HOST_PATTERNS')) . '$',
+];
+
+// Configuration sync directory
+$settings['config_sync_directory'] = getenv('DRUPAL_CONFIG_SYNC_DIRECTORY');
+
+// Environment-specific settings
+if (getenv('DRUPAL_ENVIRONMENT') === 'production') {
+  $config['system.logging']['error_level'] = 'hide';
+  $config['system.performance']['cache']['page']['max_age'] = 3600;
+}
+```
+
+**Azure-Specific Best Practices:**
+
+- **Slot Settings**: Mark sensitive variables as "deployment slot settings" to prevent swapping between environments
+- **Connection Strings**: Use Azure's Connection Strings section for database connections (additional security layer)
+- **Key Vault Integration**: For highly sensitive values, reference Azure Key Vault secrets
+- **Environment Detection**: Use `DRUPAL_ENVIRONMENT` variable to conditionally apply settings
+- **File Storage**: Configure Azure Storage for private files and media uploads
+
+**Security Considerations:**
+- Never commit environment-specific values to version control
+- Use Azure Key Vault for secrets like database passwords and API keys
+- Configure slot settings to maintain environment separation
+- Set appropriate trusted host patterns to prevent host header attacks
 
 ---
 
