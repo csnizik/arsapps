@@ -417,6 +417,115 @@ $settings['file_chmod_file'] = 0664;
 - Cache both Composer dependencies and tools for optimal performance
 - Set `COMPOSER_NO_INTERACTION=1` for automated workflows
 
+### NPM/Node.js Dependency Caching
+
+**Primary Recommendation: `actions/setup-node@v4`**
+- **Built-in Caching**: Uses `actions/cache` under the hood with optimized configuration
+- **Package Manager Support**: npm, yarn, pnpm (v6.10+)
+- **Global Cache Strategy**: Caches package manager's global cache, not `node_modules`
+
+```yaml
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'  # or 'yarn', 'pnpm'
+- run: npm ci
+```
+
+**Package Manager Specific Best Practices:**
+
+**NPM:**
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+- run: npm ci  # Use ci for deterministic installs
+```
+
+**Yarn:**
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'yarn'
+- run: yarn install --frozen-lockfile
+```
+
+**PNPM:**
+```yaml
+- uses: pnpm/action-setup@v4
+  with:
+    version: 10
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'pnpm'
+- run: pnpm install --frozen-lockfile
+```
+
+**Monorepo Support:**
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+    cache-dependency-path: 'sub-project/package-lock.json'
+```
+
+### Docker Layer Caching
+
+**Primary Recommendation: `docker/build-push-action@v6` with GHA Cache**
+- **2025 Update**: GitHub Cache API v1 shutdown April 15, 2025 - upgrade required
+- **Auto-Configuration**: URL and token parameters automatically populated
+- **Performance**: Best integration with GitHub Actions environment
+
+```yaml
+- name: Build and push Docker image
+  uses: docker/build-push-action@v6
+  with:
+    context: .
+    push: true
+    tags: user/app:latest
+    cache-from: type=gha
+    cache-to: type=gha,mode=max
+```
+
+**Alternative: Registry Cache (Better Performance)**
+```yaml
+- name: Build and push Docker image
+  uses: docker/build-push-action@v6
+  with:
+    context: .
+    push: true
+    tags: user/app:latest
+    cache-from: type=registry,ref=user/app:buildcache
+    cache-to: type=registry,ref=user/app:buildcache,mode=max
+```
+
+**Docker Cache Best Practices:**
+- Use `mode=max` for better cache coverage when possible
+- Specify cache scope for multi-image builds: `scope=myapp-frontend`
+- Consider registry cache for complex builds with better network performance
+- Upgrade to Docker Engine >= v28.0.0 for containerd image store support
+
+**Combined Node.js + Docker Workflow:**
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+- run: npm ci
+- run: npm run build
+
+- uses: docker/build-push-action@v6
+  with:
+    context: .
+    cache-from: type=gha
+    cache-to: type=gha,mode=max
+```
+
 ---
 
 ## Testing
