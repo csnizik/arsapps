@@ -35,6 +35,7 @@ The `stage-deploy.yml` workflow runs automatically when:
 - **Multi-stage Docker build** following DEVELOPER_NOTES.md guidelines
 - **Composite Actions**: Reusable build environment setup
 - **Enhanced Security**: Production-specific validation and auditing
+- **Frontend Asset Building**: Webpack-based SCSS and JavaScript compilation in custom themes
 - **Dependency Caching**: Optimized caching for Composer and Node.js
 - **Docker layer caching** using GitHub Actions cache
 - **Security scanning** with Trivy vulnerability scanner
@@ -107,7 +108,7 @@ Reusable action that handles common Drupal build environment setup:
 - Composer dependency caching and installation
 - Node.js environment setup with npm caching
 - Security audit execution
-- Frontend asset compilation
+- Frontend asset compilation (webpack builds for theme SCSS/JS)
 
 ### Reusable Workflow: reusable-build.yml
 

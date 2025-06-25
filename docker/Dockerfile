@@ -21,17 +21,28 @@ RUN composer install --no-dev --optimize-autoloader
 FROM node:22-alpine AS frontend_build
 WORKDIR /app
 
-# Copy package files first for better layer caching
+# Copy root package files first for better layer caching
 COPY package*.json ./
 
-# Install only production dependencies
+# Install root dependencies for webpack config
 RUN npm ci --only=production
 
-# Copy frontend build configuration and source
-COPY webpack.config.js ./
-COPY web/themes/custom/ ./web/themes/custom/
+# Copy theme package files and install theme dependencies
+COPY web/themes/custom/arsapps_theme/package*.json ./web/themes/custom/arsapps_theme/
+WORKDIR /app/web/themes/custom/arsapps_theme
+RUN npm ci
 
-# Build frontend assets
+# Copy theme source files and build configuration
+WORKDIR /app
+COPY webpack.config.js ./
+COPY web/themes/custom/arsapps_theme/ ./web/themes/custom/arsapps_theme/
+
+# Build frontend assets for theme
+WORKDIR /app/web/themes/custom/arsapps_theme
+RUN npm run build
+
+# Also run root build for any global assets
+WORKDIR /app
 RUN npm run build
 
 # Stage 3: Production Runtime

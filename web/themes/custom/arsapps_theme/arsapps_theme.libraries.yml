@@ -2,12 +2,22 @@ global-styling:
   version: 1.x
   css:
     theme:
+      dist/css/styles.css: {}
+  js:
+    dist/js/main.bundle.js: {}
+  dependencies:
+    - core/drupal
+
+# Fallback for development (non-compiled assets)
+global-styling-dev:
+  version: 1.x
+  css:
+    theme:
       css/style.css: {}
   js:
     js/arsapps_theme.js: {}
   dependencies:
     - core/drupal
-    - core/jquery
 
 print:
   version: 1.x

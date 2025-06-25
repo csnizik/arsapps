@@ -4,9 +4,9 @@
   "description": "Drupal 11 project with frontend build tools",
   "private": true,
   "scripts": {
-    "build": "echo 'Frontend build completed - replace with actual build commands'",
-    "dev": "echo 'Development build - replace with actual dev commands'",
-    "lint": "echo 'Linting - replace with actual lint commands'"
+    "build": "cd web/themes/custom/arsapps_theme && npm run build",
+    "dev": "cd web/themes/custom/arsapps_theme && npm run dev",
+    "lint": "cd web/themes/custom/arsapps_theme && npm run lint"
   },
   "devDependencies": {
     "webpack": "^5.0.0",

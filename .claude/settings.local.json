@@ -5,7 +5,9 @@
       "Bash(ls:*)",
       "Bash(find:*)",
       "WebFetch(domain:www.drupal.org)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(touch:*)"
     ],
     "deny": []
   }
