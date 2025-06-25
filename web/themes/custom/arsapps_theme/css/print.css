@@ -1,0 +1,44 @@
+/**
+ * @file
+ * Print stylesheet for ARSApps Theme.
+ */
+
+/* Print styles */
+@media print {
+  /* Hide navigation and non-essential elements */
+  .layout-sidebar-first,
+  .layout-sidebar-second,
+  header nav,
+  .skip-link {
+    display: none !important;
+  }
+
+  /* Optimize for print */
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+    color: #000;
+    background: #fff;
+  }
+
+  .layout-container {
+    max-width: none;
+    padding: 0;
+  }
+
+  /* Ensure links are visible */
+  a:link,
+  a:visited {
+    text-decoration: underline;
+    color: #000;
+  }
+
+  /* Page breaks */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  p, li {
+    page-break-inside: avoid;
+  }
+}
