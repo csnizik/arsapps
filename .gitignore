@@ -1,0 +1,42 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+core
+
+# Ignore sensitive files
+web/sites/default/settings.*.php
+web/sites/*.services.yml
+web/sites/*.*.services.yml
+
+# Ignore private files
+web/sites/*/files/private/
+web/sites/*/files/temporary/
+web/sites/*/files/sync/
+web/sites/*/files/config_*
+
+# Ignore contributed modules and themes
+web/sites/*/modules/contrib/
+web/sites/*/themes/contrib/
+web/modules/contrib/
+web/themes/contrib/
+
+# Ignore default files folder
+web/sites/default/files/
+
+# Ignore cache and temporary files
+web/sites/*/files/css/
+web/sites/*/files/js/
+web/sites/*/files/php/
+
+# Ignore generated and compiled files
+*.gz
+*.tar
+*.zip
+*.log
+
+# Ignore Composer vendor folder
+vendor/
+**/vendor/
+
+# Ignore Node.js dependency folder
+**/node_modules/
