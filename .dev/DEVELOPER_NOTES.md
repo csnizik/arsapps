@@ -428,6 +428,7 @@ $settings['file_chmod_file'] = 0664;
 - **Built-in Caching**: Uses `actions/cache` under the hood with optimized configuration
 - **Package Manager Support**: npm, yarn, pnpm (v6.10+)
 - **Global Cache Strategy**: Caches package manager's global cache, not `node_modules`
+- **2025 Update**: Built-in cache functionality provides faster and more reliable caching than manual implementations
 
 ```yaml
 - name: Setup Node.js
@@ -438,9 +439,17 @@ $settings['file_chmod_file'] = 0664;
 - run: npm ci
 ```
 
+**Why npm ci vs npm install in CI/CD (2025):**
+
+- **Deterministic Builds**: `npm ci` installs exact versions from `package-lock.json`, ensuring reproducible builds
+- **Performance**: Bypasses dependency resolution, typically 2-4x faster than `npm install`
+- **Clean State**: Removes existing `node_modules` before installation, preventing version conflicts
+- **CI Optimized**: Designed specifically for automated environments like GitHub Actions
+- **Lock File Validation**: Validates that `package.json` and `package-lock.json` are in sync
+
 **Package Manager Specific Best Practices:**
 
-**NPM:**
+**NPM (Recommended for Drupal Themes):**
 
 ```yaml
 - uses: actions/setup-node@v4
@@ -448,6 +457,7 @@ $settings['file_chmod_file'] = 0664;
     node-version: '20'
     cache: 'npm'
 - run: npm ci  # Use ci for deterministic installs
+- run: npm run build
 ```
 
 **Yarn:**
@@ -473,15 +483,66 @@ $settings['file_chmod_file'] = 0664;
 - run: pnpm install --frozen-lockfile
 ```
 
-**Monorepo Support:**
+**Drupal Custom Theme Configuration:**
+
+For Drupal themes with frontend dependencies in subdirectories:
 
 ```yaml
 - uses: actions/setup-node@v4
   with:
     node-version: '20'
     cache: 'npm'
-    cache-dependency-path: 'sub-project/package-lock.json'
+    cache-dependency-path: 'web/themes/custom/*/package-lock.json'
+- run: npm ci
+  working-directory: web/themes/custom/theme_name
+- run: npm run build
+  working-directory: web/themes/custom/theme_name
 ```
+
+**Multi-Theme Projects:**
+
+For projects with multiple themes requiring builds:
+
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+    cache-dependency-path: '**/package-lock.json'
+- name: Build all themes
+  run: |
+    for theme in web/themes/custom/*/; do
+      if [ -f "$theme/package.json" ]; then
+        echo "Building theme: $theme"
+        cd "$theme" && npm ci && npm run build && cd -
+      fi
+    done
+```
+
+**Advanced Caching with Manual Control:**
+
+For complex scenarios requiring custom cache keys:
+
+```yaml
+- name: Cache npm dependencies
+  uses: actions/cache@v4
+  with:
+    path: ~/.npm
+    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    restore-keys: |
+      ${{ runner.os }}-node-
+```
+
+**Best Practices Summary (2025):**
+
+- Always use `npm ci` instead of `npm install` in CI environments
+- Specify exact Node.js versions for consistency across environments
+- Cache the global npm directory (`~/.npm`), not `node_modules`
+- Use `cache-dependency-path` for theme subdirectories
+- Commit `package-lock.json` files to repository for reproducible builds
+- Separate build steps for each theme to isolate failures
+- Use `working-directory` when themes are in subdirectories
+- Validate builds with `npm run lint` before deployment
 
 ### Docker Layer Caching
 
