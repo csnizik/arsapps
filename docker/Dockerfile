@@ -67,6 +67,8 @@ RUN groupadd -r deploy && useradd -r -g deploy -G www-data deploy
 
 # Copy Composer dependencies (production only, no dev tools)
 COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
+# Verify vendor directory was copied successfully
+RUN ls -la /var/www/html/vendor/ && ls -la /var/www/html/vendor/autoload.php
 COPY --from=composer_build --chown=deploy:www-data /app/web ./web
 COPY --from=composer_build --chown=deploy:www-data /app/composer.json ./composer.json
 COPY --from=composer_build --chown=deploy:www-data /app/composer.lock ./composer.lock
