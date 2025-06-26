@@ -49,7 +49,11 @@ COPY web/themes/custom/arsapps_theme/scss/ ./scss/
 COPY web/themes/custom/arsapps_theme/css/ ./css/
 
 # Build frontend assets - creates dist/ directory with compiled assets
-RUN npm run build
+RUN npm run build && \
+    echo "Frontend build completed. Checking dist directory:" && \
+    ls -la dist/ && \
+    echo "Contents of dist/:" && \
+    find dist/ -type f
 
 # Stage 3: Production Runtime
 FROM drupal:11.1.5-php8.3-fpm-bookworm AS production
@@ -77,6 +81,12 @@ COPY --from=composer_build --chown=deploy:www-data /app/composer.lock ./composer
 
 # Copy ONLY compiled frontend assets (exclude source files and dev tools)
 COPY --from=frontend_build --chown=deploy:www-data /app/web/themes/custom/arsapps_theme/dist ./web/themes/custom/arsapps_theme/dist
+
+# Verify the copy worked
+RUN echo "Verifying frontend assets were copied:" && \
+    ls -la ./web/themes/custom/arsapps_theme/ && \
+    echo "Contents of dist directory:" && \
+    ls -la ./web/themes/custom/arsapps_theme/dist/ || echo "ERROR: dist directory not found"
 
 # Copy configuration files
 COPY --chown=deploy:www-data config/ ./config/
