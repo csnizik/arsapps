@@ -36,14 +36,14 @@
     "config": {
         "allow-plugins": {
             "composer/installers": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
             "drupal/core-project-message": true,
             "drupal/core-recipe-unpack": true,
             "php-http/discovery": true,
             "php-tuf/composer-integration": true,
             "phpstan/extension-installer": true,
-            "tbachert/spi": true
+            "tbachert/spi": true,
+            "dealerdirect/phpcodesniffer-composer-installer": false
         },
         "sort-packages": true
     },
