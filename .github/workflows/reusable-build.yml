@@ -1,0 +1,139 @@
+name: Reusable Build and Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Target environment (staging or production)'
+        required: true
+        type: string
+      registry:
+        description: 'Container registry URL'
+        required: true
+        type: string
+      image_name:
+        description: 'Container image name'
+        required: true
+        type: string
+      dockerfile_path:
+        description: 'Path to Dockerfile'
+        required: false
+        type: string
+        default: './docker/Dockerfile'
+    secrets:
+      acr_username:
+        description: 'Azure Container Registry username'
+        required: true
+      acr_password:
+        description: 'Azure Container Registry password'
+        required: true
+    outputs:
+      image_tags:
+        description: 'Generated Docker image tags'
+        value: ${{ jobs.build-and-deploy.outputs.image_tags }}
+      image_digest:
+        description: 'Docker image digest'
+        value: ${{ jobs.build-and-deploy.outputs.image_digest }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    outputs:
+      image_tags: ${{ steps.meta.outputs.tags }}
+      image_digest: ${{ steps.build.outputs.digest }}
+    
+    env:
+      IS_PRODUCTION: ${{ inputs.environment == 'production' }}
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Drupal build environment
+      uses: ./.github/actions/setup-drupal-build
+      with:
+        php-version: '8.3'
+        node-version: '20'
+        composer-options: '--prefer-dist --no-progress --no-dev --optimize-autoloader'
+        enable-code-audit: 'true'
+      
+    - name: Enhanced production readiness check
+      if: env.IS_PRODUCTION == 'true'
+      run: |
+        echo "Running production readiness checks..."
+        
+        # Verify no development dependencies
+        if [ -d "vendor/phpunit" ] || [ -d "vendor/behat" ]; then
+          echo "Error: Development dependencies found in production build"
+          exit 1
+        fi
+        
+        # Check for debug configurations
+        if grep -r "xdebug" web/ --exclude-dir=vendor 2>/dev/null; then
+          echo "Warning: Xdebug references found in codebase"
+        fi
+        
+        # Ensure settings.php is production-ready
+        if [ -f "web/sites/default/settings.php" ]; then
+          if grep -q "assert_options.*ASSERT_ACTIVE.*1" web/sites/default/settings.php; then
+            echo "Error: Assertions enabled in production settings"
+            exit 1
+          fi
+        fi
+        
+        echo "Production readiness check completed successfully"
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Log in to Azure Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ secrets.acr_username }}
+        password: ${{ secrets.acr_password }}
+        
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ inputs.registry }}/${{ inputs.image_name }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=tag
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
+          type=raw,value=production,enable=${{ startsWith(github.ref, 'refs/tags/prod_') }}
+          type=sha,prefix={{branch}}-,enable=${{ github.ref == 'refs/heads/develop' }}
+          type=sha,prefix=prod-,enable=${{ startsWith(github.ref, 'refs/tags/prod_') }}
+          
+    - name: Build and push Docker image
+      id: build
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: ${{ inputs.dockerfile_path }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64
+        build-args: |
+          BUILDKIT_INLINE_CACHE=1
+          ENVIRONMENT=${{ inputs.environment }}
+          BUILD_DATE=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+          VCS_REF=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+          
+        
+    - name: Output deployment summary
+      run: |
+        echo "# Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment:** ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Image Tags:** ${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Image Digest:** ${{ steps.build.outputs.digest }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Registry:** ${{ inputs.registry }}" >> $GITHUB_STEP_SUMMARY
+        
+        echo "Image pushed with tags: ${{ steps.meta.outputs.tags }}"
+        echo "Image digest: ${{ steps.build.outputs.digest }}"

@@ -1,0 +1,119 @@
+// ARSApps Theme Main Styles
+// This file will be compiled by webpack
+
+@use 'sass:color';
+
+// Variables
+$primary-color: #1976d1;
+$secondary-color: #424242;
+$text-color: #333;
+$background-color: #fff;
+$border-radius: 4px;
+
+// Base styles
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: $text-color;
+  background-color: $background-color;
+  margin: 0;
+  padding: 0;
+}
+
+// Layout
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+// Components
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: $primary-color;
+  color: white;
+  text-decoration: none;
+  border-radius: $border-radius;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: color.adjust($primary-color, $lightness: -10%);
+  }
+}
+
+// Layout Builder enhancements for accessibility
+.layout-builder__section {
+  position: relative;
+
+  &:focus {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+
+  // Enhanced visual indicators for keyboard navigation
+  &[tabindex="0"]:focus-visible {
+    background-color: color.adjust($primary-color, $lightness: 95%);
+    box-shadow: 0 0 0 3px color.adjust($primary-color, $alpha: -0.7);
+  }
+}
+
+// Skip link improvements
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: $text-color;
+  color: $background-color;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: $border-radius;
+  z-index: 9999;
+
+  &:focus {
+    top: 6px;
+  }
+}
+
+// Mobile menu enhancements
+.primary-menu {
+  transition: transform 0.3s ease;
+
+  &.is-open {
+    transform: translateX(0);
+  }
+
+  @media (max-width: 768px) {
+    transform: translateX(-100%);
+  }
+}
+
+.mobile-menu-toggle {
+  &.is-active {
+    .hamburger {
+      &::before {
+        transform: rotate(45deg);
+      }
+
+      &::after {
+        transform: rotate(-45deg);
+      }
+
+      span {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+}
+
+// Import existing styles for compatibility
+@import '../css/style.css';

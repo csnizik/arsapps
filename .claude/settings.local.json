@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "WebFetch(domain:www.drupal.org)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(touch:*)",
+      "Bash(composer show:*)",
+      "Bash(grep:*)",
+      "Bash(composer require:*)",
+      "Bash(composer config:*)",
+      "Bash(npm init:*)",
+      "Bash(npx playwright:*)",
+      "Bash(vendor/bin/phpunit:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(composer install:*)",
+      "Bash(composer check-platform-reqs:*)",
+      "Bash(composer validate:*)",
+      "Bash(rm:*)",
+      "Bash(composer:*)",
+      "Bash(rg:*)",
+      "Bash(npm test)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(sed:*)",
+      "Bash(mv:*)"
+    ],
+    "deny": []
+  }
+}

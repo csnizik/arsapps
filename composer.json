@@ -16,10 +16,16 @@
     ],
     "require": {
         "composer/installers": "^2.3",
+        "drupal/admin_toolbar": "^3.6",
+        "drupal/better_exposed_filters": "^7.0",
         "drupal/core-composer-scaffold": "^11.2",
         "drupal/core-project-message": "^11.2",
         "drupal/core-recipe-unpack": "^11.2",
         "drupal/core-recommended": "^11.2",
+        "drupal/devel": "^5.3",
+        "drupal/field_group": "^4.0",
+        "drupal/pathauto": "^1.13",
+        "drupal/token": "^1.15",
         "drush/drush": "^13.6"
     },
     "conflict": {
@@ -31,12 +37,13 @@
         "allow-plugins": {
             "composer/installers": true,
             "drupal/core-composer-scaffold": true,
-            "drupal/core-recipe-unpack": true,
             "drupal/core-project-message": true,
-            "phpstan/extension-installer": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "drupal/core-recipe-unpack": true,
             "php-http/discovery": true,
-            "php-tuf/composer-integration": true
+            "php-tuf/composer-integration": true,
+            "phpstan/extension-installer": true,
+            "tbachert/spi": true,
+            "dealerdirect/phpcodesniffer-composer-installer": false
         },
         "sort-packages": true
     },
@@ -44,7 +51,8 @@
         "drupal-scaffold": {
             "locations": {
                 "web-root": "web/"
-            }
+            },
+            "allowed-packages": ["drupal/claude_code"]
         },
         "installer-paths": {
             "web/core": [
@@ -99,5 +107,8 @@
                 "      composer remove drupal/core-project-message"
             ]
         }
+    },
+    "require-dev": {
+        "drupal/core-dev": "^11.2"
     }
 }

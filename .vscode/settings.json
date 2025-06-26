@@ -1,0 +1,4 @@
+{
+  "phpcs.standard": "Drupal",
+  "phpcs.executablePath": "vendor/bin/phpcs"
+}

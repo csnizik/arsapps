@@ -1,0 +1,9 @@
+name: 'ARSApps Module'
+type: module
+description: 'Placeholder module for ARSApps custom functionality and CI/CD pipeline testing.'
+package: Custom
+core_version_requirement: ^11
+version: 1.0.0
+dependencies:
+  - drupal:help
+configure: arsapps_module.settings

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Drupal Custom Code">
+    <description>PHPCS configuration for custom Drupal modules and themes</description>
+    
+    <!-- Set the minimum supported PHP version -->
+    <config name="php_version" value="80300"/>
+    
+    <!-- Use Drupal coding standards -->
+    <rule ref="Drupal"/>
+    <rule ref="DrupalPractice"/>
+    
+    <!-- Paths to check -->
+    <file>web/modules/custom</file>
+    <file>web/themes/custom</file>
+    
+    <!-- Exclude patterns -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/dist/*</exclude-pattern>
+    <exclude-pattern>*/libraries/*</exclude-pattern>
+    <exclude-pattern>*/.git/*</exclude-pattern>
+    <exclude-pattern>*/tests/fixtures/*</exclude-pattern>
+    
+    <!-- File extensions to check -->
+    <arg name="extensions" value="php,module,inc,install,test,profile,theme"/>
+    
+    <!-- Show progress -->
+    <arg value="p"/>
+    
+    <!-- Show colors -->
+    <arg name="colors"/>
+    
+    <!-- Show sniff codes in all reports -->
+    <arg value="s"/>
+    
+    <!-- Custom rules for themes -->
+    <rule ref="Drupal.Files.TxtFileLineLength.TooLong">
+        <exclude-pattern>*/themes/custom/*/README.md</exclude-pattern>
+    </rule>
+    
+    <!-- Allow longer lines in configuration files -->
+    <rule ref="Drupal.Files.LineLength.TooLong">
+        <exclude-pattern>*/config/install/*</exclude-pattern>
+        <exclude-pattern>*/config/schema/*</exclude-pattern>
+    </rule>
+    
+    <!-- Exclude generated files -->
+    <exclude-pattern>*/sites/*/files/*</exclude-pattern>
+    <exclude-pattern>*/sites/*/private/*</exclude-pattern>
+    
+    <!-- Performance: Only check files that have been modified -->
+    <arg name="cache" value=".phpcs-cache"/>
+</ruleset>

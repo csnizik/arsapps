@@ -1,0 +1,8 @@
+name: 'ARSApps Module Test'
+type: module
+description: 'Test module for ARSApps Module testing.'
+package: Testing
+core_version_requirement: ^11
+dependencies:
+  - arsapps_module
+hidden: true

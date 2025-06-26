@@ -40,3 +40,10 @@ vendor/
 
 # Ignore Node.js dependency folder
 **/node_modules/
+
+# Ignore code quality cache directories
+.phpcs-cache
+.phpstan-cache
+
+# Ignore compiled frontend assets (generated during build)
+web/themes/custom/*/dist/
