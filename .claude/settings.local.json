@@ -19,7 +19,9 @@
       "Bash(pkill:*)",
       "Bash(composer install:*)",
       "Bash(composer check-platform-reqs:*)",
-      "Bash(composer validate:*)"
+      "Bash(composer validate:*)",
+      "Bash(rm:*)",
+      "Bash(composer:*)"
     ],
     "deny": []
   }
