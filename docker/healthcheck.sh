@@ -1,7 +1,7 @@
 #!/bin/bash
-# Comprehensive Drupal 11 Docker Container Health Check
+# Drupal 11 Docker Container Health Check
 # Verifies site is online and responding correctly
-# Follows DEVELOPER_NOTES.md security and immutability practices
+# Follows DEVELOPER_NOTES.md deployment practices
 
 set -euo pipefail
 
@@ -151,13 +151,13 @@ EOF
     success "Drupal bootstrap is functional"
 }
 
-# Check critical file structure and immutability
+# Check critical file structure
 check_file_structure() {
-    log "Checking critical file structure and immutability..."
+    log "Checking critical file structure..."
     
     # Check vendor directory exists and has content
     if [[ ! -d "/var/www/html/vendor" ]]; then
-        critical_error "vendor/ directory missing - image immutability compromised"
+        critical_error "vendor/ directory missing - dependencies not installed"
     fi
     
     if [[ ! -f "/var/www/html/vendor/autoload.php" ]]; then
@@ -169,7 +169,7 @@ check_file_structure() {
         critical_error "web/themes/custom/arsapps_theme/dist/ missing - frontend assets not compiled"
     fi
     
-    # Verify no dev dependencies or source files are present (immutability check)
+    # Verify no dev dependencies or source files are present (production check)
     if [[ -d "/var/www/html/node_modules" ]]; then
         critical_error "node_modules found in production image - build process failed"
     fi
@@ -187,13 +187,13 @@ check_file_structure() {
         critical_error "Drupal core files missing"
     fi
     
-    # Check file permissions align with security model (640/750/770)
+    # Check file permissions align with best practices (640/750/770)
     local index_permissions=$(stat -c "%a" "/var/www/html/web/index.php")
     if [[ "$index_permissions" != "640" ]]; then
         warning "File permission mismatch: index.php has $index_permissions, expected 640"
     fi
     
-    success "File structure and immutability checks passed"
+    success "File structure checks passed"
 }
 
 # Check disk space and resource constraints
@@ -242,14 +242,14 @@ check_configuration() {
     fi
 }
 
-# Check security headers and user context
-check_security_context() {
-    log "Checking security context..."
+# Check user context
+check_user_context() {
+    log "Checking user context..."
     
     # Verify running as non-root user
     local current_user=$(id -u)
     if [[ "$current_user" == "0" ]]; then
-        critical_error "Container running as root user - security violation"
+        critical_error "Container running as root user - best practice violation"
     fi
     
     # Verify user belongs to correct groups
@@ -262,18 +262,18 @@ check_security_context() {
         warning "User not in deploy group - may affect file ownership"
     fi
     
-    success "Security context checks passed"
+    success "User context checks passed"
 }
 
 # Main health check execution
 main() {
-    log "Starting comprehensive Drupal 11 container health check..."
+    log "Starting Drupal 11 container health check..."
     
     # Core system checks (critical)
     check_php_fpm
     check_php_fpm_socket
     check_file_structure
-    check_security_context
+    check_user_context
     
     # Application checks (important but not critical)
     check_drupal_bootstrap

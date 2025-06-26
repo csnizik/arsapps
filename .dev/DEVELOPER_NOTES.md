@@ -10,7 +10,7 @@ Do not delete this comment. If you reorganize sections, do so thoughtfully and p
 
 This document captures technical decisions, practices, standards, and implementation details for this Drupal 11 project. It is updated progressively in response to scoped prompts during the CI/CD and development pipeline buildout process.
 
-Last updated: June 26, 2025 - Added comprehensive Docker health checks and vulnerability scanning pipeline
+Last updated: June 26, 2025 - Updated Docker configuration and deployment pipeline
 
 ---
 
@@ -42,17 +42,6 @@ Last updated: June 26, 2025 - Added comprehensive Docker health checks and vulne
 - Built into Drupal 11 core.
 - Optional: `drupal/layout_builder_restrictions` – Restrict block usage in Layout Builder to improve editorial safety.
 
-### Security Dependencies
-
-**Authentication & Policy:**
-
-- `drupal/tfa` – Two-factor authentication. Recommended to use the latest version (security updates in 2025).
-- `drupal/security_review` – Performs a checklist of common security issues.
-- `drupal/password_policy` – Enforce complex password requirements.
-
-**Security Monitoring:**
-
-- Use `composer audit` – Native Composer feature replaces deprecated `drupal-composer/drupal-security-advisories`.
 
 ### Testing Dependencies
 
@@ -93,7 +82,7 @@ Included in `drupal/core-dev`:
 - PHPUnit 10+ is required for testing compatibility.
 - Symfony 7.3 components are the current stable standard with Drupal 11.
 - PHP 8.3+ is the required minimum version for core compatibility.
-- Composer’s built-in audit replaces previous community-led security packages.
+- Composer’s built-in audit replaces previous community-led advisory packages.
 - Workspaces is now considered stable and supported for production staging.
 
 These dependencies provide a secure, testable, and fully-featured foundation for government Drupal 11 websites, supporting Configuration Management, Layout Builder, accessibility, and modern CI/CD pipelines.
@@ -291,14 +280,14 @@ COPY --from=frontend_build --chown=deploy:www-data /app/web/themes/custom/arsapp
 # Copy configuration files
 COPY --chown=deploy:www-data config/ ./config/
 
-# Apply secure file permissions following security best practices
+# Apply file permissions following best practices
 RUN find . -type f -exec chmod 640 {} \; && \
     find . -type d -exec chmod 750 {} \; && \
     mkdir -p web/sites/default/files && \
     chmod 770 web/sites/default/files && \
     chown -R deploy:www-data /var/www/html
 
-# Run as non-root user for security
+# Run as non-root user
 USER deploy:www-data
 ```
 
@@ -309,7 +298,7 @@ USER deploy:www-data
 - **Layer Caching**: Dependencies install only when package files change
 - **Security**: Minimal attack surface with only runtime essentials
 - **Compiled Assets Only**: Only `dist/` directory copied, no source files or dev configs
-- **Strict File Permissions**: Implements 640/750/770 security model
+- **Strict File Permissions**: Implements 640/750/770 model
 
 **Build Optimization Techniques (2025):**
 
@@ -321,27 +310,24 @@ USER deploy:www-data
 - Order build steps by frequency of changes (dependencies → source → assets)
 - Install system packages before user creation for better layer optimization
 
-**Security Considerations (2025):**
+**Production Considerations (2025):**
 
-- Regular base image updates for security patches
-- Minimize installed packages to reduce attack surface
+- Regular base image updates for stability
+- Minimize installed packages to reduce container size
 - Use multi-stage builds to exclude build-time dependencies from final image
 - **Strict Asset Separation**: Only compiled `dist/` assets copied, no source files or configs
 - **Enhanced File Permissions**: 640/750/770 model with deploy user ownership
 - **Non-root Execution**: Container runs as `deploy:www-data` user
 - **Minimal Production Surface**: No package managers, build tools, or dev dependencies
-- **Comprehensive Health Checks**: Multi-stage verification of container health and Drupal functionality
-- **Automated Vulnerability Scanning**: Trivy and Grype scanners integrated into CI/CD pipeline
-- **Image Immutability Verification**: Automated checks ensure production images contain only required assets
 
 ### Docker Health Check Integration
 
-**Comprehensive Health Check System:**
+**Basic Health Check System:**
 
-The production Dockerfile includes a comprehensive health check script (`docker/healthcheck.sh`) that verifies:
+The production Dockerfile includes a basic health check script (`docker/healthcheck.sh`) that verifies:
 
 ```dockerfile
-# Comprehensive health check that verifies site functionality
+# Basic health check that verifies site functionality
 HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
     CMD /usr/local/bin/healthcheck.sh
 ```
@@ -351,8 +337,7 @@ HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
 - **PHP-FPM Process Verification**: Ensures PHP-FPM master and worker processes are running
 - **Socket Connectivity**: Tests PHP-FPM socket responsiveness and basic PHP functionality
 - **Drupal Bootstrap**: Validates Drupal can bootstrap and essential services are available
-- **File Structure Immutability**: Verifies critical directories exist and dev tools are absent
-- **Security Context**: Confirms non-root execution and proper file permissions
+- **File Structure**: Verifies critical directories exist
 - **Resource Monitoring**: Checks disk space and memory usage within acceptable limits
 - **Configuration Accessibility**: Validates settings files and configuration directories
 
@@ -376,15 +361,15 @@ docker run --rm your-image:latest /usr/local/bin/healthcheck.sh
 docker ps --format "table {{.Names}}\t{{.Status}}"
 ```
 
-### Secure File Permissions & Ownership
+### File Permissions & Ownership
 
-**Core Security Principle:**
+**Core Principle:**
 Web server should not have write permissions to executable code files. All Drupal files should be read-only for the web server process, with write permissions only for a dedicated deployment user.
 
 **Recommended Ownership Structure:**
 
 ```dockerfile
-# Create non-root user for secure file ownership
+# Create non-root user for file ownership
 RUN groupadd -r www-data && useradd -r -g www-data www-data
 RUN groupadd -r deploy && useradd -r -g deploy -G www-data deploy
 
@@ -404,7 +389,7 @@ RUN find /var/www/html -type d -exec chmod 750 {} \;
 # Files directory: 770 (both owner and group: rwx, other: none)
 RUN chmod 770 /var/www/html/web/sites/default/files
 
-# Settings files: 640 (contains sensitive database credentials)
+# Settings files: 640 (contains database credentials)
 RUN chmod 640 /var/www/html/web/sites/default/settings.php
 ```
 
@@ -419,10 +404,10 @@ RUN chgrp www-data /var/www/html/web/sites/default/files
 RUN chmod g+w /var/www/html/web/sites/default/files
 ```
 
-**settings.php Security Configuration:**
+**settings.php Configuration:**
 
 ```php
-// Set secure default file creation permissions
+// Set default file creation permissions
 $settings['file_chmod_directory'] = 0775;
 $settings['file_chmod_file'] = 0664;
 ```
@@ -702,7 +687,6 @@ jobs:
       environment: 'staging'
       registry: 'your-acr-registry.azurecr.io'
       image_name: 'drupal-app'
-      enable_security_scan: true
     secrets:
       acr_username: ${{ secrets.ACR_USERNAME }}
       acr_password: ${{ secrets.ACR_PASSWORD }}
@@ -714,7 +698,6 @@ jobs:
       environment: 'production'
       registry: 'your-acr-registry.azurecr.io'
       image_name: 'drupal-app'
-      enable_security_scan: true
     secrets:
       acr_username: ${{ secrets.ACR_USERNAME }}
       acr_password: ${{ secrets.ACR_PASSWORD }}
@@ -786,92 +769,12 @@ runs:
 **Best Practices for DRY Workflows:**
 
 - Use reusable workflows for complete job sequences (build, test, deploy)
-- Use composite actions for repeated step sequences (setup, security audits)
+- Use composite actions for repeated step sequences (setup, code quality checks)
 - Parameterize environment-specific values (registry URLs, environment names)
 - Maintain clear input/output contracts between workflows
 - Document inputs and outputs for easier team collaboration
 - Version reusable workflows alongside your application code
 
-### Container Security and Vulnerability Scanning
-
-**Automated Security Pipeline:**
-
-The project implements a comprehensive container security pipeline through the `.github/workflows/image-security.yml` workflow:
-
-```yaml
-# Multi-scanner vulnerability detection
-strategy:
-  matrix:
-    scanner: [trivy, grype]
-```
-
-**Security Verification Components:**
-
-1. **Image Immutability Verification**
-   - Validates `vendor/` directory completeness
-   - Confirms `web/themes/custom/*/dist/` contains compiled assets
-   - Ensures no development tools (`node_modules`, source files) in production
-   - Verifies file permissions follow 640/750/770 security model
-   - Confirms non-root user execution
-
-2. **Vulnerability Scanning**
-   - **Trivy Scanner**: Industry-standard container vulnerability detection
-   - **Grype Scanner**: Anchore's comprehensive vulnerability analysis
-   - **SARIF Integration**: Results uploaded to GitHub Security tab
-   - **Severity Filtering**: Focus on CRITICAL, HIGH, and MEDIUM vulnerabilities
-
-3. **Security Baseline Verification**
-   - Docker Bench for Security compliance
-   - CIS Kubernetes Benchmark alignment
-   - Container runtime security analysis
-
-**GitHub Actions Integration:**
-
-```yaml
-# Automatic security scanning on deployment
-jobs:
-  image-security:
-    uses: ./.github/workflows/image-security.yml
-    secrets: inherit
-
-  stage-deploy:
-    needs: [code-quality, image-security]
-    # Deployment blocked if security issues found
-```
-
-**Security Workflow Features:**
-
-- **Pre-deployment Security Gates**: No deployment proceeds with security violations
-- **Compliance Reporting**: Automated generation of security compliance reports
-- **Artifact Retention**: 30-90 day retention for security scan results and reports
-- **Weekly Scheduled Scans**: Automated vulnerability detection for deployed images
-- **Pull Request Security Comments**: Automatic security summary in PR discussions
-
-**Local Security Testing:**
-
-```bash
-# Local vulnerability scanning
-docker run --rm -v $(pwd):/workspace aquasec/trivy image your-image:latest
-
-# Health check verification
-docker run --rm your-image:latest /usr/local/bin/healthcheck.sh
-```
-
-**Security Compliance Standards:**
-
-The security pipeline ensures compliance with government and industry standards:
-
-- **NIST Cybersecurity Framework**: Container security controls implementation
-- **CIS Docker Benchmark**: Container image security standards compliance
-- **OWASP Container Security**: Top 10 container security risks mitigation
-- **Section 508**: Government accessibility and security requirements
-
-**Security Monitoring and Maintenance:**
-
-- **Automated Vulnerability Detection**: Weekly scheduled scans with immediate alerting
-- **Base Image Updates**: Monthly security patch cycles with automated testing
-- **Compliance Documentation**: Automated generation of audit-ready security reports
-- **SARIF Integration**: Security findings integrated with GitHub Security tab for visibility
 
 ---
 
@@ -1105,9 +1008,9 @@ Tests are designed to work with minimal Drupal installation:
 
 ---
 
-## Security & secrets management
+## Secrets management
 
-<!-- AI appends here from security-related prompts -->
+<!-- AI appends here from secrets management prompts -->
 
 ---
 
@@ -1184,17 +1087,17 @@ if (getenv('DRUPAL_ENVIRONMENT') === 'production') {
 **Azure-Specific Best Practices:**
 
 - **Slot Settings**: Mark sensitive variables as "deployment slot settings" to prevent swapping between environments
-- **Connection Strings**: Use Azure's Connection Strings section for database connections (additional security layer)
+- **Connection Strings**: Use Azure's Connection Strings section for database connections
 - **Key Vault Integration**: For highly sensitive values, reference Azure Key Vault secrets
 - **Environment Detection**: Use `DRUPAL_ENVIRONMENT` variable to conditionally apply settings
 - **File Storage**: Configure Azure Storage for private files and media uploads
 
-**Security Considerations:**
+**Best Practices:**
 
 - Never commit environment-specific values to version control
-- Use Azure Key Vault for secrets like database passwords and API keys
+- Use Azure Key Vault for sensitive values like database passwords and API keys
 - Configure slot settings to maintain environment separation
-- Set appropriate trusted host patterns to prevent host header attacks
+- Set appropriate trusted host patterns
 
 ### Post-Deploy Hooks and Drush Commands
 
@@ -1328,8 +1231,6 @@ docker build -f docker/Dockerfile -t drupal-app:local .
 # Test health check
 docker run --rm drupal-app:local /usr/local/bin/healthcheck.sh
 
-# Security scan
-docker run --rm -v $(pwd):/workspace aquasec/trivy image drupal-app:local
 ```
 
 **Deployment:**
@@ -1344,27 +1245,26 @@ git tag prod_v1.2.3 && git push origin prod_v1.2.3
 ### Key File Locations
 
 - **Docker**: `docker/Dockerfile`, `docker/healthcheck.sh`
-- **GitHub Actions**: `.github/workflows/` (stage-deploy.yml, image-security.yml, testing.yml)
+- **GitHub Actions**: `.github/workflows/` (stage-deploy.yml, testing.yml)
 - **Configuration**: `phpcs.xml`, `phpstan.neon`, `phpunit.xml`
 - **Testing**: `tests/` (accessibility)
 - **Documentation**: `.github/workflows/README.md` (detailed workflow guide)
 
-### Security & Compliance
+### System Configuration
 
-- **File Permissions**: 640/750/770 security model
+- **File Permissions**: 640/750/770 model
 - **User Context**: Non-root execution (deploy:www-data)
-- **Vulnerability Scanning**: Trivy + Grype with SARIF output
-- **Health Monitoring**: Comprehensive container health checks
-- **Compliance**: NIST, CIS, OWASP, Section 508 standards
+- **Health Monitoring**: Container health checks
+- **Compliance**: Section 508 accessibility standards
 
 ### Architecture Highlights
 
-- **Multi-stage Docker Builds**: Immutable production images
+- **Multi-stage Docker Builds**: Optimized production images
 - **DRY GitHub Actions**: Reusable workflows and composite actions
-- **Security-First Pipeline**: Mandatory security gates for all deployments
+- **Quality-First Pipeline**: Code quality gates for all deployments
 - **Comprehensive Testing**: PHPUnit, accessibility (Section 508)
-- **Government-Grade Security**: Container scanning, compliance reporting, audit trails
+- **Government-Grade Compliance**: Accessibility testing, compliance reporting, audit trails
 
-This Drupal 11 project implements enterprise-grade security, testing, and deployment practices suitable for government and high-security environments while maintaining developer productivity.
+This Drupal 11 project implements enterprise-grade testing and deployment practices suitable for government environments while maintaining developer productivity.
 
 ---

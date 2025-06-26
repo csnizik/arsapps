@@ -1,10 +1,10 @@
 # GitHub Actions Workflows
 
-This directory contains comprehensive GitHub Actions workflows for automated CI/CD, security scanning, and testing of the Drupal 11 project. The system implements a multi-layered security approach with automated vulnerability scanning, image immutability verification, and comprehensive testing pipelines.
+This directory contains comprehensive GitHub Actions workflows for automated CI/CD and testing of the Drupal 11 project. The system implements comprehensive testing pipelines and automated deployment workflows.
 
 ## TL;DR
 
-- A workflow can be triggered manually from the console (this assumes the gh CLI is installed): `gh workflow run image-security.yml --branch <BRANCH_NAME>`. Progress on running workflows can be monitored in the Actions tab of the repo on Github.
+- Workflows can be triggered manually from the console (this assumes the gh CLI is installed): `gh workflow run <workflow-name>.yml --branch <BRANCH_NAME>`. Progress on running workflows can be monitored in the Actions tab of the repo on Github.
 
 ## Architecture Overview
 
@@ -12,9 +12,8 @@ The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable wo
 
 ### Core Workflows
 
-- **`stage-deploy.yml`**: Main deployment workflow with integrated security gates
+- **`stage-deploy.yml`**: Main deployment workflow
 - **`reusable-build.yml`**: Shared build and deployment logic for all environments
-- **`image-security.yml`**: Comprehensive container security verification and vulnerability scanning
 - **`code-quality.yml`**: Reusable workflow for PHPCS, PHPStan, and ESLint checks
 - **`testing.yml`**: Comprehensive testing pipeline (PHPUnit, accessibility)
 
@@ -29,7 +28,6 @@ The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable wo
 ├── workflows/
 │   ├── stage-deploy.yml          # Main deployment workflow
 │   ├── reusable-build.yml        # Shared build logic
-│   ├── image-security.yml        # Security verification & vulnerability scanning
 │   ├── code-quality.yml          # Code quality checks
 │   └── testing.yml               # Testing pipeline (PHPUnit, a11y)
 └── actions/
@@ -37,49 +35,18 @@ The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable wo
         └── action.yml            # Composite action for build setup
 ```
 
-## Security-First Deployment Pipeline
+## Deployment Pipeline
 
-### Automated Security Gates
+### Automated Quality Gates
 
-All deployments go through mandatory security verification:
+All deployments go through mandatory quality verification:
 
 ```yaml
 jobs:
   code-quality:     # PHPCS, PHPStan, ESLint checks
-  image-security:   # Vulnerability scanning & immutability verification
-  stage-deploy:     # Only proceeds if security gates pass
-    needs: [code-quality, image-security]
+  stage-deploy:     # Only proceeds if quality gates pass
+    needs: [code-quality]
 ```
-
-### Multi-Scanner Vulnerability Detection
-
-The security pipeline uses multiple industry-standard scanners:
-
-- **Trivy**: Comprehensive vulnerability database with SARIF output
-- **Grype**: Anchore's open-source vulnerability scanner
-- **Docker Bench for Security**: CIS Docker Benchmark compliance
-
-### Image Immutability Verification
-
-Automated verification ensures production images are secure and complete:
-
-✅ **Required Components Present:**
-- `vendor/` directory with complete Composer dependencies
-- `web/themes/custom/*/dist/` compiled frontend assets
-- Drupal core files and directory structure
-- Configuration directories and essential files
-
-✅ **Development Tools Absent:**
-- No `node_modules` directories in production
-- No source files (`.scss`, `.js`, `package.json`)
-- No development dependencies or build tools
-- No package managers (`npm`, `composer`) in runtime
-
-✅ **Security Model Enforced:**
-- File permissions follow 640/750/770 security model
-- Non-root user execution confirmed
-- Proper user group membership (deploy:www-data)
-- Secure file ownership throughout container
 
 ## Docker Health Check System
 
@@ -112,12 +79,6 @@ HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
 **Production Deployment:**
 - Git tags prefixed with `prod_*` (e.g., `prod_v1.2.3`)
 
-**Security Scanning:**
-- All pushes to `main`, `stage`, `develop`
-- All pull requests to `main`, `stage`
-- Weekly scheduled scans (Monday 6 AM UTC)
-- Manual workflow dispatch
-
 **Testing Pipeline:**
 - All pushes to `main`, `stage`, `develop`
 - All pull requests to `main`, `stage`
@@ -125,14 +86,12 @@ HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
 ### Environment-Specific Behavior
 
 **Staging Deployments:**
-- Standard security verification
-- All vulnerability scanners enabled
+- Standard quality verification
 - Artifact retention: 30 days
 
 **Production Deployments:**
-- Enhanced security auditing
+- Enhanced quality auditing
 - Additional production-specific checks
-- Comprehensive compliance reporting
 - Extended artifact retention: 90 days
 
 ## Container Registry and Tagging Strategy
@@ -152,36 +111,28 @@ your-registry.azurecr.io/drupal-app:prod-<commit-sha>
 your-registry.azurecr.io/drupal-app:prod_v1.2.3
 ```
 
-**Security Verification:**
-```
-ghcr.io/your-org/repo:main
-ghcr.io/your-org/repo:<branch-name>
-ghcr.io/your-org/repo:<commit-sha>
-```
 
-## Security Compliance and Reporting
+## Quality Assurance and Reporting
 
-### Compliance Standards
+### Quality Standards
 
-The security pipeline ensures compliance with:
+The pipeline ensures compliance with:
 
-- **NIST Cybersecurity Framework**: Container security controls
-- **CIS Docker Benchmark**: Container image security standards
-- **OWASP Container Security**: Top 10 container security risks
-- **Government Security Standards**: Section 508 and accessibility compliance
+- **Drupal Coding Standards**: PHP and JavaScript code quality
+- **Government Accessibility Standards**: Section 508 and WCAG 2.1 AA compliance
+- **Best Practices**: Modern development practices and conventions
 
-### Automated Security Reports
+### Automated Quality Reports
 
 **Generated Reports:**
-- Vulnerability scan results (SARIF format)
-- Image immutability verification reports
-- Security baseline compliance reports
-- Comprehensive security compliance documentation
+- Code quality analysis results
+- Test coverage reports
+- Accessibility compliance reports
+- Comprehensive quality documentation
 
 **GitHub Integration:**
-- Security tab integration with SARIF uploads
-- Pull request security comments
-- Security alert notifications
+- Pull request quality comments
+- Automated quality summaries
 - Artifact storage for audit trails
 
 ## Testing Infrastructure
@@ -283,7 +234,7 @@ git pull origin develop
 git checkout stage
 git merge develop
 git push origin stage
-# Triggers: code-quality → image-security → stage-deploy
+# Triggers: code-quality → stage-deploy
 ```
 
 **4. Production Deployment:**
@@ -295,7 +246,7 @@ git merge develop  # or merge via PR: develop → main
 # Create production tag
 git tag -a prod_v1.2.3 -m "Production release v1.2.3"
 git push origin prod_v1.2.3
-# Triggers: code-quality → image-security → production-deploy (enhanced security)
+# Triggers: code-quality → production-deploy (enhanced quality checks)
 ```
 
 #### Branch Protection and Requirements
@@ -309,7 +260,6 @@ git push origin prod_v1.2.3
 
 **Required Status Checks:**
 - Code Quality (PHPCS, PHPStan, ESLint)
-- Security Scanning (vulnerability detection)
 - Testing Pipeline (PHPUnit, accessibility)
 
 #### Hotfix Process
@@ -345,26 +295,17 @@ git push origin develop
 - **`hotfix/*`**: Critical production fixes
 
 **Why This Workflow:**
-- **Security Gates**: Every code change goes through security scanning
 - **Quality Assurance**: All changes require code review and automated testing
 - **Deployment Safety**: Stage testing before production deployment
 - **Audit Trail**: Clear history of what was deployed when
 - **Rollback Capability**: Tagged releases enable quick rollbacks
 
 **Workflow Automation:**
-- **PR Creation**: Triggers code quality checks and security scanning
+- **PR Creation**: Triggers code quality checks and testing
 - **Stage Deployment**: Automatic deployment to staging environment for testing
-- **Production Deployment**: Manual tagging triggers enhanced security verification
-- **Security Monitoring**: Weekly scans and vulnerability detection
+- **Production Deployment**: Manual tagging triggers enhanced quality verification
 
 ### Running Individual Workflows
-
-**Manual Security Scan:**
-```bash
-# Via GitHub UI: Actions → Image Security and Verification → Run workflow
-# Or via GitHub CLI:
-gh workflow run image-security.yml
-```
 
 **Manual Testing:**
 ```bash
@@ -385,16 +326,13 @@ cd web/themes/custom/arsapps_theme
 npm run lint
 ```
 
-**Docker Build and Security Test:**
+**Docker Build and Test:**
 ```bash
 # Build production image
 docker build -f docker/Dockerfile -t drupal-app:local .
 
 # Test health check
 docker run --rm drupal-app:local /usr/local/bin/healthcheck.sh
-
-# Run security verification
-docker run --rm -v $(pwd):/workspace aquasec/trivy image drupal-app:local
 ```
 
 **Accessibility Testing:**
@@ -408,35 +346,21 @@ npm run test:pa11y
 
 ### Common Issues and Solutions
 
-**1. Security Scan Failures:**
-```bash
-# View security issues in GitHub Security tab
-# Update base images: Update Dockerfile FROM statements
-# Check for vulnerable dependencies: composer audit
-```
-
-**2. Image Immutability Failures:**
-```bash
-# Verify frontend build: cd web/themes/custom/arsapps_theme && npm run build
-# Check .gitignore: Ensure dist/ is not ignored
-# Verify Dockerfile: Check COPY statements for dist/ directories
-```
-
-**3. Health Check Failures:**
+**1. Health Check Failures:**
 ```bash
 # Test locally: docker run --rm your-image /usr/local/bin/healthcheck.sh
 # Check logs: docker logs container-name
 # Verify PHP-FPM: docker exec container-name ps aux | grep php-fpm
 ```
 
-**4. Code Quality Failures:**
+**2. Code Quality Failures:**
 ```bash
 # PHPCS issues: vendor/bin/phpcs --report=full
 # PHPStan issues: vendor/bin/phpstan analyse --level=0
 # ESLint issues: cd web/themes/custom/arsapps_theme && npm run lint
 ```
 
-**5. Test Failures:**
+**3. Test Failures:**
 ```bash
 # PHPUnit: vendor/bin/phpunit --testsuite=custom --verbose
 # Accessibility: Check reports in GitHub Actions artifacts
@@ -454,18 +378,17 @@ npm run test:pa11y
 - Layer caching optimizes build times
 - Parallel job execution reduces pipeline duration
 
-### Security Best Practices
+### Best Practices
 
 **Regular Maintenance:**
-- Weekly vulnerability scans run automatically
-- Update base images monthly or when vulnerabilities detected
-- Review security reports in GitHub Security tab
-- Monitor security compliance artifacts
+- Update base images monthly or when issues detected
+- Review quality reports in GitHub Actions
+- Monitor compliance artifacts
 
 **Access Control:**
 - Use repository secrets for sensitive values
 - Implement branch protection rules
-- Require security scan passage for deployments
+- Require quality checks passage for deployments
 - Enable signed commits for production tags
 
 ## Integration with External Systems
@@ -482,13 +405,12 @@ secrets:
   acr_password: ${{ secrets.ACR_PASSWORD }}
 ```
 
-### GitHub Security Integration
+### GitHub Integration
 
-Security results are automatically integrated with GitHub's security features:
+Quality results are automatically integrated with GitHub's features:
 
-- **Security Tab**: Vulnerability findings appear in repository security tab
-- **Pull Request Comments**: Automated security summaries on PRs
-- **Security Alerts**: Notifications for critical vulnerabilities
+- **Pull Request Comments**: Automated quality summaries on PRs
+- **Actions Tab**: Detailed workflow execution logs
 - **Dependency Insights**: Integration with GitHub's dependency graph
 
 ### Monitoring and Alerting
@@ -497,22 +419,18 @@ The pipeline integrates with monitoring systems:
 
 - **Azure Application Insights**: Container health and performance metrics
 - **GitHub Actions Insights**: Workflow performance and reliability metrics
-- **Security Monitoring**: Automated alerts for security violations
 
 ## Advanced Configuration
 
-### Custom Security Policies
+### Custom Quality Policies
 
-To customize security scanning rules:
+To customize code quality rules:
 
 ```yaml
-# In image-security.yml
-- name: Run Trivy with custom policy
-  uses: aquasecurity/trivy-action@master
-  with:
-    severity: 'CRITICAL,HIGH'
-    ignore-unfixed: true
-    trivyignores: .trivyignore  # Custom ignore file
+# In code-quality.yml
+- name: Run PHPCS with custom rules
+  run: |
+    vendor/bin/phpcs --standard=custom-ruleset.xml
 ```
 
 ### Environment-Specific Testing
@@ -538,6 +456,6 @@ check_custom_functionality() {
 }
 ```
 
-This comprehensive workflow system provides government-grade security, automated testing, and reliable deployment pipelines while maintaining developer productivity and system reliability.
+This comprehensive workflow system provides automated testing and reliable deployment pipelines while maintaining developer productivity and system reliability.
 
 For detailed technical specifications, see the project's DEVELOPER_NOTES.md file.

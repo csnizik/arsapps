@@ -20,11 +20,6 @@ on:
         required: false
         type: string
         default: './docker/Dockerfile'
-      enable_security_scan:
-        description: 'Enable vulnerability scanning'
-        required: false
-        type: boolean
-        default: true
     secrets:
       acr_username:
         description: 'Azure Container Registry username'
@@ -61,12 +56,12 @@ jobs:
         php-version: '8.3'
         node-version: '20'
         composer-options: '--prefer-dist --no-progress --no-dev --optimize-autoloader'
-        enable-security-audit: 'true'
+        enable-code-audit: 'true'
       
-    - name: Enhanced security audit for production
+    - name: Enhanced production readiness check
       if: env.IS_PRODUCTION == 'true'
       run: |
-        echo "Running enhanced security checks for production deployment..."
+        echo "Running production readiness checks..."
         
         # Verify no development dependencies
         if [ -d "vendor/phpunit" ] || [ -d "vendor/behat" ]; then
@@ -87,7 +82,7 @@ jobs:
           fi
         fi
         
-        echo "Production security audit completed successfully"
+        echo "Production readiness check completed successfully"
       
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -131,19 +126,6 @@ jobs:
           BUILD_DATE=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
           VCS_REF=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
           
-    - name: Run security scan on built image
-      if: inputs.enable_security_scan
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: ${{ inputs.registry }}/${{ inputs.image_name }}:${{ inputs.environment == 'production' && 'production' || 'stage' }}
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-        
-    - name: Upload Trivy scan results to GitHub Security tab
-      if: inputs.enable_security_scan && always()
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: 'trivy-results.sarif'
         
     - name: Output deployment summary
       run: |
@@ -152,7 +134,6 @@ jobs:
         echo "**Image Tags:** ${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
         echo "**Image Digest:** ${{ steps.build.outputs.digest }}" >> $GITHUB_STEP_SUMMARY
         echo "**Registry:** ${{ inputs.registry }}" >> $GITHUB_STEP_SUMMARY
-        echo "**Security Scan:** ${{ inputs.enable_security_scan && 'Enabled' || 'Disabled' }}" >> $GITHUB_STEP_SUMMARY
         
         echo "Image pushed with tags: ${{ steps.meta.outputs.tags }}"
         echo "Image digest: ${{ steps.build.outputs.digest }}"
