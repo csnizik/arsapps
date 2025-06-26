@@ -108,6 +108,7 @@
         }
     },
     "require-dev": {
-        "drupal/claude_code": "^1.0"
+        "drupal/claude_code": "^1.0",
+        "drupal/core-dev": "^11.2"
     }
 }

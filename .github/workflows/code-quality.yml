@@ -1,0 +1,152 @@
+name: Code Quality Checks
+
+on:
+  workflow_call:
+    inputs:
+      enable_phpcs:
+        description: 'Enable PHPCS checks'
+        required: false
+        type: boolean
+        default: true
+      enable_eslint:
+        description: 'Enable ESLint checks'
+        required: false
+        type: boolean
+        default: true
+      phpcs_standard:
+        description: 'PHPCS coding standard'
+        required: false
+        type: string
+        default: 'Drupal'
+      custom_paths:
+        description: 'Comma-separated paths to check (modules,themes)'
+        required: false
+        type: string
+        default: 'web/modules/custom,web/themes/custom'
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Drupal build environment
+      uses: ./.github/actions/setup-drupal-build
+      with:
+        php-version: '8.3'
+        node-version: '20'
+        composer-options: '--prefer-dist --no-progress --optimize-autoloader'
+        enable-security-audit: 'false'
+    
+    - name: Install development dependencies
+      run: |
+        echo "Installing Drupal code quality tools..."
+        composer require --dev drupal/core-dev
+        
+        # Verify tools are available
+        echo "Verifying installed tools:"
+        vendor/bin/phpcs --version || echo "PHPCS not found"
+        vendor/bin/phpstan --version || echo "PHPStan not found"
+    
+    - name: Run PHPCS (Drupal Coding Standards)
+      if: inputs.enable_phpcs
+      run: |
+        echo "Running PHPCS with Drupal coding standards..."
+        
+        # Check if project has custom phpcs.xml
+        if [ -f "phpcs.xml" ] || [ -f "phpcs.xml.dist" ]; then
+          echo "Using project phpcs.xml configuration"
+          vendor/bin/phpcs
+        else
+          echo "Using Drupal standard with custom paths"
+          vendor/bin/phpcs --standard=${{ inputs.phpcs_standard }} \
+            --extensions=php,module,inc,install,test,profile,theme,css,js \
+            --ignore=*/vendor/*,*/node_modules/*,*/dist/* \
+            ${{ inputs.custom_paths }}
+        fi
+    
+    - name: Run PHPStan (Static Analysis)
+      if: inputs.enable_phpcs
+      run: |
+        echo "Running PHPStan static analysis..."
+        
+        # Check if project has custom phpstan configuration
+        if [ -f "phpstan.neon" ] || [ -f "phpstan.neon.dist" ]; then
+          echo "Using project phpstan configuration"
+          vendor/bin/phpstan analyse
+        else
+          echo "Using default PHPStan analysis"
+          vendor/bin/phpstan analyse --level=6 ${{ inputs.custom_paths }}
+        fi
+    
+    - name: Run ESLint (JavaScript Linting)
+      if: inputs.enable_eslint
+      run: |
+        echo "Running ESLint on custom JavaScript files..."
+        
+        # Find all custom theme directories with JavaScript
+        themes_with_js=""
+        for theme_dir in web/themes/custom/*/; do
+          if [ -d "$theme_dir" ] && ([ -d "${theme_dir}js" ] || [ -f "${theme_dir}package.json" ]); then
+            echo "Found JavaScript in theme: $theme_dir"
+            themes_with_js="$themes_with_js $theme_dir"
+          fi
+        done
+        
+        # Run ESLint on each theme that has JavaScript
+        exit_code=0
+        for theme_dir in $themes_with_js; do
+          echo "Checking ESLint in $theme_dir"
+          cd "$theme_dir"
+          
+          # Check if theme has its own ESLint config
+          if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f "package.json" ]; then
+            if [ -f "package.json" ] && npm list eslint >/dev/null 2>&1; then
+              echo "Running ESLint with theme configuration"
+              npm run lint || exit_code=1
+            else
+              echo "ESLint not configured in package.json, checking files directly"
+              if command -v npx >/dev/null 2>&1; then
+                npx eslint js/ --ext .js || exit_code=1
+              else
+                echo "Warning: ESLint not available for $theme_dir"
+              fi
+            fi
+          else
+            echo "No ESLint configuration found in $theme_dir, using basic checks"
+            # Basic JavaScript syntax check using Node.js
+            find js/ -name "*.js" -type f 2>/dev/null | while read -r file; do
+              echo "Syntax checking: $file"
+              node -c "$file" || exit_code=1
+            done
+          fi
+          
+          cd - >/dev/null
+        done
+        
+        # Check for JavaScript in custom modules
+        echo "Checking JavaScript in custom modules..."
+        find web/modules/custom -name "*.js" -type f 2>/dev/null | while read -r file; do
+          echo "Syntax checking module JS: $file"
+          node -c "$file" || exit_code=1
+        done
+        
+        exit $exit_code
+    
+    - name: Code Quality Summary
+      if: always()
+      run: |
+        echo "# Code Quality Check Summary" >> $GITHUB_STEP_SUMMARY
+        echo "**PHPCS:** ${{ inputs.enable_phpcs && 'Enabled' || 'Disabled' }}" >> $GITHUB_STEP_SUMMARY
+        echo "**ESLint:** ${{ inputs.enable_eslint && 'Enabled' || 'Disabled' }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Standard:** ${{ inputs.phpcs_standard }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Paths:** ${{ inputs.custom_paths }}" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ job.status }}" = "success" ]; then
+          echo "✅ All code quality checks passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Code quality checks failed" >> $GITHUB_STEP_SUMMARY
+          echo "Please fix the coding standard violations before proceeding." >> $GITHUB_STEP_SUMMARY
+        fi

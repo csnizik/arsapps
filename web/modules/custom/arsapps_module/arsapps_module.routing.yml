@@ -1,0 +1,15 @@
+arsapps_module.settings:
+  path: '/admin/config/system/arsapps-module'
+  defaults:
+    _form: '\Drupal\arsapps_module\Form\ArsappsModuleSettingsForm'
+    _title: 'ARSApps Module Settings'
+  requirements:
+    _permission: 'administer site configuration'
+
+arsapps_module.info:
+  path: '/arsapps-module/info'
+  defaults:
+    _controller: '\Drupal\arsapps_module\Controller\ArsappsModuleController::info'
+    _title: 'ARSApps Module Info'
+  requirements:
+    _permission: 'access content'

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- PHPUnit configuration for Drupal 11 with DDEV integration -->
+<phpunit
+    bootstrap="web/core/tests/bootstrap.php"
+    colors="true"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+    beStrictAboutOutputDuringTests="true"
+    beStrictAboutChangesToGlobalState="true"
+    failOnWarning="true"
+    printerClass="\Drupal\Tests\Listeners\HtmlOutputPrinter"
+    cacheDirectory=".phpunit-cache"
+    displayDetailsOnTestsThatTriggerDeprecations="true">
+  
+  <testsuites>
+    <!-- Custom module and theme tests -->
+    <testsuite name="custom">
+      <directory>web/modules/custom/*/tests</directory>
+      <directory>web/themes/custom/*/tests</directory>
+    </testsuite>
+    
+    <!-- Unit tests -->
+    <testsuite name="unit">
+      <file>web/core/tests/TestSuites/UnitTestSuite.php</file>
+      <directory>web/modules/custom/*/tests/src/Unit</directory>
+    </testsuite>
+    
+    <!-- Kernel tests -->
+    <testsuite name="kernel">
+      <file>web/core/tests/TestSuites/KernelTestSuite.php</file>
+      <directory>web/modules/custom/*/tests/src/Kernel</directory>
+    </testsuite>
+    
+    <!-- Functional tests -->
+    <testsuite name="functional">
+      <file>web/core/tests/TestSuites/FunctionalTestSuite.php</file>
+      <directory>web/modules/custom/*/tests/src/Functional</directory>
+    </testsuite>
+    
+    <!-- Functional JavaScript tests -->
+    <testsuite name="functional-javascript">
+      <file>web/core/tests/TestSuites/FunctionalJavascriptTestSuite.php</file>
+      <directory>web/modules/custom/*/tests/src/FunctionalJavascript</directory>
+    </testsuite>
+  </testsuites>
+  
+  <!-- Environment variables for DDEV database configuration -->
+  <php>
+    <!-- Database configuration (DDEV default) -->
+    <env name="SIMPLETEST_DB" value="mysql://db:db@db:3306/db"/>
+    
+    <!-- Base URL for functional tests -->
+    <env name="SIMPLETEST_BASE_URL" value="http://web:80"/>
+    
+    <!-- Disable deprecation warnings for faster test execution -->
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
+    
+    <!-- Browser test configuration -->
+    <env name="MINK_DRIVER_ARGS_WEBDRIVER" value='["chrome", {"chromeOptions": {"args": ["--disable-gpu", "--headless", "--no-sandbox", "--disable-dev-shm-usage"]}}, "http://chromedriver:9515"]'/>
+    
+    <!-- Test debugging -->
+    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value="web/sites/simpletest/browser_output"/>
+    <env name="BROWSERTEST_OUTPUT_BASE_URL" value=""/>
+    
+    <!-- Performance optimization -->
+    <env name="MINK_DRIVER_ARGS" value='["chrome", {"chromeOptions": {"args": ["--disable-gpu", "--headless"]}}, "http://chromedriver:9515"]'/>
+  </php>
+  
+  <!-- Coverage configuration -->
+  <source>
+    <include>
+      <directory>web/modules/custom</directory>
+      <directory>web/themes/custom</directory>
+    </include>
+    <exclude>
+      <directory>web/modules/custom/*/tests</directory>
+      <directory>web/themes/custom/*/tests</directory>
+      <directory>web/modules/custom/*/vendor</directory>
+      <directory>web/themes/custom/*/node_modules</directory>
+      <directory>web/themes/custom/*/dist</directory>
+    </exclude>
+  </source>
+  
+  <!-- Test listeners -->
+  <extensions>
+    <!-- Drupal test discovery -->
+    <bootstrap class="Drupal\Tests\Extension\DiscoveryExtension"/>
+  </extensions>
+  
+  <!-- Logging -->
+  <logging>
+    <junit outputFile="reports/junit.xml"/>
+    <testdoxHtml outputFile="reports/testdox.html"/>
+    <testdoxText outputFile="reports/testdox.txt"/>
+  </logging>
+</phpunit>

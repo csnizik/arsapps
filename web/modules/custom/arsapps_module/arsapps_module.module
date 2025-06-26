@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ * Contains arsapps_module.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function arsapps_module_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.arsapps_module':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('ARSApps Module is a placeholder custom module designed for ARSApps projects. This module serves as a foundation for future custom functionality and is primarily used for CI/CD pipeline testing and development workflow validation.') . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Configuration') . '</dt>';
+      $output .= '<dd>' . t('The module provides a basic configuration form that can be accessed from the <a href=":config">ARSApps Module Settings</a> page.', [':config' => \Drupal::url('arsapps_module.settings')]) . '</dd>';
+      $output .= '<dt>' . t('Block Plugin') . '</dt>';
+      $output .= '<dd>' . t('The module includes a sample block plugin that can be placed in any block region through the <a href=":blocks">Block layout</a> interface.', [':blocks' => \Drupal::url('block.admin_display')]) . '</dd>';
+      $output .= '<dt>' . t('Development Template') . '</dt>';
+      $output .= '<dd>' . t('This module serves as a template for creating additional custom modules with proper Drupal architecture and coding standards.') . '</dd>';
+      $output .= '</dl>';
+      return $output;
+
+    case 'arsapps_module.settings':
+      return '<p>' . t('Configure settings for ARSApps Module. This is a placeholder configuration form for testing and development purposes.') . '</p>';
+  }
+}
