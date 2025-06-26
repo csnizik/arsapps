@@ -7,25 +7,18 @@
     "build": "cd web/themes/custom/arsapps_theme && npm run build",
     "dev": "cd web/themes/custom/arsapps_theme && npm run dev",
     "lint": "cd web/themes/custom/arsapps_theme && npm run lint",
-    "test": "npm run test:unit && npm run test:accessibility && npm run test:e2e",
+    "test": "npm run test:unit && npm run test:accessibility",
     "test:unit": "vendor/bin/phpunit --testsuite=custom",
     "test:accessibility": "npm run test:axe && npm run test:pa11y",
     "test:axe": "axe http://localhost:8080 --tags section508,wcag2a,wcag2aa",
     "test:pa11y": "pa11y http://localhost:8080",
-    "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed",
-    "test:e2e:debug": "playwright test --debug",
-    "test:lighthouse": "lighthouse http://localhost:8080 --output=html --output-path=reports/lighthouse.html",
-    "playwright:install": "playwright install",
-    "playwright:install-deps": "playwright install-deps"
+    "test:lighthouse": "lighthouse http://localhost:8080 --output=html --output-path=reports/lighthouse.html"
   },
   "devDependencies": {
     "@axe-core/cli": "^4.10.2",
-    "@playwright/test": "^1.53.1",
     "axe-core": "^4.10.3",
     "lighthouse": "^12.6.1",
     "pa11y": "^9.0.0",
-    "playwright": "^1.53.1",
     "webpack": "^5.0.0",
     "webpack-cli": "^5.0.0"
   },

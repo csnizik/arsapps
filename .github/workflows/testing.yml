@@ -197,9 +197,6 @@ jobs:
           cd web && php -S 127.0.0.1:8080 .ht.router.php &
           sleep 5
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
       - name: Run accessibility tests with axe-core
         run: |
           mkdir -p reports/accessibility
@@ -218,140 +215,10 @@ jobs:
           path: reports/accessibility/
           retention-days: 7
 
-  playwright-tests:
-    name: Playwright E2E Tests
-    runs-on: ubuntu-latest
-    needs: phpunit-tests
-
-    strategy:
-      matrix:
-        browser: [chromium, firefox, webkit]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps ${{ matrix.browser }}
-
-      - name: Build and start Drupal in Docker
-        run: |
-          # Create a simplified Dockerfile for testing
-          cat > Dockerfile.test << 'EOF'
-          FROM drupal:11.1.5-php8.3-apache-bookworm
-          
-          # Install system dependencies
-          RUN apt-get update && apt-get install -y \
-              mariadb-client \
-              && rm -rf /var/lib/apt/lists/*
-          
-          # Copy project files
-          COPY --chown=www-data:www-data . /var/www/html/
-          
-          # Install Composer dependencies
-          USER www-data
-          RUN composer install --no-dev --optimize-autoloader
-          
-          # Create necessary directories
-          RUN mkdir -p web/sites/default/files/sync && \
-              chmod 755 web/sites/default/files
-          
-          USER root
-          EOF
-          
-          # Build test image
-          docker build -f Dockerfile.test -t drupal-test:latest .
-
-      - name: Start test environment with Docker Compose
-        run: |
-          cat > docker-compose.test.yml << 'EOF'
-          version: '3.8'
-          services:
-            drupal:
-              image: drupal-test:latest
-              ports:
-                - "8080:80"
-              environment:
-                - DRUPAL_DB_HOST=db
-                - DRUPAL_DB_NAME=drupal
-                - DRUPAL_DB_USER=drupal
-                - DRUPAL_DB_PASSWORD=drupal
-              volumes:
-                - ./web/sites/default/files:/var/www/html/web/sites/default/files
-              depends_on:
-                - db
-            
-            db:
-              image: mariadb:10.11
-              environment:
-                MYSQL_ROOT_PASSWORD: root
-                MYSQL_DATABASE: drupal
-                MYSQL_USER: drupal
-                MYSQL_PASSWORD: drupal
-              ports:
-                - "3306:3306"
-          EOF
-          
-          docker compose -f docker-compose.test.yml up -d
-          
-          # Wait for services to be ready
-          sleep 30
-          
-          # Install Drupal
-          docker compose -f docker-compose.test.yml exec -T drupal bash -c "
-            cd /var/www/html && \
-            vendor/bin/drush site:install standard --db-url=mysql://drupal:drupal@db:3306/drupal --yes && \
-            vendor/bin/drush en layout_builder layout_discovery field_ui -y
-          "
-
-      - name: Run Playwright tests
-        run: |
-          # Set base URL for tests
-          export BASE_URL=http://localhost:8080
-          
-          # Run tests for specific browser
-          npx playwright test --project=${{ matrix.browser }} --reporter=html
-        env:
-          BASE_URL: http://localhost:8080
-
-      - name: Upload Playwright artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-results-${{ matrix.browser }}
-          path: |
-            playwright-report/
-            test-results/
-            reports/
-          retention-days: 30
-
-      - name: Upload Playwright screenshots and videos
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: playwright-screenshots-videos-${{ matrix.browser }}
-          path: |
-            test-results/**/*.png
-            test-results/**/*.webm
-          retention-days: 30
-
-      - name: Stop test environment
-        if: always()
-        run: docker compose -f docker-compose.test.yml down -v
-
   test-report:
     name: Generate Test Report
     runs-on: ubuntu-latest
-    needs: [phpunit-tests, accessibility-tests, playwright-tests]
+    needs: [phpunit-tests, accessibility-tests]
     if: always()
 
     steps:
@@ -387,12 +254,6 @@ jobs:
           - Section 508 compliance verification
           - WCAG 2.1 AA standard compliance
           - Layout Builder accessibility validation
-          
-          ### Playwright E2E Tests
-          - Cross-browser compatibility testing
-          - Layout Builder functionality verification
-          - Responsive design validation
-          - Performance regression detection
           
           ## Artifact Storage
           

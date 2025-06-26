@@ -1036,56 +1036,6 @@ await testKeyboardNavigation(page);
 await testLayoutBuilderAccessibility(page);
 ```
 
-### Playwright End-to-End Testing
-
-**Playwright Configuration:**
-
-The project includes a comprehensive Playwright setup (`playwright.config.js`) for regression testing:
-
-```javascript
-// Multi-browser testing
-projects: [
-  { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-  { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-  { name: 'webkit', use: { ...devices['Desktop Safari'] } },
-  { name: 'Mobile Chrome', use: { ...devices['Pixel 5'] } },
-  { name: 'Mobile Safari', use: { ...devices['iPhone 12'] } }
-]
-```
-
-**Running Playwright Tests:**
-
-```bash
-# Run all tests
-npm run test:e2e
-
-# Run in headed mode (visible browser)
-npm run test:e2e:headed
-
-# Debug tests interactively
-npm run test:e2e:debug
-
-# Run specific browser
-npx playwright test --project=chromium
-
-# Install browsers
-npm run playwright:install
-```
-
-**Playwright Test Features:**
-
-- **Layout Builder Regression**: Tests Layout Builder functionality across browsers
-- **Responsive Testing**: Validates layouts on desktop, tablet, and mobile
-- **Visual Regression**: Screenshot comparison for layout consistency
-- **Performance Testing**: Measures Core Web Vitals and load times
-- **Cross-browser Compatibility**: Tests Chrome, Firefox, Safari, and mobile browsers
-- **Accessibility Integration**: Combines with axe-core for comprehensive testing
-
-**Test Specifications:**
-
-- `tests/playwright/specs/layout-builder-accessibility.spec.js`: Section 508 compliance tests
-- `tests/playwright/specs/layout-builder-regression.spec.js`: Functional regression tests
-
 ### GitHub Actions Testing Pipeline
 
 **Comprehensive Testing Workflow:**
@@ -1093,11 +1043,10 @@ npm run playwright:install
 The `.github/workflows/testing.yml` workflow provides a complete testing pipeline:
 
 ```yaml
-# Three-stage testing approach
+# Two-stage testing approach
 jobs:
   phpunit-tests:     # Unit and functional tests
   accessibility-tests: # Section 508 compliance validation  
-  playwright-tests:  # Cross-browser E2E testing
 ```
 
 **Testing Pipeline Features:**
@@ -1105,15 +1054,13 @@ jobs:
 - **PHPUnit Integration**: Uses MySQL service for database testing
 - **Docker Environment**: Tests against production-like container setup
 - **Accessibility Validation**: Automated Section 508 compliance checking
-- **Cross-browser Matrix**: Tests Chrome, Firefox, and Safari
-- **Artifact Storage**: 30-day retention of screenshots, videos, and reports
-- **QA Review Assets**: Screenshots and videos stored for manual QA review
+- **Artifact Storage**: 30-day retention of test reports and accessibility results
+- **QA Review Assets**: Test reports and accessibility results stored for manual QA review
 
 **Artifact Categories:**
 
 - **PHPUnit Results**: Test coverage reports and JUnit XML
 - **Accessibility Reports**: axe-core and pa11y scan results
-- **Playwright Assets**: Screenshots, videos, and HTML reports
 - **Performance Data**: Core Web Vitals and load time metrics
 
 **Running Tests in GitHub Actions:**
@@ -1398,8 +1345,8 @@ git tag prod_v1.2.3 && git push origin prod_v1.2.3
 
 - **Docker**: `docker/Dockerfile`, `docker/healthcheck.sh`
 - **GitHub Actions**: `.github/workflows/` (stage-deploy.yml, image-security.yml, testing.yml)
-- **Configuration**: `phpcs.xml`, `phpstan.neon`, `phpunit.xml`, `playwright.config.js`
-- **Testing**: `tests/` (accessibility, playwright specs)
+- **Configuration**: `phpcs.xml`, `phpstan.neon`, `phpunit.xml`
+- **Testing**: `tests/` (accessibility)
 - **Documentation**: `.github/workflows/README.md` (detailed workflow guide)
 
 ### Security & Compliance
@@ -1415,7 +1362,7 @@ git tag prod_v1.2.3 && git push origin prod_v1.2.3
 - **Multi-stage Docker Builds**: Immutable production images
 - **DRY GitHub Actions**: Reusable workflows and composite actions
 - **Security-First Pipeline**: Mandatory security gates for all deployments
-- **Comprehensive Testing**: PHPUnit, accessibility (Section 508), E2E (Playwright)
+- **Comprehensive Testing**: PHPUnit, accessibility (Section 508)
 - **Government-Grade Security**: Container scanning, compliance reporting, audit trails
 
 This Drupal 11 project implements enterprise-grade security, testing, and deployment practices suitable for government and high-security environments while maintaining developer productivity.

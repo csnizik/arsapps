@@ -12,7 +12,7 @@ The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable wo
 - **`reusable-build.yml`**: Shared build and deployment logic for all environments
 - **`image-security.yml`**: Comprehensive container security verification and vulnerability scanning
 - **`code-quality.yml`**: Reusable workflow for PHPCS, PHPStan, and ESLint checks
-- **`testing.yml`**: Comprehensive testing pipeline (PHPUnit, accessibility, Playwright)
+- **`testing.yml`**: Comprehensive testing pipeline (PHPUnit, accessibility)
 
 ### Composite Actions
 
@@ -27,7 +27,7 @@ The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable wo
 │   ├── reusable-build.yml        # Shared build logic
 │   ├── image-security.yml        # Security verification & vulnerability scanning
 │   ├── code-quality.yml          # Code quality checks
-│   └── testing.yml               # Testing pipeline (PHPUnit, a11y, Playwright)
+│   └── testing.yml               # Testing pipeline (PHPUnit, a11y)
 └── actions/
     └── setup-drupal-build/
         └── action.yml            # Composite action for build setup
@@ -195,19 +195,12 @@ The security pipeline ensures compliance with:
 - Layout Builder accessibility testing
 - axe-core and pa11y integration
 
-**End-to-End Testing:**
-- Playwright cross-browser testing
-- Visual regression testing
-- Performance monitoring (Core Web Vitals)
-- Mobile responsiveness validation
-
 ### Test Artifact Management
 
 **Artifact Categories:**
 - Test coverage reports (30-day retention)
 - Screenshot comparisons (30-day retention)
 - Accessibility scan results (30-day retention)
-- Playwright videos and screenshots (30-day retention)
 - Performance metrics and reports (30-day retention)
 
 ## Configuration and Setup
@@ -243,8 +236,6 @@ composer require --dev drupal/core-dev
 # Install Node.js dependencies for testing
 npm ci
 
-# Install Playwright browsers
-npx playwright install
 ```
 
 ## Usage Examples
@@ -315,7 +306,7 @@ git push origin prod_v1.2.3
 **Required Status Checks:**
 - Code Quality (PHPCS, PHPStan, ESLint)
 - Security Scanning (vulnerability detection)
-- Testing Pipeline (PHPUnit, accessibility, Playwright)
+- Testing Pipeline (PHPUnit, accessibility)
 
 #### Hotfix Process
 
@@ -402,15 +393,11 @@ docker run --rm drupal-app:local /usr/local/bin/healthcheck.sh
 docker run --rm -v $(pwd):/workspace aquasec/trivy image drupal-app:local
 ```
 
-**Accessibility and E2E Testing:**
+**Accessibility Testing:**
 ```bash
 # Accessibility testing
 npm run test:axe
 npm run test:pa11y
-
-# Playwright testing
-npm run test:e2e
-npm run test:e2e:headed  # With visible browser
 ```
 
 ## Monitoring and Troubleshooting
@@ -449,7 +436,6 @@ npm run test:e2e:headed  # With visible browser
 ```bash
 # PHPUnit: vendor/bin/phpunit --testsuite=custom --verbose
 # Accessibility: Check reports in GitHub Actions artifacts
-# Playwright: npx playwright test --headed --debug
 ```
 
 ### Performance Optimization
