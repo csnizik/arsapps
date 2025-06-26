@@ -4,7 +4,7 @@
 @use 'sass:color';
 
 // Variables
-$primary-color: #1976d2;
+$primary-color: #1976d1;
 $secondary-color: #424242;
 $text-color: #333;
 $background-color: #fff;
@@ -47,12 +47,12 @@ body {
 // Layout Builder enhancements for accessibility
 .layout-builder__section {
   position: relative;
-  
+
   &:focus {
     outline: 2px solid $primary-color;
     outline-offset: 2px;
   }
-  
+
   // Enhanced visual indicators for keyboard navigation
   &[tabindex="0"]:focus-visible {
     background-color: color.adjust($primary-color, $lightness: 95%);
@@ -71,7 +71,7 @@ body {
   text-decoration: none;
   border-radius: $border-radius;
   z-index: 9999;
-  
+
   &:focus {
     top: 6px;
   }
@@ -80,11 +80,11 @@ body {
 // Mobile menu enhancements
 .primary-menu {
   transition: transform 0.3s ease;
-  
+
   &.is-open {
     transform: translateX(0);
   }
-  
+
   @media (max-width: 768px) {
     transform: translateX(-100%);
   }
@@ -96,11 +96,11 @@ body {
       &::before {
         transform: rotate(45deg);
       }
-      
+
       &::after {
         transform: rotate(-45deg);
       }
-      
+
       span {
         opacity: 0;
       }
