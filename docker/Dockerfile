@@ -21,73 +21,67 @@ RUN composer install --no-dev --optimize-autoloader
 FROM node:22-alpine AS frontend_build
 WORKDIR /app
 
-# Copy root package files first for better layer caching
-COPY package*.json ./
-
-# Install root dependencies for webpack config
-RUN npm ci --only=production
-
 # Copy theme package files and install theme dependencies
 COPY web/themes/custom/arsapps_theme/package*.json ./web/themes/custom/arsapps_theme/
 WORKDIR /app/web/themes/custom/arsapps_theme
 RUN npm ci
 
-# Copy theme source files and build configuration
-WORKDIR /app
-COPY webpack.config.js ./
-COPY web/themes/custom/arsapps_theme/ ./web/themes/custom/arsapps_theme/
+# Copy only necessary files for building (exclude dev tools and configs from final image)
+COPY web/themes/custom/arsapps_theme/webpack.config.js ./
+COPY web/themes/custom/arsapps_theme/js/ ./js/
+COPY web/themes/custom/arsapps_theme/scss/ ./scss/
+COPY web/themes/custom/arsapps_theme/css/ ./css/
 
-# Build frontend assets for theme
-WORKDIR /app/web/themes/custom/arsapps_theme
-RUN npm run build
-
-# Also run root build for any global assets
-WORKDIR /app
+# Build frontend assets - creates dist/ directory with compiled assets
 RUN npm run build
 
 # Stage 3: Production Runtime
 FROM drupal:11.1.5-php8.3-fpm-bookworm AS production
 WORKDIR /var/www/html
 
-# Create secure user structure as per DEVELOPER_NOTES.md
-RUN groupadd -r deploy && useradd -r -g deploy -G www-data deploy
-
-# Copy Composer dependencies (excluding dev tools)
-COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
-COPY --from=composer_build --chown=deploy:www-data /app/web ./web
-COPY --from=composer_build --chown=deploy:www-data /app/composer.json ./composer.json
-COPY --from=composer_build --chown=deploy:www-data /app/composer.lock ./composer.lock
-
-# Copy compiled frontend assets
-COPY --from=frontend_build --chown=deploy:www-data /app/web/themes/custom/*/dist ./web/themes/custom/*/dist
-
-# Copy configuration files
-COPY --chown=deploy:www-data config/ ./config/
-
-# Apply secure file permissions as per DEVELOPER_NOTES.md
-RUN find . -type f -exec chmod 640 {} \; && \
-    find . -type d -exec chmod 750 {} \;
-
-# Create and configure files directory with proper permissions
-RUN mkdir -p web/sites/default/files && \
-    chmod 770 web/sites/default/files && \
-    chown deploy:www-data web/sites/default/files
-
-# Ensure settings.php has secure permissions
-RUN if [ -f web/sites/default/settings.php ]; then \
-        chmod 640 web/sites/default/settings.php; \
-    fi
-
-# Install additional PHP extensions needed for Drupal
+# Install additional PHP extensions needed for Drupal before user creation
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     && docker-php-ext-install zip \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory ownership
+# Create secure user structure as per DEVELOPER_NOTES.md
+RUN groupadd -r deploy && useradd -r -g deploy -G www-data deploy
+
+# Copy Composer dependencies (production only, no dev tools)
+COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
+COPY --from=composer_build --chown=deploy:www-data /app/web ./web
+COPY --from=composer_build --chown=deploy:www-data /app/composer.json ./composer.json
+COPY --from=composer_build --chown=deploy:www-data /app/composer.lock ./composer.lock
+
+# Copy ONLY compiled frontend assets (exclude source files and dev tools)
+COPY --from=frontend_build --chown=deploy:www-data /app/web/themes/custom/arsapps_theme/dist ./web/themes/custom/arsapps_theme/dist
+
+# Copy configuration files
+COPY --chown=deploy:www-data config/ ./config/
+
+# Apply secure file permissions following DEVELOPER_NOTES.md security practices
+# Files: 640 (owner: rw, group: r, other: none)
+RUN find . -type f -exec chmod 640 {} \;
+
+# Directories: 750 (owner: rwx, group: rx, other: none)  
+RUN find . -type d -exec chmod 750 {} \;
+
+# Create and configure files directory with special permissions
+# Files directory: 770 (both owner and group: rwx, other: none)
+RUN mkdir -p web/sites/default/files && \
+    chmod 770 web/sites/default/files && \
+    chown deploy:www-data web/sites/default/files
+
+# Ensure settings.php has secure permissions (contains sensitive database credentials)
+RUN if [ -f web/sites/default/settings.php ]; then \
+        chmod 640 web/sites/default/settings.php; \
+    fi
+
+# Final ownership pass to ensure deploy user owns files, www-data group can read
 RUN chown -R deploy:www-data /var/www/html
 
-# Run as non-root user for security
+# Run container as non-root user for security
 USER deploy:www-data
 
 # Expose port 9000 for PHP-FPM

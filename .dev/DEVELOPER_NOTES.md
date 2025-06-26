@@ -10,7 +10,7 @@ Do not delete this comment. If you reorganize sections, do so thoughtfully and p
 
 This document captures technical decisions, practices, standards, and implementation details for this Drupal 11 project. It is updated progressively in response to scoped prompts during the CI/CD and development pipeline buildout process.
 
-Last updated: June 25, 2025
+Last updated: June 26, 2025
 
 ---
 
@@ -239,7 +239,7 @@ Use `.ddev/config.<service>.yaml` for service-specific configuration
 └── .dockerignore
 ```
 
-**Multi-Stage Dockerfile Pattern:**
+**Multi-Stage Dockerfile Pattern (2025 Production-Optimized):**
 
 ```dockerfile
 # Stage 1: Composer Dependencies
@@ -253,27 +253,53 @@ RUN composer install --no-dev --optimize-autoloader
 # Stage 2: Frontend Asset Compilation
 FROM node:22-alpine AS frontend_build
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY webpack.config.js ./
-COPY web/themes/custom/ ./web/themes/custom/
+# Copy theme package files for dependency management
+COPY web/themes/custom/arsapps_theme/package*.json ./web/themes/custom/arsapps_theme/
+WORKDIR /app/web/themes/custom/arsapps_theme
+RUN npm ci
+
+# Copy only source files needed for building (exclude dev configs)
+COPY web/themes/custom/arsapps_theme/webpack.config.js ./
+COPY web/themes/custom/arsapps_theme/js/ ./js/
+COPY web/themes/custom/arsapps_theme/scss/ ./scss/
+COPY web/themes/custom/arsapps_theme/css/ ./css/
+
+# Build frontend assets - creates dist/ directory with compiled assets
 RUN npm run build
 
 # Stage 3: Production Runtime
 FROM drupal:11.1.5-php8.3-fpm-bookworm AS production
 WORKDIR /var/www/html
 
-# Copy Composer dependencies (excluding dev tools)
-COPY --from=composer_build /app/vendor ./vendor
-COPY --from=composer_build /app/web ./web
+# Install PHP extensions before user creation
+RUN apt-get update && apt-get install -y libzip-dev \
+    && docker-php-ext-install zip \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy compiled frontend assets
-COPY --from=frontend_build /app/web/themes/custom/*/dist ./web/themes/custom/*/dist
+# Create secure user structure
+RUN groupadd -r deploy && useradd -r -g deploy -G www-data deploy
 
-# Apply secure file permissions
+# Copy production dependencies only (no dev tools)
+COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
+COPY --from=composer_build --chown=deploy:www-data /app/web ./web
+COPY --from=composer_build --chown=deploy:www-data /app/composer.json ./composer.json
+COPY --from=composer_build --chown=deploy:www-data /app/composer.lock ./composer.lock
+
+# Copy ONLY compiled frontend assets (no source files or dev tools)
+COPY --from=frontend_build --chown=deploy:www-data /app/web/themes/custom/arsapps_theme/dist ./web/themes/custom/arsapps_theme/dist
+
+# Copy configuration files
+COPY --chown=deploy:www-data config/ ./config/
+
+# Apply secure file permissions following security best practices
 RUN find . -type f -exec chmod 640 {} \; && \
     find . -type d -exec chmod 750 {} \; && \
-    chown -R www-data:www-data .
+    mkdir -p web/sites/default/files && \
+    chmod 770 web/sites/default/files && \
+    chown -R deploy:www-data /var/www/html
+
+# Run as non-root user for security
+USER deploy:www-data
 ```
 
 **Key Multi-Stage Benefits:**
@@ -282,21 +308,28 @@ RUN find . -type f -exec chmod 640 {} \; && \
 - **Size Optimization**: Final image excludes Node.js, Composer, and build dependencies
 - **Layer Caching**: Dependencies install only when package files change
 - **Security**: Minimal attack surface with only runtime essentials
-- **Compiled Assets**: CSS/JS built during image creation, not runtime
+- **Compiled Assets Only**: Only `dist/` directory copied, no source files or dev configs
+- **Strict File Permissions**: Implements 640/750/770 security model
 
-**Build Optimization Techniques:**
+**Build Optimization Techniques (2025):**
 
-- Copy `package*.json` before full source to leverage Docker layer caching
+- Copy specific source files only (js/, scss/, css/) during frontend build
+- Copy `package*.json` before source to leverage Docker layer caching
 - Use `npm ci` instead of `npm install` for faster, deterministic builds
 - Copy `composer.json` before source code for dependency caching
 - Use `--no-dev` flags to exclude development dependencies
 - Order build steps by frequency of changes (dependencies → source → assets)
+- Install system packages before user creation for better layer optimization
 
-**Security Considerations:**
+**Security Considerations (2025):**
 
 - Regular base image updates for security patches
 - Minimize installed packages to reduce attack surface
 - Use multi-stage builds to exclude build-time dependencies from final image
+- **Strict Asset Separation**: Only compiled `dist/` assets copied, no source files or configs
+- **Enhanced File Permissions**: 640/750/770 model with deploy user ownership
+- **Non-root Execution**: Container runs as `deploy:www-data` user
+- **Minimal Production Surface**: No package managers, build tools, or dev dependencies
 - Consider vulnerability scanning with tools like Snyk for ongoing security assessment
 
 ### Secure File Permissions & Ownership
