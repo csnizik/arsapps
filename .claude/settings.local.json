@@ -21,7 +21,9 @@
       "Bash(composer check-platform-reqs:*)",
       "Bash(composer validate:*)",
       "Bash(rm:*)",
-      "Bash(composer:*)"
+      "Bash(composer:*)",
+      "Bash(rg:*)",
+      "Bash(npm test)"
     ],
     "deny": []
   }
