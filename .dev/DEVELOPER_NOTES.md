@@ -752,7 +752,79 @@ runs:
 
 ## Testing
 
-<!-- AI appends here from test-related prompts -->
+### Code Quality & Standards (2025)
+
+**Automated Code Quality Checks:**
+
+All deployments are automatically protected by code quality gates that enforce Drupal coding standards and JavaScript best practices.
+
+**PHPCS (PHP CodeSniffer) - Drupal Standards:**
+
+```bash
+# Project uses phpcs.xml configuration with Drupal standards
+vendor/bin/phpcs
+
+# Manual check specific paths
+vendor/bin/phpcs --standard=Drupal web/modules/custom web/themes/custom
+```
+
+**PHPStan - Static Analysis:**
+
+```bash
+# Project uses phpstan.neon configuration (level 6)
+vendor/bin/phpstan analyse
+
+# Manual analysis with custom level
+vendor/bin/phpstan analyse --level=6 web/modules/custom
+```
+
+**ESLint - JavaScript Linting:**
+
+```bash
+# Theme-specific linting (if configured)
+cd web/themes/custom/arsapps_theme
+npm run lint
+
+# Direct ESLint usage
+npx eslint js/ --ext .js
+```
+
+**GitHub Actions Integration:**
+
+The `code-quality.yml` reusable workflow runs automatically before deployments:
+
+```yaml
+jobs:
+  code-quality:
+    uses: ./.github/workflows/code-quality.yml
+    with:
+      enable_phpcs: true
+      enable_eslint: true
+      phpcs_standard: 'Drupal'
+      custom_paths: 'web/modules/custom,web/themes/custom'
+```
+
+**Key Features:**
+
+- **Fail-Fast Deployment**: Code quality violations block deployments
+- **Automatic Detection**: Scans all custom modules and themes
+- **Configurable Standards**: Centralized phpcs.xml and phpstan.neon files
+- **Performance Caching**: Uses .phpcs-cache and .phpstan-cache for speed
+- **Multi-Language Support**: Handles PHP, JavaScript, CSS, and configuration files
+
+**Configuration Files:**
+
+- **`phpcs.xml`**: Drupal coding standards with custom exclusions
+- **`phpstan.neon`**: Level 6 static analysis with Drupal extension
+- **Theme `.eslintrc.js`**: JavaScript linting rules per theme
+
+**Best Practices (2025):**
+
+- Install dev dependencies locally: `composer require --dev drupal/core-dev`
+- Run checks before committing: `vendor/bin/phpcs && vendor/bin/phpstan`
+- Use IDE integrations for real-time feedback
+- Fix issues incrementally rather than disabling rules
+- Configure ESLint in theme package.json for consistent JavaScript quality
 
 ---
 

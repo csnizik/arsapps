@@ -1,0 +1,44 @@
+parameters:
+    level: 6
+    paths:
+        - web/modules/custom
+        - web/themes/custom
+    
+    # Drupal-specific configuration
+    drupal:
+        drupal_root: web
+    
+    # Extensions
+    extensions:
+        - mglaman\PHPStanDrupal\Extension
+    
+    # Exclude patterns
+    excludePaths:
+        - */vendor/*
+        - */node_modules/*
+        - */dist/*
+        - */libraries/*
+        - */tests/fixtures/*
+        - */sites/*/files/*
+        - */sites/*/private/*
+    
+    # Ignore specific errors
+    ignoreErrors:
+        # Common Drupal patterns that are safe
+        - '#Call to deprecated function drupal_set_message\(\)#'
+        - '#Unsafe usage of new static\(\)#'
+        
+        # Theme-specific ignores
+        - '#Function theme_[a-zA-Z_]+ not found#'
+        
+        # Configuration schema files
+        - '#in file .*/config/schema/.*\.yml#'
+    
+    # Check for missing return typehints
+    checkMissingReturnTypehint: true
+    
+    # Check for unused parameters
+    checkUnusedReturnValuesOfInternalFunctions: true
+    
+    # Performance
+    tmpDir: .phpstan-cache

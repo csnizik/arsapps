@@ -8,6 +8,7 @@ The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable wo
 
 - **`stage-deploy.yml`**: Main workflow handling both staging and production triggers
 - **`reusable-build.yml`**: Shared build and deployment logic for all environments
+- **`code-quality.yml`**: Reusable workflow for PHPCS and ESLint code quality checks
 - **`.github/actions/setup-drupal-build/`**: Composite action for Drupal build environment setup
 
 ### Workflow Structure
@@ -16,7 +17,8 @@ The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable wo
 .github/
 ├── workflows/
 │   ├── stage-deploy.yml          # Main workflow (stage + production triggers)
-│   └── reusable-build.yml        # Shared build logic
+│   ├── reusable-build.yml        # Shared build logic
+│   └── code-quality.yml          # Code quality checks (PHPCS + ESLint)
 └── actions/
     └── setup-drupal-build/
         └── action.yml            # Composite action for build setup
@@ -31,6 +33,7 @@ The `stage-deploy.yml` workflow runs automatically when:
 
 ### Workflow Features
 
+- **Code Quality Gates**: PHPCS and ESLint checks block deployments on violations
 - **DRY Architecture**: Shared build logic eliminates duplication
 - **Environment-Specific Logic**: Conditional behavior for staging vs production
 - **Multi-stage Docker build** following DEVELOPER_NOTES.md guidelines
@@ -142,6 +145,47 @@ jobs:
 - Consistent behavior across staging and production
 - Easier maintenance and updates
 
+## Code Quality Workflow
+
+### Automatic Code Quality Checks
+
+The `code-quality.yml` workflow runs automatically before any deployment and includes:
+
+- **PHPCS (PHP CodeSniffer)**: Enforces Drupal coding standards on custom modules and themes
+- **PHPStan**: Static analysis for PHP code quality and type safety
+- **ESLint**: JavaScript linting for custom theme assets
+
+### Configuration Files
+
+The project includes centralized configuration files:
+
+- **`phpcs.xml`**: PHPCS configuration with Drupal standards
+- **`phpstan.neon`**: PHPStan configuration with Drupal-specific rules
+
+### Code Quality Features
+
+- **Fail-Fast**: Deployments are blocked if code quality checks fail
+- **Automatic Detection**: Finds all custom modules and themes automatically
+- **Configurable Standards**: Can be customized per project needs
+- **Performance Optimized**: Uses caching for faster subsequent runs
+
+### Running Code Quality Checks Locally
+
+```bash
+# Install development dependencies
+composer require --dev drupal/core-dev
+
+# Run PHPCS
+vendor/bin/phpcs
+
+# Run PHPStan
+vendor/bin/phpstan analyse
+
+# Run ESLint (in theme directory)
+cd web/themes/custom/arsapps_theme
+npm run lint
+```
+
 ### Local Testing
 
 To test the Docker build locally:
@@ -156,9 +200,14 @@ docker run -p 9000:9000 drupal-app:local
 
 ### Troubleshooting
 
-1. **ACR Authentication Errors**: Verify ACR_USERNAME and ACR_PASSWORD secrets
-2. **Build Cache Issues**: Clear GitHub Actions cache if builds become inconsistent
-3. **Composer Errors**: Ensure composer.lock is committed and up to date
-4. **Node.js Build Errors**: Verify package.json and package-lock.json are present
+1. **Code Quality Failures**: 
+   - Check PHPCS errors: `vendor/bin/phpcs --report=full`
+   - Fix PHPStan issues: `vendor/bin/phpstan analyse --level=0` (start with level 0)
+   - ESLint errors: Check theme's `npm run lint` output
+2. **ACR Authentication Errors**: Verify ACR_USERNAME and ACR_PASSWORD secrets
+3. **Build Cache Issues**: Clear GitHub Actions cache if builds become inconsistent
+4. **Composer Errors**: Ensure composer.lock is committed and up to date
+5. **Node.js Build Errors**: Verify package.json and package-lock.json are present
+6. **Dev Dependencies Missing**: Run `composer require --dev drupal/core-dev` locally
 
 For more details, see the project's DEVELOPER_NOTES.md file.
