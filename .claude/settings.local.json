@@ -13,7 +13,10 @@
       "Bash(composer require:*)",
       "Bash(composer config:*)",
       "Bash(npm init:*)",
-      "Bash(npx playwright:*)"
+      "Bash(npx playwright:*)",
+      "Bash(vendor/bin/phpunit:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)"
     ],
     "deny": []
   }

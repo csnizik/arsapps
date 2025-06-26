@@ -7,7 +7,6 @@
     beStrictAboutOutputDuringTests="true"
     beStrictAboutChangesToGlobalState="true"
     failOnWarning="true"
-    printerClass="\Drupal\Tests\Listeners\HtmlOutputPrinter"
     cacheDirectory=".phpunit-cache"
     displayDetailsOnTestsThatTriggerDeprecations="true">
   
@@ -43,26 +42,23 @@
     </testsuite>
   </testsuites>
   
-  <!-- Environment variables for DDEV database configuration -->
+  <!-- Environment variables for GitHub Actions and DDEV -->
   <php>
-    <!-- Database configuration (DDEV default) -->
-    <env name="SIMPLETEST_DB" value="mysql://db:db@db:3306/db"/>
+    <!-- Database configuration -->
+    <env name="SIMPLETEST_DB" value="mysql://drupal:drupal@127.0.0.1:3306/drupal"/>
     
     <!-- Base URL for functional tests -->
-    <env name="SIMPLETEST_BASE_URL" value="http://web:80"/>
+    <env name="SIMPLETEST_BASE_URL" value="http://127.0.0.1:8080"/>
     
     <!-- Disable deprecation warnings for faster test execution -->
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
-    
-    <!-- Browser test configuration -->
-    <env name="MINK_DRIVER_ARGS_WEBDRIVER" value='["chrome", {"chromeOptions": {"args": ["--disable-gpu", "--headless", "--no-sandbox", "--disable-dev-shm-usage"]}}, "http://chromedriver:9515"]'/>
     
     <!-- Test debugging -->
     <env name="BROWSERTEST_OUTPUT_DIRECTORY" value="web/sites/simpletest/browser_output"/>
     <env name="BROWSERTEST_OUTPUT_BASE_URL" value=""/>
     
-    <!-- Performance optimization -->
-    <env name="MINK_DRIVER_ARGS" value='["chrome", {"chromeOptions": {"args": ["--disable-gpu", "--headless"]}}, "http://chromedriver:9515"]'/>
+    <!-- Mink driver configuration for headless testing -->
+    <env name="MINK_DRIVER_ARGS_WEBDRIVER" value='["chrome", {"chromeOptions": {"args": ["--disable-gpu", "--headless", "--no-sandbox", "--disable-dev-shm-usage", "--disable-extensions"]}}, "http://127.0.0.1:9515"]'/>
   </php>
   
   <!-- Coverage configuration -->
@@ -79,12 +75,6 @@
       <directory>web/themes/custom/*/dist</directory>
     </exclude>
   </source>
-  
-  <!-- Test listeners -->
-  <extensions>
-    <!-- Drupal test discovery -->
-    <bootstrap class="Drupal\Tests\Extension\DiscoveryExtension"/>
-  </extensions>
   
   <!-- Logging -->
   <logging>

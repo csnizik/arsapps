@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/var/www/html/phpunit.xml" tests="6" assertions="0" errors="6" failures="0" skipped="0" time="0.000000">
+    <testsuite name="custom" tests="6" assertions="0" errors="6" failures="0" skipped="0" time="0.000000">
+      <testsuite name="Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest" file="/var/www/html/web/modules/custom/arsapps_module/tests/src/Functional/ArsappsModuleTest.php" tests="6" assertions="0" errors="6" failures="0" skipped="0" time="0.000000">
+        <testcase name="testModuleInstallation" file="/var/www/html/web/modules/custom/arsapps_module/tests/src/Functional/ArsappsModuleTest.php" line="29" class="Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest" classname="Drupal.Tests.arsapps_module.Functional.ArsappsModuleTest" assertions="0" time="0.000000">
+          <error type="Drupal\Core\Installer\Exception\InstallerException">Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest::testModuleInstallation
+Drupal\Core\Installer\Exception\InstallerException: Resolve all issues below to continue the installation. For help configuring your database server, see the &lt;a href="https://www.drupal.org/docs/installing-drupal"&gt;installation handbook&lt;/a&gt;, or contact your hosting provider.&lt;ul&gt;&lt;li&gt;Failed to connect to your database server. The server reports the following message: &lt;em class="placeholder"&gt;SQLSTATE[HY000] [2002] Connection refused [Tip: This message normally means that there is no MySQL server running on the system or that you are using an incorrect host name or port number when trying to connect to the server. You should also check that the TCP/IP port you are using has not been blocked by a firewall or port blocking service.] &lt;/em&gt;.&lt;ul&gt;&lt;li&gt;Is the database server running?&lt;/li&gt;&lt;li&gt;Does the database exist or does the database user have sufficient privileges to create the database?&lt;/li&gt;&lt;li&gt;Have you entered the correct database name?&lt;/li&gt;&lt;li&gt;Have you entered the correct username and password?&lt;/li&gt;&lt;li&gt;Have you entered the correct database hostname and port number?&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;
+
+/var/www/html/web/core/includes/install.core.inc:981
+/var/www/html/web/core/includes/install.core.inc:611
+/var/www/html/web/core/includes/install.core.inc:564
+/var/www/html/web/core/includes/install.core.inc:122
+/var/www/html/web/core/lib/Drupal/Core/Test/FunctionalTestSetupTrait.php:326
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:532
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:343</error>
+        </testcase>
+        <testcase name="testSettingsForm" file="/var/www/html/web/modules/custom/arsapps_module/tests/src/Functional/ArsappsModuleTest.php" line="36" class="Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest" classname="Drupal.Tests.arsapps_module.Functional.ArsappsModuleTest" assertions="0" time="0.000000">
+          <error type="Drupal\Core\Installer\Exception\InstallerException">Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest::testSettingsForm
+Drupal\Core\Installer\Exception\InstallerException: Resolve all issues below to continue the installation. For help configuring your database server, see the &lt;a href="https://www.drupal.org/docs/installing-drupal"&gt;installation handbook&lt;/a&gt;, or contact your hosting provider.&lt;ul&gt;&lt;li&gt;Failed to connect to your database server. The server reports the following message: &lt;em class="placeholder"&gt;SQLSTATE[HY000] [2002] Connection refused [Tip: This message normally means that there is no MySQL server running on the system or that you are using an incorrect host name or port number when trying to connect to the server. You should also check that the TCP/IP port you are using has not been blocked by a firewall or port blocking service.] &lt;/em&gt;.&lt;ul&gt;&lt;li&gt;Is the database server running?&lt;/li&gt;&lt;li&gt;Does the database exist or does the database user have sufficient privileges to create the database?&lt;/li&gt;&lt;li&gt;Have you entered the correct database name?&lt;/li&gt;&lt;li&gt;Have you entered the correct username and password?&lt;/li&gt;&lt;li&gt;Have you entered the correct database hostname and port number?&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;
+
+/var/www/html/web/core/includes/install.core.inc:981
+/var/www/html/web/core/includes/install.core.inc:611
+/var/www/html/web/core/includes/install.core.inc:564
+/var/www/html/web/core/includes/install.core.inc:122
+/var/www/html/web/core/lib/Drupal/Core/Test/FunctionalTestSetupTrait.php:326
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:532
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:343</error>
+        </testcase>
+        <testcase name="testInfoPage" file="/var/www/html/web/modules/custom/arsapps_module/tests/src/Functional/ArsappsModuleTest.php" line="51" class="Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest" classname="Drupal.Tests.arsapps_module.Functional.ArsappsModuleTest" assertions="0" time="0.000000">
+          <error type="Drupal\Core\Installer\Exception\InstallerException">Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest::testInfoPage
+Drupal\Core\Installer\Exception\InstallerException: Resolve all issues below to continue the installation. For help configuring your database server, see the &lt;a href="https://www.drupal.org/docs/installing-drupal"&gt;installation handbook&lt;/a&gt;, or contact your hosting provider.&lt;ul&gt;&lt;li&gt;Failed to connect to your database server. The server reports the following message: &lt;em class="placeholder"&gt;SQLSTATE[HY000] [2002] Connection refused [Tip: This message normally means that there is no MySQL server running on the system or that you are using an incorrect host name or port number when trying to connect to the server. You should also check that the TCP/IP port you are using has not been blocked by a firewall or port blocking service.] &lt;/em&gt;.&lt;ul&gt;&lt;li&gt;Is the database server running?&lt;/li&gt;&lt;li&gt;Does the database exist or does the database user have sufficient privileges to create the database?&lt;/li&gt;&lt;li&gt;Have you entered the correct database name?&lt;/li&gt;&lt;li&gt;Have you entered the correct username and password?&lt;/li&gt;&lt;li&gt;Have you entered the correct database hostname and port number?&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;
+
+/var/www/html/web/core/includes/install.core.inc:981
+/var/www/html/web/core/includes/install.core.inc:611
+/var/www/html/web/core/includes/install.core.inc:564
+/var/www/html/web/core/includes/install.core.inc:122
+/var/www/html/web/core/lib/Drupal/Core/Test/FunctionalTestSetupTrait.php:326
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:532
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:343</error>
+        </testcase>
+        <testcase name="testBlockPlugin" file="/var/www/html/web/modules/custom/arsapps_module/tests/src/Functional/ArsappsModuleTest.php" line="64" class="Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest" classname="Drupal.Tests.arsapps_module.Functional.ArsappsModuleTest" assertions="0" time="0.000000">
+          <error type="Drupal\Core\Installer\Exception\InstallerException">Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest::testBlockPlugin
+Drupal\Core\Installer\Exception\InstallerException: Resolve all issues below to continue the installation. For help configuring your database server, see the &lt;a href="https://www.drupal.org/docs/installing-drupal"&gt;installation handbook&lt;/a&gt;, or contact your hosting provider.&lt;ul&gt;&lt;li&gt;Failed to connect to your database server. The server reports the following message: &lt;em class="placeholder"&gt;SQLSTATE[HY000] [2002] Connection refused [Tip: This message normally means that there is no MySQL server running on the system or that you are using an incorrect host name or port number when trying to connect to the server. You should also check that the TCP/IP port you are using has not been blocked by a firewall or port blocking service.] &lt;/em&gt;.&lt;ul&gt;&lt;li&gt;Is the database server running?&lt;/li&gt;&lt;li&gt;Does the database exist or does the database user have sufficient privileges to create the database?&lt;/li&gt;&lt;li&gt;Have you entered the correct database name?&lt;/li&gt;&lt;li&gt;Have you entered the correct username and password?&lt;/li&gt;&lt;li&gt;Have you entered the correct database hostname and port number?&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;
+
+/var/www/html/web/core/includes/install.core.inc:981
+/var/www/html/web/core/includes/install.core.inc:611
+/var/www/html/web/core/includes/install.core.inc:564
+/var/www/html/web/core/includes/install.core.inc:122
+/var/www/html/web/core/lib/Drupal/Core/Test/FunctionalTestSetupTrait.php:326
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:532
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:343</error>
+        </testcase>
+        <testcase name="testHelpPage" file="/var/www/html/web/modules/custom/arsapps_module/tests/src/Functional/ArsappsModuleTest.php" line="77" class="Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest" classname="Drupal.Tests.arsapps_module.Functional.ArsappsModuleTest" assertions="0" time="0.000000">
+          <error type="Drupal\Core\Installer\Exception\InstallerException">Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest::testHelpPage
+Drupal\Core\Installer\Exception\InstallerException: Resolve all issues below to continue the installation. For help configuring your database server, see the &lt;a href="https://www.drupal.org/docs/installing-drupal"&gt;installation handbook&lt;/a&gt;, or contact your hosting provider.&lt;ul&gt;&lt;li&gt;Failed to connect to your database server. The server reports the following message: &lt;em class="placeholder"&gt;SQLSTATE[HY000] [2002] Connection refused [Tip: This message normally means that there is no MySQL server running on the system or that you are using an incorrect host name or port number when trying to connect to the server. You should also check that the TCP/IP port you are using has not been blocked by a firewall or port blocking service.] &lt;/em&gt;.&lt;ul&gt;&lt;li&gt;Is the database server running?&lt;/li&gt;&lt;li&gt;Does the database exist or does the database user have sufficient privileges to create the database?&lt;/li&gt;&lt;li&gt;Have you entered the correct database name?&lt;/li&gt;&lt;li&gt;Have you entered the correct username and password?&lt;/li&gt;&lt;li&gt;Have you entered the correct database hostname and port number?&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;
+
+/var/www/html/web/core/includes/install.core.inc:981
+/var/www/html/web/core/includes/install.core.inc:611
+/var/www/html/web/core/includes/install.core.inc:564
+/var/www/html/web/core/includes/install.core.inc:122
+/var/www/html/web/core/lib/Drupal/Core/Test/FunctionalTestSetupTrait.php:326
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:532
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:343</error>
+        </testcase>
+        <testcase name="testConfigurationSchema" file="/var/www/html/web/modules/custom/arsapps_module/tests/src/Functional/ArsappsModuleTest.php" line="90" class="Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest" classname="Drupal.Tests.arsapps_module.Functional.ArsappsModuleTest" assertions="0" time="0.000000">
+          <error type="Drupal\Core\Installer\Exception\InstallerException">Drupal\Tests\arsapps_module\Functional\ArsappsModuleTest::testConfigurationSchema
+Drupal\Core\Installer\Exception\InstallerException: Resolve all issues below to continue the installation. For help configuring your database server, see the &lt;a href="https://www.drupal.org/docs/installing-drupal"&gt;installation handbook&lt;/a&gt;, or contact your hosting provider.&lt;ul&gt;&lt;li&gt;Failed to connect to your database server. The server reports the following message: &lt;em class="placeholder"&gt;SQLSTATE[HY000] [2002] Connection refused [Tip: This message normally means that there is no MySQL server running on the system or that you are using an incorrect host name or port number when trying to connect to the server. You should also check that the TCP/IP port you are using has not been blocked by a firewall or port blocking service.] &lt;/em&gt;.&lt;ul&gt;&lt;li&gt;Is the database server running?&lt;/li&gt;&lt;li&gt;Does the database exist or does the database user have sufficient privileges to create the database?&lt;/li&gt;&lt;li&gt;Have you entered the correct database name?&lt;/li&gt;&lt;li&gt;Have you entered the correct username and password?&lt;/li&gt;&lt;li&gt;Have you entered the correct database hostname and port number?&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;
+
+/var/www/html/web/core/includes/install.core.inc:981
+/var/www/html/web/core/includes/install.core.inc:611
+/var/www/html/web/core/includes/install.core.inc:564
+/var/www/html/web/core/includes/install.core.inc:122
+/var/www/html/web/core/lib/Drupal/Core/Test/FunctionalTestSetupTrait.php:326
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:532
+/var/www/html/web/core/tests/Drupal/Tests/BrowserTestBase.php:343</error>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

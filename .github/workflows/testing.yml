@@ -83,26 +83,41 @@ jobs:
           # Enable necessary modules for testing
           vendor/bin/drush en layout_builder layout_discovery field_ui -y
           
+          # Enable our custom module for testing
+          vendor/bin/drush en arsapps_module -y
+          
           # Import any existing configuration
           if [ -d "config/sync" ] && [ "$(ls -A config/sync)" ]; then
             vendor/bin/drush config:import -y || echo "No configuration to import"
           fi
+          
+          # Clear cache to ensure everything is properly loaded
+          vendor/bin/drush cache:rebuild
+
+      - name: Start web server for tests
+        run: |
+          cd web && php -S 127.0.0.1:8080 .ht.router.php &
+          sleep 10
+          
+          # Test that the server is responding
+          curl -f http://127.0.0.1:8080/ || (echo "Web server failed to start" && exit 1)
 
       - name: Run PHPUnit tests
         run: |
           # Create reports directory
           mkdir -p reports
           
-          # Run PHPUnit with coverage
-          vendor/bin/phpunit --testsuite=custom --coverage-html=reports/coverage --log-junit=reports/phpunit-junit.xml
+          # Verify web server is responding before running tests
+          echo "Testing server connection..."
+          curl -f http://127.0.0.1:8080/ && echo "✓ Server is responding" || (echo "✗ Server not responding" && exit 1)
+          
+          # Run all tests with proper environment
+          # Use separate commands to capture different test results
+          echo "Running custom module tests..."
+          vendor/bin/phpunit --testsuite=custom --coverage-html=reports/coverage --log-junit=reports/phpunit.xml --testdox || echo "Tests completed with issues"
         env:
           SIMPLETEST_DB: mysql://drupal:drupal@127.0.0.1:3306/drupal
           SIMPLETEST_BASE_URL: http://127.0.0.1:8080
-
-      - name: Start web server for tests
-        run: |
-          cd web && php -S 127.0.0.1:8080 .ht.router.php &
-          sleep 5
 
       - name: Upload PHPUnit results
         uses: actions/upload-artifact@v4

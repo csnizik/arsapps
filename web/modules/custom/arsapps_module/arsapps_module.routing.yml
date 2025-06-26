@@ -10,6 +10,6 @@ arsapps_module.info:
   path: '/arsapps-module/info'
   defaults:
     _controller: '\Drupal\arsapps_module\Controller\ArsappsModuleController::info'
-    _title: 'ARSApps Module Info'
+    _title: 'ARS Apps Module Info'
   requirements:
     _permission: 'access content'
