@@ -9,7 +9,11 @@
       "Bash(npm run build:*)",
       "Bash(touch:*)",
       "Bash(composer show:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(composer require:*)",
+      "Bash(composer config:*)",
+      "Bash(npm init:*)",
+      "Bash(npx playwright:*)"
     ],
     "deny": []
   }

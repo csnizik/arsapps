@@ -826,6 +826,211 @@ jobs:
 - Fix issues incrementally rather than disabling rules
 - Configure ESLint in theme package.json for consistent JavaScript quality
 
+### PHPUnit Testing with DDEV Integration
+
+**Test Configuration:**
+
+The project includes a comprehensive PHPUnit configuration (`phpunit.xml`) that integrates with DDEV's database settings:
+
+```xml
+<!-- Database configuration for DDEV -->
+<env name="SIMPLETEST_DB" value="mysql://db:db@db:3306/db"/>
+<env name="SIMPLETEST_BASE_URL" value="http://web:80"/>
+```
+
+**Running Tests Locally:**
+
+```bash
+# Run all custom tests
+vendor/bin/phpunit --testsuite=custom
+
+# Run specific test types
+vendor/bin/phpunit --testsuite=unit
+vendor/bin/phpunit --testsuite=kernel
+vendor/bin/phpunit --testsuite=functional
+
+# Run with coverage
+vendor/bin/phpunit --testsuite=custom --coverage-html=reports/coverage
+```
+
+**Test Directory Structure:**
+
+```
+web/modules/custom/*/tests/
+├── src/
+│   ├── Unit/           # Unit tests
+│   ├── Kernel/         # Kernel tests
+│   ├── Functional/     # Functional tests
+│   └── FunctionalJavascript/  # JS functional tests
+```
+
+### Accessibility Testing (Section 508 Compliance)
+
+**Automated Accessibility Scanning:**
+
+The project includes comprehensive accessibility testing tools for Section 508 compliance:
+
+```bash
+# Run axe-core accessibility scan
+npm run test:axe
+
+# Run pa11y accessibility scan
+npm run test:pa11y
+
+# Generate Lighthouse accessibility report
+npm run test:lighthouse
+```
+
+**Accessibility Testing Features:**
+
+- **Section 508 Compliance**: Tests against government accessibility standards
+- **WCAG 2.1 AA**: Validates compliance with web content accessibility guidelines
+- **Layout Builder Focus**: Specialized tests for Layout Builder components
+- **Keyboard Navigation**: Validates keyboard-only navigation workflows
+- **Screen Reader Support**: Tests ARIA attributes and announcements
+- **Color Contrast**: Validates contrast ratios meet required standards
+
+**Accessibility Test Utilities:**
+
+Located in `tests/accessibility/accessibility-utils.js`:
+
+```javascript
+// Comprehensive accessibility scan
+const axeResults = await runAxeScan(page, {
+  tags: ['section508', 'wcag2a', 'wcag2aa', 'wcag21aa'],
+  include: ['[data-layout-builder-content]', '.layout-builder__layout']
+});
+
+// Assert no violations
+await assertNoA11yViolations(axeResults);
+
+// Test keyboard navigation
+await testKeyboardNavigation(page);
+
+// Test Layout Builder specific accessibility
+await testLayoutBuilderAccessibility(page);
+```
+
+### Playwright End-to-End Testing
+
+**Playwright Configuration:**
+
+The project includes a comprehensive Playwright setup (`playwright.config.js`) for regression testing:
+
+```javascript
+// Multi-browser testing
+projects: [
+  { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+  { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+  { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  { name: 'Mobile Chrome', use: { ...devices['Pixel 5'] } },
+  { name: 'Mobile Safari', use: { ...devices['iPhone 12'] } }
+]
+```
+
+**Running Playwright Tests:**
+
+```bash
+# Run all tests
+npm run test:e2e
+
+# Run in headed mode (visible browser)
+npm run test:e2e:headed
+
+# Debug tests interactively
+npm run test:e2e:debug
+
+# Run specific browser
+npx playwright test --project=chromium
+
+# Install browsers
+npm run playwright:install
+```
+
+**Playwright Test Features:**
+
+- **Layout Builder Regression**: Tests Layout Builder functionality across browsers
+- **Responsive Testing**: Validates layouts on desktop, tablet, and mobile
+- **Visual Regression**: Screenshot comparison for layout consistency
+- **Performance Testing**: Measures Core Web Vitals and load times
+- **Cross-browser Compatibility**: Tests Chrome, Firefox, Safari, and mobile browsers
+- **Accessibility Integration**: Combines with axe-core for comprehensive testing
+
+**Test Specifications:**
+
+- `tests/playwright/specs/layout-builder-accessibility.spec.js`: Section 508 compliance tests
+- `tests/playwright/specs/layout-builder-regression.spec.js`: Functional regression tests
+
+### GitHub Actions Testing Pipeline
+
+**Comprehensive Testing Workflow:**
+
+The `.github/workflows/testing.yml` workflow provides a complete testing pipeline:
+
+```yaml
+# Three-stage testing approach
+jobs:
+  phpunit-tests:     # Unit and functional tests
+  accessibility-tests: # Section 508 compliance validation  
+  playwright-tests:  # Cross-browser E2E testing
+```
+
+**Testing Pipeline Features:**
+
+- **PHPUnit Integration**: Uses MySQL service for database testing
+- **Docker Environment**: Tests against production-like container setup
+- **Accessibility Validation**: Automated Section 508 compliance checking
+- **Cross-browser Matrix**: Tests Chrome, Firefox, and Safari
+- **Artifact Storage**: 30-day retention of screenshots, videos, and reports
+- **QA Review Assets**: Screenshots and videos stored for manual QA review
+
+**Artifact Categories:**
+
+- **PHPUnit Results**: Test coverage reports and JUnit XML
+- **Accessibility Reports**: axe-core and pa11y scan results
+- **Playwright Assets**: Screenshots, videos, and HTML reports
+- **Performance Data**: Core Web Vitals and load time metrics
+
+**Running Tests in GitHub Actions:**
+
+Tests run automatically on:
+- Push to `main`, `stage`, `develop` branches
+- Pull requests to `main`, `stage`
+- Manual workflow dispatch
+
+**Test Artifact Access:**
+
+1. Navigate to Actions tab in GitHub repository
+2. Select completed workflow run
+3. Download artifacts from the Artifacts section
+4. Review screenshots, videos, and reports for QA validation
+
+### Test Data Management
+
+**Test Database Setup:**
+
+```bash
+# DDEV automatically provides test database
+# Configuration in web/sites/default/settings.ddev.php
+
+# GitHub Actions uses dedicated MySQL service
+# Configuration in .github/workflows/testing.yml
+```
+
+**Layout Builder Test Content:**
+
+Tests are designed to work with minimal Drupal installation:
+- Standard profile installation
+- Layout Builder module enabled
+- Default content types with Layout Builder enabled
+
+**Performance Benchmarks:**
+
+- **Page Load Time**: < 5 seconds for Layout Builder pages
+- **Cumulative Layout Shift**: < 0.1 for good user experience
+- **Accessibility Scan Time**: < 30 seconds per page
+- **Cross-browser Test Time**: < 10 minutes total across all browsers
+
 ---
 
 ## Security & secrets management
