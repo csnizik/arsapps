@@ -11,7 +11,8 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     libpng-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd
+    && docker-php-ext-install -j$(nproc) gd \
+    && php -m | grep gd
 
 # Copy Composer files first for better layer caching
 COPY composer.json composer.lock ./
