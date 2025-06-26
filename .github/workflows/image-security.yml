@@ -108,6 +108,19 @@ jobs:
           
           # Start container in background for testing
           CONTAINER_ID=$(docker run -d ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }})
+          echo "Started container: $CONTAINER_ID"
+          
+          # Check if container is actually running
+          docker ps -a
+          echo "Container status:"
+          docker inspect "$CONTAINER_ID" --format='{{.State.Status}}' || echo "Container inspect failed"
+          
+          # Check container logs if it's not running
+          if [ "$(docker inspect "$CONTAINER_ID" --format='{{.State.Status}}')" != "running" ]; then
+            echo "Container is not running! Logs:"
+            docker logs "$CONTAINER_ID"
+            exit 1
+          fi
           
           # Wait for container to be ready
           echo "Waiting for container to be ready..."
@@ -143,6 +156,10 @@ jobs:
           ERRORS=0
           
           echo "--- Checking required directories ---"
+          echo "First, let's see what's actually in the container:"
+          run_in_container pwd
+          run_in_container ls -la /var/www/html/
+          echo "Now checking specific paths:"
           check_path_exists "/var/www/html/vendor" || ((ERRORS++))
           check_path_exists "/var/www/html/vendor/autoload.php" || ((ERRORS++))
           check_path_exists "/var/www/html/web/themes/custom/arsapps_theme/dist" || ((ERRORS++))
