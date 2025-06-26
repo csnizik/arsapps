@@ -53,6 +53,8 @@ RUN npm run build
 
 # Stage 3: Production Runtime
 FROM drupal:11.1.5-php8.3-fpm-bookworm AS production
+
+# Override the base image's working directory to ensure consistency
 WORKDIR /var/www/html
 
 # Install additional PHP extensions and tools needed for Drupal and healthcheck
@@ -97,18 +99,21 @@ RUN if [ -f web/sites/default/settings.php ]; then \
         chmod 640 web/sites/default/settings.php; \
     fi
 
+# Copy custom healthcheck script
+COPY --chown=deploy:www-data docker/healthcheck.sh /usr/local/bin/healthcheck.sh
+RUN chmod +x /usr/local/bin/healthcheck.sh
+
 # Final ownership pass to ensure deploy user owns files, www-data group can read
 RUN chown -R deploy:www-data /var/www/html
+
+# Ensure we're in the correct working directory for runtime
+WORKDIR /var/www/html
 
 # Run container as non-root user for security
 USER deploy:www-data
 
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
-
-# Copy custom healthcheck script
-COPY --chown=deploy:www-data docker/healthcheck.sh /usr/local/bin/healthcheck.sh
-RUN chmod +x /usr/local/bin/healthcheck.sh
 
 # Comprehensive health check that verifies site functionality
 HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
