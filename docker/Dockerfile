@@ -17,8 +17,8 @@ RUN apk add --no-cache \
 # Copy Composer files first for better layer caching
 COPY composer.json composer.lock ./
 
-# Install dependencies without dev packages, autoloader, or scripts
-RUN composer install --no-dev --no-autoloader --no-scripts --prefer-dist \
+# Install dependencies without dev packages or scripts
+RUN composer install --no-dev --no-scripts --prefer-dist \
     && ls -la /app/ \
     && echo "Checking if vendor directory exists:" \
     && ls -la /app/vendor/ || echo "Vendor directory not found"

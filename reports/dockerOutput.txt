@@ -1,0 +1,884 @@
+Run docker/build-push-action@v6
+  with:
+    context: .
+    file: ./docker/Dockerfile
+    platforms: linux/amd64
+    push: true
+    tags: ghcr.io/csnizik/arsapps:develop
+  ghcr.io/csnizik/arsapps:latest
+  ghcr.io/csnizik/arsapps:develop-4aac7bc
+    labels: org.opencontainers.image.created=2025-06-26T16:52:39.246Z
+  org.opencontainers.image.description=
+  org.opencontainers.image.licenses=
+  org.opencontainers.image.revision=4aac7bca80b4e1ece65e613843b6d88c60a4ea56
+  org.opencontainers.image.source=https://github.com/csnizik/arsapps
+  org.opencontainers.image.title=arsapps
+  org.opencontainers.image.url=https://github.com/csnizik/arsapps
+  org.opencontainers.image.version=develop
+    cache-from: type=gha
+    cache-to: type=gha,mode=max
+    provenance: true
+    sbom: true
+    load: false
+    no-cache: false
+    pull: false
+    github-token: ***
+  env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: csnizik/arsapps
+    DOCKER_METADATA_OUTPUT_VERSION: develop
+    DOCKER_METADATA_OUTPUT_TAGS: ghcr.io/csnizik/arsapps:develop
+  ghcr.io/csnizik/arsapps:latest
+  ghcr.io/csnizik/arsapps:develop-4aac7bc
+    DOCKER_METADATA_OUTPUT_LABELS: org.opencontainers.image.created=2025-06-26T16:52:39.246Z
+  org.opencontainers.image.description=
+  org.opencontainers.image.licenses=
+  org.opencontainers.image.revision=4aac7bca80b4e1ece65e613843b6d88c60a4ea56
+  org.opencontainers.image.source=https://github.com/csnizik/arsapps
+  org.opencontainers.image.title=arsapps
+  org.opencontainers.image.url=https://github.com/csnizik/arsapps
+  org.opencontainers.image.version=develop
+    DOCKER_METADATA_OUTPUT_ANNOTATIONS: manifest:org.opencontainers.image.created=2025-06-26T16:52:39.246Z
+  manifest:org.opencontainers.image.description=
+  manifest:org.opencontainers.image.licenses=
+  manifest:org.opencontainers.image.revision=4aac7bca80b4e1ece65e613843b6d88c60a4ea56
+  manifest:org.opencontainers.image.source=https://github.com/csnizik/arsapps
+  manifest:org.opencontainers.image.title=arsapps
+  manifest:org.opencontainers.image.url=https://github.com/csnizik/arsapps
+  manifest:org.opencontainers.image.version=develop
+    DOCKER_METADATA_OUTPUT_JSON: {"tags":["ghcr.io/csnizik/arsapps:develop","ghcr.io/csnizik/arsapps:latest","ghcr.io/csnizik/arsapps:develop-4aac7bc"],"labels":{"org.opencontainers.image.created":"2025-06-26T16:52:39.246Z","org.opencontainers.image.description":"","org.opencontainers.image.licenses":"","org.opencontainers.image.revision":"4aac7bca80b4e1ece65e613843b6d88c60a4ea56","org.opencontainers.image.source":"https://github.com/csnizik/arsapps","org.opencontainers.image.title":"arsapps","org.opencontainers.image.url":"https://github.com/csnizik/arsapps","org.opencontainers.image.version":"develop"},"annotations":["manifest:org.opencontainers.image.created=2025-06-26T16:52:39.246Z","manifest:org.opencontainers.image.description=","manifest:org.opencontainers.image.licenses=","manifest:org.opencontainers.image.revision=4aac7bca80b4e1ece65e613843b6d88c60a4ea56","manifest:org.opencontainers.image.source=https://github.com/csnizik/arsapps","manifest:org.opencontainers.image.title=arsapps","manifest:org.opencon
+    DOCKER_METADATA_OUTPUT_BAKE_FILE_TAGS: /home/runner/work/_temp/docker-actions-toolkit-LTIrdN/docker-metadata-action-bake-tags.json
+    DOCKER_METADATA_OUTPUT_BAKE_FILE_LABELS: /home/runner/work/_temp/docker-actions-toolkit-LTIrdN/docker-metadata-action-bake-labels.json
+    DOCKER_METADATA_OUTPUT_BAKE_FILE_ANNOTATIONS: /home/runner/work/_temp/docker-actions-toolkit-LTIrdN/docker-metadata-action-bake-annotations.json
+    DOCKER_METADATA_OUTPUT_BAKE_FILE: /home/runner/work/_temp/docker-actions-toolkit-LTIrdN/docker-metadata-action-bake.json
+GitHub Actions runtime token ACs
+  refs/heads/develop: read/write
+Docker info
+  /usr/bin/docker version
+  Client: Docker Engine - Community
+   Version:           28.0.4
+   API version:       1.48
+   Go version:        go1.23.7
+   Git commit:        b8034c0
+   Built:             Tue Mar 25 15:07:16 2025
+   OS/Arch:           linux/amd64
+   Context:           default
+  Server: Docker Engine - Community
+   Engine:
+    Version:          28.0.4
+    API version:      1.48 (minimum version 1.24)
+    Go version:       go1.23.7
+    Git commit:       6430e49
+    Built:            Tue Mar 25 15:07:16 2025
+    OS/Arch:          linux/amd64
+    Experimental:     false
+   containerd:
+    Version:          1.7.27
+    GitCommit:        05044ec0a9a75232cad458027ca83437aae3f4da
+   runc:
+    Version:          1.2.5
+    GitCommit:        v1.2.5-0-g59923ef
+   docker-init:
+    Version:          0.19.0
+    GitCommit:        de40ad0
+  /usr/bin/docker info
+  Client: Docker Engine - Community
+   Version:    28.0.4
+   Context:    default
+   Debug Mode: false
+   Plugins:
+    buildx: Docker Buildx (Docker Inc.)
+      Version:  v0.25.0
+      Path:     /usr/libexec/docker/cli-plugins/docker-buildx
+    compose: Docker Compose (Docker Inc.)
+      Version:  v2.36.2
+      Path:     /usr/libexec/docker/cli-plugins/docker-compose
+  Server:
+   Containers: 1
+    Running: 1
+    Paused: 0
+    Stopped: 0
+   Images: 1
+   Server Version: 28.0.4
+   Storage Driver: overlay2
+    Backing Filesystem: extfs
+    Supports d_type: true
+    Using metacopy: false
+    Native Overlay Diff: false
+    userxattr: false
+   Logging Driver: json-file
+   Cgroup Driver: systemd
+   Cgroup Version: 2
+   Plugins:
+    Volume: local
+    Network: bridge host ipvlan macvlan null overlay
+    Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+   Swarm: inactive
+   Runtimes: io.containerd.runc.v2 runc
+   Default Runtime: runc
+   Init Binary: docker-init
+   containerd version: 05044ec0a9a75232cad458027ca83437aae3f4da
+   runc version: v1.2.5-0-g59923ef
+   init version: de40ad0
+   Security Options:
+    apparmor
+    seccomp
+     Profile: builtin
+    cgroupns
+   Kernel Version: 6.11.0-1015-azure
+   Operating System: Ubuntu 24.04.2 LTS
+   OSType: linux
+   Architecture: x86_64
+   CPUs: 2
+   Total Memory: 7.758GiB
+   Name: pkrvmbietmlfzoi
+   ID: a502c559-9809-4f96-84c0-6fa0b04836ec
+   Docker Root Dir: /var/lib/docker
+   Debug Mode: false
+   Username: githubactions
+   Experimental: false
+   Insecure Registries:
+    ::1/128
+    127.0.0.0/8
+   Live Restore Enabled: false
+Proxy configuration
+  No proxy configuration found
+Buildx version
+  /usr/bin/docker buildx version
+  github.com/docker/buildx v0.25.0 faaea65da4ba0e58a13cd9cadcb950c51cf3b3c9
+Builder info
+  {
+    "nodes": [
+      {
+        "name": "builder-c27d5310-4f43-4087-b35b-19339511f55f0",
+        "endpoint": "unix:///var/run/docker.sock",
+        "status": "running",
+        "buildkitd-flags": "--allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host",
+        "buildkit": "v0.22.0",
+        "platforms": "linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/386",
+        "features": {
+          "Automatically load images to the Docker Engine image store": true,
+          "Cache export": true,
+          "Direct push": true,
+          "Docker exporter": true,
+          "Multi-platform build": true,
+          "OCI exporter": true
+        },
+        "labels": {
+          "org.mobyproject.buildkit.worker.executor": "oci",
+          "org.mobyproject.buildkit.worker.hostname": "40f62b82501f",
+          "org.mobyproject.buildkit.worker.network": "host",
+          "org.mobyproject.buildkit.worker.oci.process-mode": "sandbox",
+          "org.mobyproject.buildkit.worker.selinux.enabled": "false",
+          "org.mobyproject.buildkit.worker.snapshotter": "overlayfs"
+        },
+        "gcPolicy": [
+          {
+            "all": false,
+            "filter": [
+              "type==source.local",
+              "type==exec.cachemount",
+              "type==source.git.checkout"
+            ],
+            "keepDuration": "48h0m0s",
+            "maxUsedSpace": "488.3MiB"
+          },
+          {
+            "all": false,
+            "keepDuration": "1440h0m0s",
+            "reservedSpace": "7.451GiB",
+            "maxUsedSpace": "54.02GiB",
+            "minFreeSpace": "13.97GiB"
+          },
+          {
+            "all": false,
+            "reservedSpace": "7.451GiB",
+            "maxUsedSpace": "54.02GiB",
+            "minFreeSpace": "13.97GiB"
+          },
+          {
+            "all": true,
+            "reservedSpace": "7.451GiB",
+            "maxUsedSpace": "54.02GiB",
+            "minFreeSpace": "13.97GiB"
+          }
+        ]
+      }
+    ],
+    "name": "builder-c27d5310-4f43-4087-b35b-19339511f55f",
+    "driver": "docker-container",
+    "lastActivity": "2025-06-26T16:52:34.000Z"
+  }
+/usr/bin/docker buildx build --cache-from type=gha --cache-to type=gha,mode=max --file ./docker/Dockerfile --iidfile /home/runner/work/_temp/docker-actions-toolkit-qUfPEA/build-iidfile-d767e49072.txt --label org.opencontainers.image.created=2025-06-26T16:52:39.246Z --label org.opencontainers.image.description= --label org.opencontainers.image.licenses= --label org.opencontainers.image.revision=4aac7bca80b4e1ece65e613843b6d88c60a4ea56 --label org.opencontainers.image.source=https://github.com/csnizik/arsapps --label org.opencontainers.image.title=arsapps --label org.opencontainers.image.url=https://github.com/csnizik/arsapps --label org.opencontainers.image.version=develop --platform linux/amd64 --attest type=provenance,builder-id=https://github.com/csnizik/arsapps/actions/runs/15907790030/attempts/1 --attest type=sbom,disabled=false --tag ghcr.io/csnizik/arsapps:develop --tag ghcr.io/csnizik/arsapps:latest --tag ghcr.io/csnizik/arsapps:develop-4aac7bc --metadata-file /home/runner/work/_temp/docker-ac
+#0 building with "builder-c27d5310-4f43-4087-b35b-19339511f55f" instance using docker-container driver
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 4.38kB done
+#1 DONE 0.0s
+#2 [auth] docker/buildkit-syft-scanner:pull token for registry-1.docker.io
+#2 DONE 0.0s
+#3 resolve image config for docker-image://docker.io/docker/buildkit-syft-scanner:stable-1
+#3 DONE 0.4s
+#4 [internal] load metadata for docker.io/library/drupal:11.1.5-php8.3-fpm-bookworm
+#4 ...
+#5 [auth] library/drupal:pull token for registry-1.docker.io
+#5 DONE 0.0s
+#6 [auth] library/composer:pull token for registry-1.docker.io
+#6 DONE 0.0s
+#7 [auth] library/node:pull token for registry-1.docker.io
+#7 DONE 0.0s
+#8 [internal] load metadata for docker.io/library/node:22-alpine
+#8 DONE 0.3s
+#9 [internal] load metadata for docker.io/library/composer:2.7
+#9 DONE 0.3s
+#4 [internal] load metadata for docker.io/library/drupal:11.1.5-php8.3-fpm-bookworm
+#4 DONE 0.4s
+#10 [internal] load .dockerignore
+#10 transferring context: 860B done
+#10 DONE 0.0s
+#11 [internal] load build context
+#11 DONE 0.0s
+#12 [frontend_build  1/10] FROM docker.io/library/node:22-alpine@sha256:5340cbfc2df14331ab021555fdd9f83f072ce811488e705b0e736b11adeec4bb
+#12 resolve docker.io/library/node:22-alpine@sha256:5340cbfc2df14331ab021555fdd9f83f072ce811488e705b0e736b11adeec4bb 0.0s done
+#12 DONE 0.0s
+#13 [production  1/18] FROM docker.io/library/drupal:11.1.5-php8.3-fpm-bookworm@sha256:b8076639583660d97bb1c538f2dbd18f9257056ca00e3965a2612bd872d64d6c
+#13 resolve docker.io/library/drupal:11.1.5-php8.3-fpm-bookworm@sha256:b8076639583660d97bb1c538f2dbd18f9257056ca00e3965a2612bd872d64d6c 0.0s done
+#13 DONE 0.0s
+#14 [composer_build 1/7] FROM docker.io/library/composer:2.7@sha256:cb3483dc851665462a66c59982577dfbbde0ae2059e8b5550c2f49f44b8c333e
+#14 resolve docker.io/library/composer:2.7@sha256:cb3483dc851665462a66c59982577dfbbde0ae2059e8b5550c2f49f44b8c333e 0.0s done
+#14 DONE 0.0s
+#15 docker-image://docker.io/docker/buildkit-syft-scanner:stable-1
+#15 resolve docker.io/docker/buildkit-syft-scanner:stable-1 0.1s done
+#15 DONE 0.1s
+#16 importing cache manifest from gha:7931823081061864536
+#16 DONE 0.1s
+#11 [internal] load build context
+#11 transferring context: 1.92MB 0.1s done
+#11 DONE 0.2s
+#17 [composer_build 2/7] WORKDIR /app
+#17 CACHED
+#18 [composer_build 3/7] RUN apk add --no-cache     freetype-dev     libjpeg-turbo-dev     libpng-dev     && docker-php-ext-configure gd --with-freetype --with-jpeg     && docker-php-ext-install -j$(nproc) gd     && php -m | grep gd
+#18 CACHED
+#19 [composer_build 4/7] COPY composer.json composer.lock ./
+#19 CACHED
+#15 docker-image://docker.io/docker/buildkit-syft-scanner:stable-1
+#15 sha256:fca393c68a5ec680d33c3b5dff3b32a76e557517dc8091089b056c8c01bfb9a2 28.26MB / 28.26MB 0.3s done
+#15 extracting sha256:fca393c68a5ec680d33c3b5dff3b32a76e557517dc8091089b056c8c01bfb9a2
+#15 extracting sha256:fca393c68a5ec680d33c3b5dff3b32a76e557517dc8091089b056c8c01bfb9a2 0.9s done
+#15 DONE 1.3s
+#20 [composer_build 5/7] RUN composer install --no-dev --no-autoloader --no-scripts --prefer-dist     && ls -la /app/     && echo "Checking if vendor directory exists:"     && ls -la /app/vendor/ || echo "Vendor directory not found"
+#20 sha256:f6c4e88f24e88a25d8efeae997c40979d829d703df5b474c913c3b24deeeef49 53.38kB / 53.38kB 0.1s done
+#20 sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 32B / 32B 0.1s done
+#20 sha256:e125b08fbbe2862aa375c7a8629bed2a81f9ca9a54b0a878f8976712596abac4 93B / 93B 0.0s done
+#20 sha256:e35c605ce8ea692cb40ea1467e304561471650770bd93a34df7dca5279e63906 26.21MB / 53.54MB 0.8s
+#20 sha256:f5a73dcee5a8d5154575cf0a309c5a94868ab3b9bfdf74f36c5ba41a287da166 419B / 419B 0.1s done
+#20 sha256:f28d2a0214d883412b618bb20a96e82ed2a1e734e2cd8b0ee83d3d80ad4eb404 3.02MB / 3.02MB 0.2s done
+#20 sha256:eb53576217843bdad720d57152037c8144d06173bb0053f4e76a87c87d5dad09 949.86kB / 949.86kB 0.1s done
+#20 sha256:b4fb93cef93c9ab5437aeda3f8fcef35cb533fcb206c01c3a7335742cba10cb3 259B / 259B 0.0s done
+#20 sha256:ca23a67aef6035b25a1778f5468293e5e07824ff2b9a8a23469cc3f592865840 19.71kB / 19.71kB done
+#20 sha256:417f9a398261bed58b52188f04ac3f78079c718c4acf213cb149f192c6b4a190 2.44kB / 2.44kB 0.0s done
+#20 sha256:57c15fd3b41bdfc8b5af169f77fdd27b0b15cf69afe4e260f650cca4d3c80600 498B / 498B 0.0s done
+#20 sha256:48a82bcfd91ef6eeff60a57b11a3775a64f0d82fe8edc99e837aed75bad95a67 20.97MB / 30.37MB 0.6s
+#20 sha256:4eea53e5dd457c24459f7202e5d629033c0951eb5add7b1e823d763add96b0c8 17.68MB / 17.68MB 0.6s done
+#20 sha256:e567f6a279d6230e9f2dfe3ce224ced757f36a350ad19c01a56514c379d9b40c 12.51MB / 12.51MB 0.4s done
+#20 sha256:32e436918c34ed4c536bdbaeace5213a8aaeb796ec65951fe681a10758ae2677 223B / 223B 0.0s done
+#20 sha256:9feb3258c4c6a46b7e182fa372bfe03ff37fd0fdf7f6894ca97b564fc382d7d4 943B / 943B 0.0s done
+#20 sha256:e35c605ce8ea692cb40ea1467e304561471650770bd93a34df7dca5279e63906 33.55MB / 53.54MB 0.9s
+#20 sha256:48a82bcfd91ef6eeff60a57b11a3775a64f0d82fe8edc99e837aed75bad95a67 26.21MB / 30.37MB 0.8s
+#20 sha256:bb15916673af8229814dcc44164d4616a6141bc5b586ae9362e741d64c6e4c91 3.28MB / 3.28MB 0.1s done
+#20 sha256:43c4264eed91be63b206e17d93e75256a6097070ce643c5e8f0379998b44f170 3.62MB / 3.62MB 0.1s done
+#20 extracting sha256:43c4264eed91be63b206e17d93e75256a6097070ce643c5e8f0379998b44f170 0.1s done
+#20 sha256:e35c605ce8ea692cb40ea1467e304561471650770bd93a34df7dca5279e63906 37.75MB / 53.54MB 1.1s
+#20 sha256:48a82bcfd91ef6eeff60a57b11a3775a64f0d82fe8edc99e837aed75bad95a67 30.37MB / 30.37MB 0.9s done
+#20 extracting sha256:bb15916673af8229814dcc44164d4616a6141bc5b586ae9362e741d64c6e4c91 0.1s done
+#20 sha256:e35c605ce8ea692cb40ea1467e304561471650770bd93a34df7dca5279e63906 47.19MB / 53.54MB 1.4s
+#20 extracting sha256:9feb3258c4c6a46b7e182fa372bfe03ff37fd0fdf7f6894ca97b564fc382d7d4 done
+#20 extracting sha256:32e436918c34ed4c536bdbaeace5213a8aaeb796ec65951fe681a10758ae2677 done
+#20 extracting sha256:e567f6a279d6230e9f2dfe3ce224ced757f36a350ad19c01a56514c379d9b40c 0.0s done
+#20 extracting sha256:57c15fd3b41bdfc8b5af169f77fdd27b0b15cf69afe4e260f650cca4d3c80600 done
+#20 extracting sha256:4eea53e5dd457c24459f7202e5d629033c0951eb5add7b1e823d763add96b0c8
+#20 sha256:e35c605ce8ea692cb40ea1467e304561471650770bd93a34df7dca5279e63906 53.54MB / 53.54MB 1.5s
+#20 sha256:e35c605ce8ea692cb40ea1467e304561471650770bd93a34df7dca5279e63906 53.54MB / 53.54MB 1.5s done
+#20 extracting sha256:4eea53e5dd457c24459f7202e5d629033c0951eb5add7b1e823d763add96b0c8 0.5s done
+#20 DONE 1.8s
+#20 [composer_build 5/7] RUN composer install --no-dev --no-autoloader --no-scripts --prefer-dist     && ls -la /app/     && echo "Checking if vendor directory exists:"     && ls -la /app/vendor/ || echo "Vendor directory not found"
+#20 extracting sha256:417f9a398261bed58b52188f04ac3f78079c718c4acf213cb149f192c6b4a190 done
+#20 extracting sha256:ca23a67aef6035b25a1778f5468293e5e07824ff2b9a8a23469cc3f592865840 done
+#20 extracting sha256:48a82bcfd91ef6eeff60a57b11a3775a64f0d82fe8edc99e837aed75bad95a67
+#20 extracting sha256:48a82bcfd91ef6eeff60a57b11a3775a64f0d82fe8edc99e837aed75bad95a67 0.8s done
+#20 DONE 2.6s
+#20 [composer_build 5/7] RUN composer install --no-dev --no-autoloader --no-scripts --prefer-dist     && ls -la /app/     && echo "Checking if vendor directory exists:"     && ls -la /app/vendor/ || echo "Vendor directory not found"
+#20 extracting sha256:b4fb93cef93c9ab5437aeda3f8fcef35cb533fcb206c01c3a7335742cba10cb3 done
+#20 extracting sha256:eb53576217843bdad720d57152037c8144d06173bb0053f4e76a87c87d5dad09 0.0s done
+#20 extracting sha256:f5a73dcee5a8d5154575cf0a309c5a94868ab3b9bfdf74f36c5ba41a287da166 done
+#20 extracting sha256:e125b08fbbe2862aa375c7a8629bed2a81f9ca9a54b0a878f8976712596abac4 done
+#20 extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 done
+#20 extracting sha256:f28d2a0214d883412b618bb20a96e82ed2a1e734e2cd8b0ee83d3d80ad4eb404 0.1s done
+#20 DONE 2.7s
+#20 [composer_build 5/7] RUN composer install --no-dev --no-autoloader --no-scripts --prefer-dist     && ls -la /app/     && echo "Checking if vendor directory exists:"     && ls -la /app/vendor/ || echo "Vendor directory not found"
+#20 extracting sha256:f6c4e88f24e88a25d8efeae997c40979d829d703df5b474c913c3b24deeeef49 done
+#20 extracting sha256:e35c605ce8ea692cb40ea1467e304561471650770bd93a34df7dca5279e63906
+#20 extracting sha256:e35c605ce8ea692cb40ea1467e304561471650770bd93a34df7dca5279e63906 5.8s done
+#20 DONE 8.5s
+#21 [composer_build 6/7] COPY . .
+#21 DONE 2.3s
+#22 [composer_build 7/7] RUN composer install --no-dev --optimize-autoloader     && echo "Final vendor directory check:"     && ls -la /app/vendor/     && echo "Autoload file check:"     && ls -la /app/vendor/autoload.php
+#22 0.337 Installing dependencies from lock file
+#22 0.339 Verifying lock file contents can be installed on current platform.
+#22 0.358 Nothing to install, update or remove
+#22 0.370 Generating optimized autoload files
+#22 1.907 46 packages you are using are looking for funding.
+#22 1.907 Use the `composer fund` command to find out more!
+#22 1.916   * Homepage: https://www.drupal.org/project/drupal
+#22 1.916   * Support:
+#22 1.916     * docs: https://www.drupal.org/docs/user_guide/en/index.html
+#22 1.916     * chat: https://www.drupal.org/node/314178
+#22 1.923 Final vendor directory check:
+#22 1.925 total 136
+#22 1.925 drwxr-xr-x  1 root root 4096 Jun 26 16:53 .
+#22 1.925 drwxr-xr-x  1 root root 4096 Jun 26 16:52 ..
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 asm89
+#22 1.925 -rw-r--r--  1 root root  771 Jun 26 16:53 autoload.php
+#22 1.925 drwxr-xr-x  2 root root 4096 Jun 26 16:45 bin
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 chi-teck
+#22 1.925 drwxr-xr-x  1 root root 4096 Jun 26 16:53 composer
+#22 1.925 drwxr-xr-x 10 root root 4096 Jun 26 16:45 consolidation
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 dflydev
+#22 1.925 drwxr-xr-x  8 root root 4096 Jun 26 16:45 doctrine
+#22 1.925 drwxr-xr-x  5 root root 4096 Jun 26 16:45 drupal
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 drush
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 egulias
+#22 1.925 drwxr-xr-x  4 root root 4096 Jun 26 16:45 grasmash
+#22 1.925 drwxr-xr-x  5 root root 4096 Jun 26 16:45 guzzlehttp
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 laravel
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 league
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 masterminds
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 mck89
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 nikic
+#22 1.925 drwxr-xr-x  6 root root 4096 Jun 26 16:45 pear
+#22 1.925 drwxr-xr-x  4 root root 4096 Jun 26 16:45 phootwork
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 php-tuf
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 phpowermove
+#22 1.925 drwxr-xr-x  9 root root 4096 Jun 26 16:45 psr
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 psy
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 ralouphie
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 revolt
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 sebastian
+#22 1.925 drwxr-xr-x 34 root root 4096 Jun 26 16:45 symfony
+#22 1.925 drwxr-xr-x  3 root root 4096 Jun 26 16:45 twig
+#22 1.925 Autoload file check:
+#22 1.927 -rw-r--r-- 1 root root 771 Jun 26 16:53 /app/vendor/autoload.php
+#22 DONE 1.9s
+#23 [production  2/18] WORKDIR /var/www/html
+#23 CACHED
+#24 [production  3/18] RUN apt-get update && apt-get install -y     libzip-dev     curl     && docker-php-ext-install zip     && rm -rf /var/lib/apt/lists/*
+#24 CACHED
+#25 [production  4/18] RUN groupadd -r deploy && useradd -r -g deploy -G www-data deploy
+#25 CACHED
+#26 [production  5/18] COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
+#26 CACHED
+#26 [production  5/18] COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
+#26 sha256:75cb6980bb81385bdc166c1819b0d38544eacc15321390bbd2642c22a4403848 1.11kB / 1.11kB 0.1s done
+#26 sha256:f76a5fcc912d5bc8019b4871af5d6f0f28dce0ed35abc8755fa8c3ac0a5fdd66 114B / 114B 0.0s done
+#26 sha256:0db77c34ad088ae3ab20e8870292a091838335fa912fe55976ea6391ef48fa60 261.94kB / 261.94kB 0.1s done
+#26 sha256:b53d86653004747d4d754e92e857ba1144c7bb7a5223dc5bf34a8cd872a97d1f 315B / 315B done
+#26 sha256:40d66104b245fe1c3170269c3f9c10edbe5753cddbde6e8b9d6e1fa3d197c1c6 740.82kB / 740.82kB 0.1s done
+#26 sha256:b79abfc0ffe8fae80874cefe1dc5a68e73f7d831fb061e7f0adc8e6c0729c376 9.18kB / 9.18kB 0.0s done
+#26 sha256:3bef4aa15af0aa2031f0901a794d55f004db889ec456e49415fb3aaca69f5715 4.53MB / 4.53MB 0.2s done
+#26 sha256:789f3e28059cc460aa7b42e702b9031ae9a8be7a6c5f9a1cdef49b8fcfa5edbc 242B / 242B 0.0s done
+#26 sha256:72e0169cf5d4ff5de08b30346dba667001fbdf2736d9a85f2065cef7c1781599 5.24MB / 20.06MB 0.2s
+#26 sha256:ff57e69b1437c25b276dc06bf203d1c6dff4ce012f53cac566a9d2b8e96bec52 1.98MB / 1.98MB 0.1s done
+#26 sha256:f2e79a7d807db4cf18efb8c69c13baefe71d1794e42bad07fa2f1d5d4e27b867 2.45kB / 2.45kB 0.0s done
+#26 sha256:72e0169cf5d4ff5de08b30346dba667001fbdf2736d9a85f2065cef7c1781599 10.49MB / 20.06MB 0.3s
+#26 sha256:33c52b4d55386b4eb029ceb7084de7fd0755bb27068f7e5386d09191500cf532 487B / 487B 0.0s done
+#26 sha256:4bf44beef353412043b2b3904037068ca43282275644dc9b25bab39318df2e2f 225B / 225B 0.0s done
+#26 sha256:5cd31f0048a04f2deacdfa04e90000a90da078da75b8b711b6c82eef396b3934 3.15MB / 27.83MB 0.2s
+#26 sha256:26c6f0658675ec128165643f91dc72a063ebc6ddff00c2fa1a0a30e21bceafa9 1.05MB / 12.67MB 0.2s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 4.19MB / 104.33MB 0.2s
+#26 sha256:72e0169cf5d4ff5de08b30346dba667001fbdf2736d9a85f2065cef7c1781599 15.73MB / 20.06MB 0.5s
+#26 sha256:5cd31f0048a04f2deacdfa04e90000a90da078da75b8b711b6c82eef396b3934 9.44MB / 27.83MB 0.3s
+#26 sha256:26c6f0658675ec128165643f91dc72a063ebc6ddff00c2fa1a0a30e21bceafa9 5.24MB / 12.67MB 0.3s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 10.49MB / 104.33MB 0.3s
+#26 sha256:72e0169cf5d4ff5de08b30346dba667001fbdf2736d9a85f2065cef7c1781599 20.06MB / 20.06MB 0.6s done
+#26 sha256:5cd31f0048a04f2deacdfa04e90000a90da078da75b8b711b6c82eef396b3934 14.68MB / 27.83MB 0.5s
+#26 sha256:26c6f0658675ec128165643f91dc72a063ebc6ddff00c2fa1a0a30e21bceafa9 12.67MB / 12.67MB 0.5s done
+#26 sha256:6ba0c13e0a380d1066144c01cfba2ab859d271383069f8c2b442f6141a93b518 224B / 224B done
+#26 sha256:5cd31f0048a04f2deacdfa04e90000a90da078da75b8b711b6c82eef396b3934 20.97MB / 27.83MB 0.6s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 18.87MB / 104.33MB 0.5s
+#26 sha256:6e909acdb790c5a1989d9cfc795fda5a246ad6664bb27b5c688e2b734b2c5fad 3.15MB / 28.20MB 0.2s
+#26 sha256:5cd31f0048a04f2deacdfa04e90000a90da078da75b8b711b6c82eef396b3934 25.17MB / 27.83MB 0.8s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 28.31MB / 104.33MB 0.8s
+#26 sha256:6e909acdb790c5a1989d9cfc795fda5a246ad6664bb27b5c688e2b734b2c5fad 8.39MB / 28.20MB 0.3s
+#26 sha256:5cd31f0048a04f2deacdfa04e90000a90da078da75b8b711b6c82eef396b3934 27.83MB / 27.83MB 0.8s done
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 33.55MB / 104.33MB 0.9s
+#26 sha256:6e909acdb790c5a1989d9cfc795fda5a246ad6664bb27b5c688e2b734b2c5fad 13.63MB / 28.20MB 0.5s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 39.85MB / 104.33MB 1.1s
+#26 sha256:6e909acdb790c5a1989d9cfc795fda5a246ad6664bb27b5c688e2b734b2c5fad 19.92MB / 28.20MB 0.6s
+#26 ...
+#27 [frontend_build  9/10] COPY web/themes/custom/arsapps_theme/css/ ./css/
+#27 CACHED
+#28 [frontend_build  2/10] WORKDIR /app
+#28 CACHED
+#29 [frontend_build  3/10] COPY web/themes/custom/arsapps_theme/package*.json ./web/themes/custom/arsapps_theme/
+#29 CACHED
+#30 [frontend_build  5/10] RUN npm ci
+#30 CACHED
+#31 [frontend_build  6/10] COPY web/themes/custom/arsapps_theme/webpack.config.js ./
+#31 CACHED
+#32 [frontend_build  7/10] COPY web/themes/custom/arsapps_theme/js/ ./js/
+#32 CACHED
+#33 [frontend_build  8/10] COPY web/themes/custom/arsapps_theme/scss/ ./scss/
+#33 CACHED
+#34 [frontend_build  4/10] WORKDIR /app/web/themes/custom/arsapps_theme
+#34 CACHED
+#26 [production  5/18] COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
+#26 sha256:6e909acdb790c5a1989d9cfc795fda5a246ad6664bb27b5c688e2b734b2c5fad 25.17MB / 28.20MB 0.8s
+#26 ...
+#35 [frontend_build 10/10] RUN npm run build
+#35 CACHED
+#26 [production  5/18] COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
+#26 sha256:6e909acdb790c5a1989d9cfc795fda5a246ad6664bb27b5c688e2b734b2c5fad 28.20MB / 28.20MB 0.8s done
+#26 extracting sha256:6e909acdb790c5a1989d9cfc795fda5a246ad6664bb27b5c688e2b734b2c5fad
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 47.19MB / 104.33MB 1.4s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 53.48MB / 104.33MB 1.5s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 59.77MB / 104.33MB 1.7s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 66.06MB / 104.33MB 1.8s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 76.55MB / 104.33MB 2.1s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 83.89MB / 104.33MB 2.3s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 89.13MB / 104.33MB 2.4s
+#26 extracting sha256:6e909acdb790c5a1989d9cfc795fda5a246ad6664bb27b5c688e2b734b2c5fad 1.1s done
+#26 extracting sha256:6ba0c13e0a380d1066144c01cfba2ab859d271383069f8c2b442f6141a93b518 done
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 95.42MB / 104.33MB 2.6s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 101.71MB / 104.33MB 2.7s
+#26 sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 104.33MB / 104.33MB 3.2s done
+#26 extracting sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614
+#26 ...
+#35 [frontend_build 10/10] RUN npm run build
+#35 sha256:40f6f9b8290cac0d2422ec69ee5b6152ce0f7f1ca5a968783b655fe8ddeef4cc 1.16kB / 1.16kB 0.0s done
+#35 sha256:7564c9714048ec24954632dc86b57d635c1c1db0f480a77a36ef2486ad8b249d 1.11kB / 1.11kB 0.0s done
+#35 sha256:631ea3620bef2d920dc696191d4c4010f9dba86d6305c95c8f99e67c12efa494 4.10kB / 4.10kB 0.1s done
+#35 sha256:93f0b17fab4327eb745365764a1e28debfe58a9ba62f1b1c9789967a083fa569 1.01kB / 1.01kB 0.0s done
+#35 sha256:7edf50d2c133fa862528751a1c9a2014890c482e3e3f624a0fe4c55e59aa9657 699B / 699B 0.0s done
+#35 sha256:b03a58c07ebf767ae2f53a14100c8a3cdcc43246f51b4a17819c4a36fe247976 43.14kB / 43.14kB done
+#35 sha256:291cdd97cf103871c48c0e3c938699008e120639113a82d8bc1be5b659c49dab 92B / 92B 0.0s done
+#35 sha256:3a953394efe83b66644f5172a1e983c6e0a4562da73bdc99ed9f7a56e6f4c43b 446B / 446B 0.0s done
+#35 sha256:4e500f9ee51d1efbea35adb29056db1db8cde5c30697af21e62da5fe6727f741 1.26MB / 1.26MB 0.1s done
+#35 sha256:41660346736104f09c00fb5538ccf043152a9811791951ff10c7ff1a82988d71 22.15MB / 22.15MB 0.6s done
+#35 sha256:0f5de7b9fedaabe948ed84b67afe5e940933cc96fa1a88a1fbef64d739e5cbf6 51.04MB / 51.04MB 1.8s done
+#35 sha256:fe07684b16b82247c3539ed86a65ff37a76138ec25d380bd80c869a1a4c73236 3.80MB / 3.80MB 0.1s done
+#35 extracting sha256:fe07684b16b82247c3539ed86a65ff37a76138ec25d380bd80c869a1a4c73236 0.2s done
+#35 extracting sha256:0f5de7b9fedaabe948ed84b67afe5e940933cc96fa1a88a1fbef64d739e5cbf6 2.1s done
+#35 DONE 4.2s
+#35 [frontend_build 10/10] RUN npm run build
+#35 extracting sha256:4e500f9ee51d1efbea35adb29056db1db8cde5c30697af21e62da5fe6727f741 0.1s done
+#35 extracting sha256:3a953394efe83b66644f5172a1e983c6e0a4562da73bdc99ed9f7a56e6f4c43b 0.0s done
+#35 extracting sha256:291cdd97cf103871c48c0e3c938699008e120639113a82d8bc1be5b659c49dab done
+#35 extracting sha256:b03a58c07ebf767ae2f53a14100c8a3cdcc43246f51b4a17819c4a36fe247976 0.0s done
+#35 extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 done
+#35 DONE 4.3s
+#26 [production  5/18] COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
+#26 ...
+#35 [frontend_build 10/10] RUN npm run build
+#35 extracting sha256:41660346736104f09c00fb5538ccf043152a9811791951ff10c7ff1a82988d71
+#35 extracting sha256:41660346736104f09c00fb5538ccf043152a9811791951ff10c7ff1a82988d71 3.2s done
+#35 extracting sha256:7edf50d2c133fa862528751a1c9a2014890c482e3e3f624a0fe4c55e59aa9657
+#35 extracting sha256:7edf50d2c133fa862528751a1c9a2014890c482e3e3f624a0fe4c55e59aa9657 0.0s done
+#35 extracting sha256:93f0b17fab4327eb745365764a1e28debfe58a9ba62f1b1c9789967a083fa569 done
+#35 extracting sha256:40f6f9b8290cac0d2422ec69ee5b6152ce0f7f1ca5a968783b655fe8ddeef4cc done
+#35 extracting sha256:7564c9714048ec24954632dc86b57d635c1c1db0f480a77a36ef2486ad8b249d done
+#35 extracting sha256:631ea3620bef2d920dc696191d4c4010f9dba86d6305c95c8f99e67c12efa494 0.0s done
+#35 DONE 7.6s
+#26 [production  5/18] COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
+#26 extracting sha256:59086e1f0cf9b61be62079647cdc4eb36b89cea5edff168417222bb22b103614 3.9s done
+#26 extracting sha256:4bf44beef353412043b2b3904037068ca43282275644dc9b25bab39318df2e2f 0.0s done
+#26 extracting sha256:26c6f0658675ec128165643f91dc72a063ebc6ddff00c2fa1a0a30e21bceafa9 0.1s done
+#26 extracting sha256:33c52b4d55386b4eb029ceb7084de7fd0755bb27068f7e5386d09191500cf532 done
+#26 extracting sha256:5cd31f0048a04f2deacdfa04e90000a90da078da75b8b711b6c82eef396b3934 1.3s done
+#26 extracting sha256:f2e79a7d807db4cf18efb8c69c13baefe71d1794e42bad07fa2f1d5d4e27b867 0.1s done
+#26 extracting sha256:789f3e28059cc460aa7b42e702b9031ae9a8be7a6c5f9a1cdef49b8fcfa5edbc done
+#26 extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 done
+#26 extracting sha256:b79abfc0ffe8fae80874cefe1dc5a68e73f7d831fb061e7f0adc8e6c0729c376 done
+#26 extracting sha256:ff57e69b1437c25b276dc06bf203d1c6dff4ce012f53cac566a9d2b8e96bec52 0.1s done
+#26 extracting sha256:b53d86653004747d4d754e92e857ba1144c7bb7a5223dc5bf34a8cd872a97d1f done
+#26 extracting sha256:40d66104b245fe1c3170269c3f9c10edbe5753cddbde6e8b9d6e1fa3d197c1c6
+#26 extracting sha256:40d66104b245fe1c3170269c3f9c10edbe5753cddbde6e8b9d6e1fa3d197c1c6 0.0s done
+#26 extracting sha256:f76a5fcc912d5bc8019b4871af5d6f0f28dce0ed35abc8755fa8c3ac0a5fdd66 done
+#26 extracting sha256:72e0169cf5d4ff5de08b30346dba667001fbdf2736d9a85f2065cef7c1781599
+#26 extracting sha256:72e0169cf5d4ff5de08b30346dba667001fbdf2736d9a85f2065cef7c1781599 5.2s done
+#26 DONE 14.5s
+#26 [production  5/18] COPY --from=composer_build --chown=deploy:www-data /app/vendor ./vendor
+#26 extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 done
+#26 extracting sha256:0db77c34ad088ae3ab20e8870292a091838335fa912fe55976ea6391ef48fa60 0.0s done
+#26 extracting sha256:75cb6980bb81385bdc166c1819b0d38544eacc15321390bbd2642c22a4403848 done
+#26 extracting sha256:3bef4aa15af0aa2031f0901a794d55f004db889ec456e49415fb3aaca69f5715
+#26 extracting sha256:3bef4aa15af0aa2031f0901a794d55f004db889ec456e49415fb3aaca69f5715 1.1s done
+#26 DONE 15.6s
+#36 [production  6/18] RUN ls -la /var/www/html/vendor/ && ls -la /var/www/html/vendor/autoload.php
+#36 0.049 total 124
+#36 0.049 drwxr-xr-x 30 deploy www-data 4096 Jun 26 16:15 .
+#36 0.049 drwxr-xr-x  1 root   root     4096 Jun 26 16:15 ..
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 asm89
+#36 0.049 -rw-r--r--  1 deploy www-data  771 Jun 26 16:15 autoload.php
+#36 0.049 drwxr-xr-x  2 deploy www-data 4096 Jun 26 16:15 bin
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 chi-teck
+#36 0.049 drwxr-xr-x  4 deploy www-data 4096 Jun 26 16:15 composer
+#36 0.049 drwxr-xr-x 10 deploy www-data 4096 Jun 26 16:15 consolidation
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 dflydev
+#36 0.049 drwxr-xr-x  8 deploy www-data 4096 Jun 26 16:15 doctrine
+#36 0.049 drwxr-xr-x  5 deploy www-data 4096 Jun 26 16:15 drupal
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 drush
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 egulias
+#36 0.049 drwxr-xr-x  4 deploy www-data 4096 Jun 26 16:15 grasmash
+#36 0.049 drwxr-xr-x  5 deploy www-data 4096 Jun 26 16:15 guzzlehttp
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 laravel
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 league
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 masterminds
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 mck89
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 nikic
+#36 0.049 drwxr-xr-x  6 deploy www-data 4096 Jun 26 16:15 pear
+#36 0.049 drwxr-xr-x  4 deploy www-data 4096 Jun 26 16:15 phootwork
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 php-tuf
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 phpowermove
+#36 0.049 drwxr-xr-x  9 deploy www-data 4096 Jun 26 16:15 psr
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 psy
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 ralouphie
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 revolt
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 sebastian
+#36 0.049 drwxr-xr-x 34 deploy www-data 4096 Jun 26 16:15 symfony
+#36 0.049 drwxr-xr-x  3 deploy www-data 4096 Jun 26 16:15 twig
+#36 0.050 -rw-r--r-- 1 deploy www-data 771 Jun 26 16:15 /var/www/html/vendor/autoload.php
+#36 DONE 1.5s
+#37 [production  7/18] COPY --from=composer_build --chown=deploy:www-data /app/web ./web
+#37 DONE 3.8s
+#38 [production  8/18] COPY --from=composer_build --chown=deploy:www-data /app/composer.json ./composer.json
+#38 DONE 0.3s
+#39 [production  9/18] COPY --from=composer_build --chown=deploy:www-data /app/composer.lock ./composer.lock
+#39 DONE 0.0s
+#40 [production 10/18] COPY --from=frontend_build --chown=deploy:www-data /app/web/themes/custom/arsapps_theme/dist ./web/themes/custom/arsapps_theme/dist
+#40 DONE 0.0s
+#41 [production 11/18] COPY --chown=deploy:www-data config/ ./config/
+#41 DONE 0.0s
+#42 [production 12/18] RUN find . -type f -exec chmod 640 {} ;
+#42 DONE 79.9s
+#43 [production 13/18] RUN find . -type d -exec chmod 750 {} ;
+#43 DONE 21.0s
+#44 [production 14/18] RUN mkdir -p web/sites/default/files &&     chmod 770 web/sites/default/files &&     chown deploy:www-data web/sites/default/files
+#44 DONE 0.3s
+#45 [production 15/18] RUN if [ -f web/sites/default/settings.php ]; then         chmod 640 web/sites/default/settings.php;     fi
+#45 DONE 0.1s
+#46 [production 16/18] RUN chown -R deploy:www-data /var/www/html
+#46 DONE 0.1s
+#47 [production 17/18] COPY --chown=deploy:www-data docker/healthcheck.sh /usr/local/bin/healthcheck.sh
+#47 DONE 0.0s
+#48 [production 18/18] RUN chmod +x /usr/local/bin/healthcheck.sh
+#48 DONE 0.1s
+#49 [linux/amd64] generating sbom using docker.io/docker/buildkit-syft-scanner:stable-1
+#49 0.064 time="2025-06-26T16:55:10Z" level=info msg="starting syft scanner for buildkit v1.6.0"
+#49 DONE 11.9s
+#50 exporting to image
+#50 exporting layers
+#50 exporting layers 10.7s done
+#50 exporting manifest sha256:f573c3647b2362a4f7d71679afe0c3e0ca8ede3991df2402318c09e9c843eae1 done
+#50 exporting config sha256:4d900495e71e4c5d44265706f8e92f856f23b0d7edba14b9f6c9d01f9052ab20 done
+#50 exporting attestation manifest sha256:87fa60bbbc85b47101c8c99a0e1a46aa96153ac2a0f7c90138656f3a6c328efb
+#50 ...
+#51 [auth] csnizik/arsapps:pull,push token for ghcr.io
+#51 DONE 0.0s
+#50 exporting to image
+#50 exporting attestation manifest sha256:87fa60bbbc85b47101c8c99a0e1a46aa96153ac2a0f7c90138656f3a6c328efb done
+#50 exporting manifest list sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c done
+#50 pushing layers
+#50 pushing layers 3.1s done
+#50 pushing manifest for ghcr.io/csnizik/arsapps:develop@sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c
+#50 pushing manifest for ghcr.io/csnizik/arsapps:develop@sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c 1.7s done
+#50 pushing layers 1.1s done
+#50 pushing manifest for ghcr.io/csnizik/arsapps:latest@sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c
+#50 pushing manifest for ghcr.io/csnizik/arsapps:latest@sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c 0.6s done
+#50 pushing layers 1.0s done
+#50 pushing manifest for ghcr.io/csnizik/arsapps:develop-4aac7bc@sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c
+#50 pushing manifest for ghcr.io/csnizik/arsapps:develop-4aac7bc@sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c 0.6s done
+#50 DONE 23.5s
+#52 exporting to GitHub Actions Cache
+#52 preparing build cache for export
+#52 writing layer sha256:0fbc09d4843a7c790978ec1a324af3677ab3c09d39fe3c03444d7b64b1571df9
+#52 writing layer sha256:0fbc09d4843a7c790978ec1a324af3677ab3c09d39fe3c03444d7b64b1571df9 0.1s done
+#52 writing layer sha256:434ebbe6cfa6e5eeec3f41d1f8898aa958c7a3bdada51633e7f5f8e7d20cd954
+#52 writing layer sha256:434ebbe6cfa6e5eeec3f41d1f8898aa958c7a3bdada51633e7f5f8e7d20cd954 0.1s done
+#52 writing layer sha256:46e1955142657f11d729246179370ff6320cfc57b66413407aa4013f2203cf52
+#52 writing layer sha256:46e1955142657f11d729246179370ff6320cfc57b66413407aa4013f2203cf52 1.2s done
+#52 writing layer sha256:62a61b86f7dfa60b348fe5995af228eaf618c0cd11a817cbe84b5d99ee013358
+#52 writing layer sha256:62a61b86f7dfa60b348fe5995af228eaf618c0cd11a817cbe84b5d99ee013358 1.4s done
+#52 writing layer sha256:859a208b6d57aef6a182d9ec66f835643ec943b08621dc40572eca1bfe8c2aff
+#52 writing layer sha256:859a208b6d57aef6a182d9ec66f835643ec943b08621dc40572eca1bfe8c2aff 0.1s done
+#52 writing layer sha256:9fb48c2431f8b414ca74c7e4250366abc416d5353597a5151ea54035cc51816d
+#52 writing layer sha256:9fb48c2431f8b414ca74c7e4250366abc416d5353597a5151ea54035cc51816d 0.1s done
+#52 writing layer sha256:a1a794906d8521f927775fd5cead293465c966fc4c8314d279c957d065017417
+#52 writing layer sha256:a1a794906d8521f927775fd5cead293465c966fc4c8314d279c957d065017417 0.1s done
+#52 writing layer sha256:aa3efc763b320a5f0c826cca17c10a1812dcafbec4198223079760a10d92e7a1 0.1s done
+#52 writing layer sha256:c8a3cc9e0666208378b1dcd7e759b8a26a89e14a61557841edece04e75023ac2
+#52 writing layer sha256:c8a3cc9e0666208378b1dcd7e759b8a26a89e14a61557841edece04e75023ac2 0.1s done
+#52 writing layer sha256:d04f0557d3c433d185d2272b7b009d2f2ddcd6823009fbce8fe4372fca414eed 0.1s done
+#52 writing layer sha256:d96461e840961d1bdaaa3330c91847e561ec185d416ab3ce2e5286d8f33518d2 0.1s done
+#52 writing layer sha256:ea593977f0b8195b479b4d657e1f05c5f83ad08f958c658b89f9ea660767932d 0.1s done
+#52 writing layer sha256:ff15eb4cd4a44abb9e18635ce6bfb3c95af4ef9c19fdacec9ce05aba841bfc5a
+#52 writing layer sha256:ff15eb4cd4a44abb9e18635ce6bfb3c95af4ef9c19fdacec9ce05aba841bfc5a 0.2s done
+#52 preparing build cache for export 6.0s done
+#52 DONE 6.0s
+#53 resolving provenance for metadata file
+#53 DONE 0.0s
+ImageID
+  sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c
+Digest
+  sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c
+Metadata
+  {
+    "buildx.build.provenance": {
+      "builder": {
+        "id": "https://github.com/csnizik/arsapps/actions/runs/15907790030/attempts/1"
+      },
+      "buildType": "https://mobyproject.org/buildkit@v1",
+      "materials": [
+        {
+          "uri": "pkg:docker/docker/buildkit-syft-scanner@stable-1",
+          "digest": {
+            "sha256": "434b49272c090c4788e38c8d8d6008c3741c4a8d4638e62dff5cdc6409d7927a"
+          }
+        },
+        {
+          "uri": "pkg:docker/composer@2.7?platform=linux%2Famd64",
+          "digest": {
+            "sha256": "cb3483dc851665462a66c59982577dfbbde0ae2059e8b5550c2f49f44b8c333e"
+          }
+        },
+        {
+          "uri": "pkg:docker/drupal@11.1.5-php8.3-fpm-bookworm?platform=linux%2Famd64",
+          "digest": {
+            "sha256": "b8076639583660d97bb1c538f2dbd18f9257056ca00e3965a2612bd872d64d6c"
+          }
+        },
+        {
+          "uri": "pkg:docker/node@22-alpine?platform=linux%2Famd64",
+          "digest": {
+            "sha256": "5340cbfc2df14331ab021555fdd9f83f072ce811488e705b0e736b11adeec4bb"
+          }
+        }
+      ],
+      "invocation": {
+        "configSource": {},
+        "parameters": {
+          "frontend": "dockerfile.v0",
+          "args": {
+            "label:org.opencontainers.image.created": "2025-06-26T16:52:39.246Z",
+            "label:org.opencontainers.image.description": "",
+            "label:org.opencontainers.image.licenses": "",
+            "label:org.opencontainers.image.revision": "4aac7bca80b4e1ece65e613843b6d88c60a4ea56",
+            "label:org.opencontainers.image.source": "https://github.com/csnizik/arsapps",
+            "label:org.opencontainers.image.title": "arsapps",
+            "label:org.opencontainers.image.url": "https://github.com/csnizik/arsapps",
+            "label:org.opencontainers.image.version": "develop"
+          },
+          "locals": [
+            {
+              "name": "context"
+            },
+            {
+              "name": "dockerfile"
+            }
+          ]
+        },
+        "environment": {
+          "platform": "linux/amd64"
+        }
+      }
+    },
+    "buildx.build.ref": "builder-c27d5310-4f43-4087-b35b-19339511f55f/builder-c27d5310-4f43-4087-b35b-19339511f55f0/ufx4o7unpv2kzrrnztgpu7rn7",
+    "containerimage.descriptor": {
+      "mediaType": "application/vnd.oci.image.index.v1+json",
+      "digest": "sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c",
+      "size": 856
+    },
+    "containerimage.digest": "sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c",
+    "image.name": "ghcr.io/csnizik/arsapps:develop,ghcr.io/csnizik/arsapps:latest,ghcr.io/csnizik/arsapps:develop-4aac7bc"
+  }
+Reference
+  builder-c27d5310-4f43-4087-b35b-19339511f55f/builder-c27d5310-4f43-4087-b35b-19339511f55f0/ufx4o7unpv2kzrrnztgpu7rn7
+Check build summary support
+  Build summary supported!
+
+1m 14s
+Run # Pull the built image for verification
+  # Pull the built image for verification
+  docker pull ghcr.io/csnizik/arsapps:develop
+
+  # Create verification script
+  cat > verify_image.sh << 'EOF'
+  #!/bin/bash
+  set -euo pipefail
+
+  echo "=== Image Immutability Verification ==="
+
+  # Start container in background for testing
+  CONTAINER_ID=$(docker run -d ghcr.io/csnizik/arsapps:develop)
+
+  # Wait for container to be ready
+  echo "Waiting for container to be ready..."
+  sleep 10
+
+  # Function to run commands in container
+  run_in_container() {
+    docker exec "$CONTAINER_ID" "$@"
+  }
+
+  # Function to check if path exists in container
+  check_path_exists() {
+    if run_in_container test -e "$1"; then
+      echo "✓ $1 exists"
+      return 0
+    else
+      echo "✗ $1 missing"
+      return 1
+    fi
+  }
+
+  # Function to check if path does NOT exist (for immutability)
+  check_path_absent() {
+    if run_in_container test -e "$1"; then
+      echo "✗ $1 should not exist in production image"
+      return 1
+    else
+      echo "✓ $1 correctly absent"
+      return 0
+    fi
+  }
+
+  ERRORS=0
+
+  echo "--- Checking required directories ---"
+  check_path_exists "/var/www/html/vendor" || ((ERRORS++))
+  check_path_exists "/var/www/html/vendor/autoload.php" || ((ERRORS++))
+  check_path_exists "/var/www/html/web/themes/custom/arsapps_theme/dist" || ((ERRORS++))
+  check_path_exists "/var/www/html/web" || ((ERRORS++))
+  check_path_exists "/var/www/html/web/index.php" || ((ERRORS++))
+  check_path_exists "/var/www/html/web/core" || ((ERRORS++))
+
+  echo "--- Checking compiled frontend assets ---"
+  # Check if dist directory has content
+  DIST_FILES=$(run_in_container find /var/www/html/web/themes/custom/arsapps_theme/dist -type f | wc -l)
+  if [ "$DIST_FILES" -gt 0 ]; then
+    echo "✓ Frontend assets compiled: $DIST_FILES files in dist/"
+  else
+    echo "✗ No compiled assets found in dist/"
+    ((ERRORS++))
+  fi
+
+  echo "--- Checking immutability (dev tools absent) ---"
+  check_path_absent "/var/www/html/node_modules" || ((ERRORS++))
+  check_path_absent "/var/www/html/web/themes/custom/arsapps_theme/node_modules" || ((ERRORS++))
+  check_path_absent "/var/www/html/web/themes/custom/arsapps_theme/package.json" || ((ERRORS++))
+  check_path_absent "/var/www/html/web/themes/custom/arsapps_theme/webpack.config.js" || ((ERRORS++))
+  check_path_absent "/var/www/html/web/themes/custom/arsapps_theme/scss" || ((ERRORS++))
+  check_path_absent "/var/www/html/web/themes/custom/arsapps_theme/js" || ((ERRORS++))
+
+  echo "--- Checking file permissions ---"
+  # Check key file permissions
+  INDEX_PERMS=$(run_in_container stat -c "%a" /var/www/html/web/index.php)
+  if [ "$INDEX_PERMS" = "640" ]; then
+    echo "✓ index.php has correct permissions (640)"
+  else
+    echo "✗ index.php has incorrect permissions ($INDEX_PERMS, expected 640)"
+    ((ERRORS++))
+  fi
+
+  # Check directory permissions
+  WEB_DIR_PERMS=$(run_in_container stat -c "%a" /var/www/html/web)
+  if [ "$WEB_DIR_PERMS" = "750" ]; then
+    echo "✓ web/ directory has correct permissions (750)"
+  else
+    echo "✗ web/ directory has incorrect permissions ($WEB_DIR_PERMS, expected 750)"
+    ((ERRORS++))
+  fi
+
+  echo "--- Checking user context ---"
+  CURRENT_USER=$(run_in_container id -u)
+  if [ "$CURRENT_USER" != "0" ]; then
+    echo "✓ Container runs as non-root user (UID: $CURRENT_USER)"
+  else
+    echo "✗ Container running as root user"
+    ((ERRORS++))
+  fi
+
+  USER_GROUPS=$(run_in_container id -Gn)
+  if echo "$USER_GROUPS" | grep -q "www-data"; then
+    echo "✓ User is member of www-data group"
+  else
+    echo "✗ User not in www-data group"
+    ((ERRORS++))
+  fi
+
+  echo "--- Running health check ---"
+  if run_in_container /usr/local/bin/healthcheck.sh; then
+    echo "✓ Health check passed"
+  else
+    echo "✗ Health check failed"
+    ((ERRORS++))
+  fi
+
+  # Cleanup
+  docker stop "$CONTAINER_ID" >/dev/null
+  docker rm "$CONTAINER_ID" >/dev/null
+
+  echo "=== Verification Summary ==="
+  if [ "$ERRORS" -eq 0 ]; then
+    echo "✓ All image verification checks passed"
+    exit 0
+  else
+    echo "✗ $ERRORS verification checks failed"
+    exit 1
+  fi
+  EOF
+
+  chmod +x verify_image.sh
+  ./verify_image.sh
+  shell: /usr/bin/bash -e {0}
+  env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: csnizik/arsapps
+    DOCKER_METADATA_OUTPUT_VERSION: develop
+    DOCKER_METADATA_OUTPUT_TAGS: ghcr.io/csnizik/arsapps:develop
+  ghcr.io/csnizik/arsapps:latest
+  ghcr.io/csnizik/arsapps:develop-4aac7bc
+    DOCKER_METADATA_OUTPUT_LABELS: org.opencontainers.image.created=2025-06-26T16:52:39.246Z
+  org.opencontainers.image.description=
+  org.opencontainers.image.licenses=
+  org.opencontainers.image.revision=4aac7bca80b4e1ece65e613843b6d88c60a4ea56
+  org.opencontainers.image.source=https://github.com/csnizik/arsapps
+  org.opencontainers.image.title=arsapps
+  org.opencontainers.image.url=https://github.com/csnizik/arsapps
+  org.opencontainers.image.version=develop
+    DOCKER_METADATA_OUTPUT_ANNOTATIONS: manifest:org.opencontainers.image.created=2025-06-26T16:52:39.246Z
+  manifest:org.opencontainers.image.description=
+  manifest:org.opencontainers.image.licenses=
+  manifest:org.opencontainers.image.revision=4aac7bca80b4e1ece65e613843b6d88c60a4ea56
+  manifest:org.opencontainers.image.source=https://github.com/csnizik/arsapps
+  manifest:org.opencontainers.image.title=arsapps
+  manifest:org.opencontainers.image.url=https://github.com/csnizik/arsapps
+  manifest:org.opencontainers.image.version=develop
+    DOCKER_METADATA_OUTPUT_JSON: {"tags":["ghcr.io/csnizik/arsapps:develop","ghcr.io/csnizik/arsapps:latest","ghcr.io/csnizik/arsapps:develop-4aac7bc"],"labels":{"org.opencontainers.image.created":"2025-06-26T16:52:39.246Z","org.opencontainers.image.description":"","org.opencontainers.image.licenses":"","org.opencontainers.image.revision":"4aac7bca80b4e1ece65e613843b6d88c60a4ea56","org.opencontainers.image.source":"https://github.com/csnizik/arsapps","org.opencontainers.image.title":"arsapps","org.opencontainers.image.url":"https://github.com/csnizik/arsapps","org.opencontainers.image.version":"develop"},"annotations":["manifest:org.opencontainers.image.created=2025-06-26T16:52:39.246Z","manifest:org.opencontainers.image.description=","manifest:org.opencontainers.image.licenses=","manifest:org.opencontainers.image.revision=4aac7bca80b4e1ece65e613843b6d88c60a4ea56","manifest:org.opencontainers.image.source=https://github.com/csnizik/arsapps","manifest:org.opencontainers.image.title=arsapps","manifest:org.opencon
+    DOCKER_METADATA_OUTPUT_BAKE_FILE_TAGS: /home/runner/work/_temp/docker-actions-toolkit-LTIrdN/docker-metadata-action-bake-tags.json
+    DOCKER_METADATA_OUTPUT_BAKE_FILE_LABELS: /home/runner/work/_temp/docker-actions-toolkit-LTIrdN/docker-metadata-action-bake-labels.json
+    DOCKER_METADATA_OUTPUT_BAKE_FILE_ANNOTATIONS: /home/runner/work/_temp/docker-actions-toolkit-LTIrdN/docker-metadata-action-bake-annotations.json
+    DOCKER_METADATA_OUTPUT_BAKE_FILE: /home/runner/work/_temp/docker-actions-toolkit-LTIrdN/docker-metadata-action-bake.json
+
+develop: Pulling from csnizik/arsapps
+6e909acdb790: Pulling fs layer
+6ba0c13e0a38: Pulling fs layer
+...
+c8a3cc9e0666: Pull complete
+859a208b6d57: Pull complete
+Digest: sha256:6ac259f596eb1e100a0552a78f01eb78319e6c9d5e5fb5f98ac26cae73fea66c
+Status: Downloaded newer image for ghcr.io/csnizik/arsapps:develop
+ghcr.io/csnizik/arsapps:develop
+=== Image Immutability Verification ===
+Waiting for container to be ready...
+--- Checking required directories ---
+✗ /var/www/html/vendor missing
+Error: Process completed with exit code 1.
