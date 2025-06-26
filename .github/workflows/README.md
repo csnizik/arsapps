@@ -4,7 +4,7 @@ This directory contains comprehensive GitHub Actions workflows for automated CI/
 
 ## TL;DR
 
-- A workflow can be triggered manually from the console (this assumes the gh CLI is installed): `gh workflow run image-security.yml --ref develop`. Progress on running workflows can be monitored in the Actions tab of the repo on Github.
+- A workflow can be triggered manually from the console (this assumes the gh CLI is installed): `gh workflow run image-security.yml --branch <BRANCH_NAME>`. Progress on running workflows can be monitored in the Actions tab of the repo on Github.
 
 ## Architecture Overview
 
