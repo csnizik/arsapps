@@ -1,213 +1,457 @@
 # GitHub Actions Workflows
 
-This directory contains GitHub Actions workflows for automated CI/CD of the Drupal 11 project.
+This directory contains comprehensive GitHub Actions workflows for automated CI/CD, security scanning, and testing of the Drupal 11 project. The system implements a multi-layered security approach with automated vulnerability scanning, image immutability verification, and comprehensive testing pipelines.
 
-## DRY Architecture (2025)
+## Architecture Overview
 
 The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable workflows and composite actions:
 
-- **`stage-deploy.yml`**: Main workflow handling both staging and production triggers
+### Core Workflows
+
+- **`stage-deploy.yml`**: Main deployment workflow with integrated security gates
 - **`reusable-build.yml`**: Shared build and deployment logic for all environments
-- **`code-quality.yml`**: Reusable workflow for PHPCS and ESLint code quality checks
-- **`.github/actions/setup-drupal-build/`**: Composite action for Drupal build environment setup
+- **`image-security.yml`**: Comprehensive container security verification and vulnerability scanning
+- **`code-quality.yml`**: Reusable workflow for PHPCS, PHPStan, and ESLint checks
+- **`testing.yml`**: Comprehensive testing pipeline (PHPUnit, accessibility, Playwright)
+
+### Composite Actions
+
+- **`.github/actions/setup-drupal-build/`**: Drupal build environment setup with caching
 
 ### Workflow Structure
 
 ```
 .github/
 ├── workflows/
-│   ├── stage-deploy.yml          # Main workflow (stage + production triggers)
+│   ├── stage-deploy.yml          # Main deployment workflow
 │   ├── reusable-build.yml        # Shared build logic
-│   └── code-quality.yml          # Code quality checks (PHPCS + ESLint)
+│   ├── image-security.yml        # Security verification & vulnerability scanning
+│   ├── code-quality.yml          # Code quality checks
+│   └── testing.yml               # Testing pipeline (PHPUnit, a11y, Playwright)
 └── actions/
     └── setup-drupal-build/
         └── action.yml            # Composite action for build setup
 ```
 
-## Stage and Production Deployment
+## Security-First Deployment Pipeline
 
-The `stage-deploy.yml` workflow runs automatically when:
+### Automated Security Gates
 
-- Code is pushed to the `stage` branch (staging deployment)
-- Git tags prefixed with `prod_*` are created (production deployment)
+All deployments go through mandatory security verification:
 
-### Workflow Features
+```yaml
+jobs:
+  code-quality:     # PHPCS, PHPStan, ESLint checks
+  image-security:   # Vulnerability scanning & immutability verification
+  stage-deploy:     # Only proceeds if security gates pass
+    needs: [code-quality, image-security]
+```
 
-- **Code Quality Gates**: PHPCS and ESLint checks block deployments on violations
-- **DRY Architecture**: Shared build logic eliminates duplication
-- **Environment-Specific Logic**: Conditional behavior for staging vs production
-- **Multi-stage Docker build** following DEVELOPER_NOTES.md guidelines
-- **Composite Actions**: Reusable build environment setup
-- **Enhanced Security**: Production-specific validation and auditing
-- **Frontend Asset Building**: Webpack-based SCSS and JavaScript compilation in custom themes
-- **Dependency Caching**: Optimized caching for Composer and Node.js
-- **Docker layer caching** using GitHub Actions cache
-- **Security scanning** with Trivy vulnerability scanner
-- **Azure Container Registry** push with environment-specific tags
+### Multi-Scanner Vulnerability Detection
+
+The security pipeline uses multiple industry-standard scanners:
+
+- **Trivy**: Comprehensive vulnerability database with SARIF output
+- **Grype**: Anchore's open-source vulnerability scanner
+- **Docker Bench for Security**: CIS Docker Benchmark compliance
+
+### Image Immutability Verification
+
+Automated verification ensures production images are secure and complete:
+
+✅ **Required Components Present:**
+- `vendor/` directory with complete Composer dependencies
+- `web/themes/custom/*/dist/` compiled frontend assets
+- Drupal core files and directory structure
+- Configuration directories and essential files
+
+✅ **Development Tools Absent:**
+- No `node_modules` directories in production
+- No source files (`.scss`, `.js`, `package.json`)
+- No development dependencies or build tools
+- No package managers (`npm`, `composer`) in runtime
+
+✅ **Security Model Enforced:**
+- File permissions follow 640/750/770 security model
+- Non-root user execution confirmed
+- Proper user group membership (deploy:www-data)
+- Secure file ownership throughout container
+
+## Docker Health Check System
+
+### Comprehensive Health Verification
+
+The production containers include a comprehensive health check (`docker/healthcheck.sh`) that verifies:
+
+- **PHP-FPM Process Health**: Master and worker process verification
+- **Socket Connectivity**: PHP-FPM responsiveness testing
+- **Drupal Bootstrap**: Core functionality and service availability
+- **File Structure Integrity**: Required directories and immutability
+- **Security Context**: User permissions and execution context
+- **Resource Monitoring**: Disk space and memory usage
+
+### Health Check Configuration
+
+```dockerfile
+HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
+    CMD /usr/local/bin/healthcheck.sh
+```
+
+## Workflow Triggers and Environments
+
+### Automatic Triggers
+
+**Stage Deployment:**
+- Push to `stage` branch
+- Manual workflow dispatch
+
+**Production Deployment:**
+- Git tags prefixed with `prod_*` (e.g., `prod_v1.2.3`)
+
+**Security Scanning:**
+- All pushes to `main`, `stage`, `develop`
+- All pull requests to `main`, `stage`
+- Weekly scheduled scans (Monday 6 AM UTC)
+- Manual workflow dispatch
+
+**Testing Pipeline:**
+- All pushes to `main`, `stage`, `develop`
+- All pull requests to `main`, `stage`
+
+### Environment-Specific Behavior
+
+**Staging Deployments:**
+- Standard security verification
+- All vulnerability scanners enabled
+- Artifact retention: 30 days
+
+**Production Deployments:**
+- Enhanced security auditing
+- Additional production-specific checks
+- Comprehensive compliance reporting
+- Extended artifact retention: 90 days
+
+## Container Registry and Tagging Strategy
+
+### Image Tags Generated
+
+**Stage Branch Builds:**
+```
+your-registry.azurecr.io/drupal-app:stage
+your-registry.azurecr.io/drupal-app:stage-<commit-sha>
+```
+
+**Production Tag Builds:**
+```
+your-registry.azurecr.io/drupal-app:production
+your-registry.azurecr.io/drupal-app:prod-<commit-sha>
+your-registry.azurecr.io/drupal-app:prod_v1.2.3
+```
+
+**Security Verification:**
+```
+ghcr.io/your-org/repo:main
+ghcr.io/your-org/repo:<branch-name>
+ghcr.io/your-org/repo:<commit-sha>
+```
+
+## Security Compliance and Reporting
+
+### Compliance Standards
+
+The security pipeline ensures compliance with:
+
+- **NIST Cybersecurity Framework**: Container security controls
+- **CIS Docker Benchmark**: Container image security standards
+- **OWASP Container Security**: Top 10 container security risks
+- **Government Security Standards**: Section 508 and accessibility compliance
+
+### Automated Security Reports
+
+**Generated Reports:**
+- Vulnerability scan results (SARIF format)
+- Image immutability verification reports
+- Security baseline compliance reports
+- Comprehensive security compliance documentation
+
+**GitHub Integration:**
+- Security tab integration with SARIF uploads
+- Pull request security comments
+- Security alert notifications
+- Artifact storage for audit trails
+
+## Testing Infrastructure
+
+### Comprehensive Testing Pipeline
+
+**PHPUnit Tests:**
+- Unit, kernel, and functional tests
+- DDEV database integration
+- Coverage reporting
+
+**Accessibility Testing:**
+- Section 508 compliance verification
+- WCAG 2.1 AA standard validation
+- Layout Builder accessibility testing
+- axe-core and pa11y integration
+
+**End-to-End Testing:**
+- Playwright cross-browser testing
+- Visual regression testing
+- Performance monitoring (Core Web Vitals)
+- Mobile responsiveness validation
+
+### Test Artifact Management
+
+**Artifact Categories:**
+- Test coverage reports (30-day retention)
+- Screenshot comparisons (30-day retention)
+- Accessibility scan results (30-day retention)
+- Playwright videos and screenshots (30-day retention)
+- Performance metrics and reports (30-day retention)
+
+## Configuration and Setup
 
 ### Required Secrets
 
 Configure these secrets in your GitHub repository settings:
 
+**For Azure Container Registry:**
 - `ACR_USERNAME`: Azure Container Registry username
 - `ACR_PASSWORD`: Azure Container Registry password
 
+**For GitHub Container Registry (alternative):**
+- `GITHUB_TOKEN`: Automatically provided by GitHub Actions
+
 ### Environment Variables
 
-Update these variables in the workflow file:
-
-- `REGISTRY`: Your Azure Container Registry URL (e.g., `myregistry.azurecr.io`)
-- `IMAGE_NAME`: Your container image name (e.g., `drupal-app`)
-
-### Tags Generated
-
-The workflow generates environment-specific Docker image tags:
-
-**Stage Branch Builds:**
-
-- `stage`: Always applied for stage branch builds
-- `stage-<commit-sha>`: Unique tag with branch and commit SHA
-
-**Production Tag Builds:**
-
-- `production`: Always applied for production tag builds
-- `prod-<commit-sha>`: Unique tag with commit SHA
-- Original tag name (e.g., `prod_v1.2.3`)
-
-**All Builds:**
-
-- `latest`: Applied when building the default branch
-
-### Security Features
-
-- **Vulnerability scanning** with Trivy
-- **SARIF upload** to GitHub Security tab
-- **Secure file permissions** in Docker image (640/750 as per DEVELOPER_NOTES.md)
-- **Non-root user** execution in container
-- **Multi-stage build** to minimize attack surface
-
-### Dependencies Aligned with DEVELOPER_NOTES.md
-
-- Uses recommended PHP 8.3 and Drupal 11.1.5 base image
-- Implements secure file ownership (deploy:www-data)
-- Follows multi-stage build pattern for optimal caching
-- Uses latest GitHub Actions versions (cache@v4, build-push-action@v6)
-- Includes Composer security audit step
-
-## Reusable Components
-
-### Composite Action: setup-drupal-build
-
-Reusable action that handles common Drupal build environment setup:
+Update these variables in workflow files:
 
 ```yaml
-- name: Setup Drupal build environment
-  uses: ./.github/actions/setup-drupal-build
-  with:
-    php-version: '8.3'
-    node-version: '20'
-    composer-options: '--prefer-dist --no-progress --no-dev'
-    enable-security-audit: 'true'
+env:
+  REGISTRY: your-acr-registry.azurecr.io  # Your container registry
+  IMAGE_NAME: drupal-app                  # Your image name
 ```
 
-**Features:**
+### Local Development Setup
 
-- PHP environment setup with extensions
-- Composer dependency caching and installation
-- Node.js environment setup with npm caching
-- Security audit execution
-- Frontend asset compilation (webpack builds for theme SCSS/JS)
-
-### Reusable Workflow: reusable-build.yml
-
-Centralized build and deployment logic that can be called from multiple workflows:
-
-**Usage:**
-
-```yaml
-jobs:
-  deploy:
-    uses: ./.github/workflows/reusable-build.yml
-    with:
-      environment: 'staging'
-      registry: 'your-registry.azurecr.io'
-      image_name: 'drupal-app'
-      enable_security_scan: true
-    secrets:
-      acr_username: ${{ secrets.ACR_USERNAME }}
-      acr_password: ${{ secrets.ACR_PASSWORD }}
-```
-
-**Benefits:**
-
-- Single source of truth for build logic
-- Environment-specific parameter injection
-- Consistent behavior across staging and production
-- Easier maintenance and updates
-
-## Code Quality Workflow
-
-### Automatic Code Quality Checks
-
-The `code-quality.yml` workflow runs automatically before any deployment and includes:
-
-- **PHPCS (PHP CodeSniffer)**: Enforces Drupal coding standards on custom modules and themes
-- **PHPStan**: Static analysis for PHP code quality and type safety
-- **ESLint**: JavaScript linting for custom theme assets
-
-### Configuration Files
-
-The project includes centralized configuration files:
-
-- **`phpcs.xml`**: PHPCS configuration with Drupal standards
-- **`phpstan.neon`**: PHPStan configuration with Drupal-specific rules
-
-### Code Quality Features
-
-- **Fail-Fast**: Deployments are blocked if code quality checks fail
-- **Automatic Detection**: Finds all custom modules and themes automatically
-- **Configurable Standards**: Can be customized per project needs
-- **Performance Optimized**: Uses caching for faster subsequent runs
-
-### Running Code Quality Checks Locally
-
+**Prerequisites:**
 ```bash
 # Install development dependencies
 composer require --dev drupal/core-dev
 
-# Run PHPCS
-vendor/bin/phpcs
+# Install Node.js dependencies for testing
+npm ci
 
-# Run PHPStan
+# Install Playwright browsers
+npx playwright install
+```
+
+## Usage Examples
+
+### Basic Deployment
+
+**Stage Deployment:**
+```bash
+git checkout develop
+git commit -m "Your changes"
+git push origin stage
+# Triggers: code-quality → image-security → stage-deploy
+```
+
+**Production Deployment:**
+```bash
+git tag prod_v1.2.3
+git push origin prod_v1.2.3
+# Triggers: code-quality → image-security → production-deploy
+```
+
+### Running Individual Workflows
+
+**Manual Security Scan:**
+```bash
+# Via GitHub UI: Actions → Image Security and Verification → Run workflow
+# Or via GitHub CLI:
+gh workflow run image-security.yml
+```
+
+**Manual Testing:**
+```bash
+# Via GitHub UI: Actions → Testing Pipeline → Run workflow
+gh workflow run testing.yml
+```
+
+### Local Testing and Verification
+
+**Code Quality Checks:**
+```bash
+# PHP standards
+vendor/bin/phpcs
 vendor/bin/phpstan analyse
 
-# Run ESLint (in theme directory)
+# JavaScript linting
 cd web/themes/custom/arsapps_theme
 npm run lint
 ```
 
-### Local Testing
-
-To test the Docker build locally:
-
+**Docker Build and Security Test:**
 ```bash
-# Build the image
+# Build production image
 docker build -f docker/Dockerfile -t drupal-app:local .
 
-# Run the container
-docker run -p 9000:9000 drupal-app:local
+# Test health check
+docker run --rm drupal-app:local /usr/local/bin/healthcheck.sh
+
+# Run security verification
+docker run --rm -v $(pwd):/workspace aquasec/trivy image drupal-app:local
 ```
 
-### Troubleshooting
+**Accessibility and E2E Testing:**
+```bash
+# Accessibility testing
+npm run test:axe
+npm run test:pa11y
 
-1. **Code Quality Failures**: 
-   - Check PHPCS errors: `vendor/bin/phpcs --report=full`
-   - Fix PHPStan issues: `vendor/bin/phpstan analyse --level=0` (start with level 0)
-   - ESLint errors: Check theme's `npm run lint` output
-2. **ACR Authentication Errors**: Verify ACR_USERNAME and ACR_PASSWORD secrets
-3. **Build Cache Issues**: Clear GitHub Actions cache if builds become inconsistent
-4. **Composer Errors**: Ensure composer.lock is committed and up to date
-5. **Node.js Build Errors**: Verify package.json and package-lock.json are present
-6. **Dev Dependencies Missing**: Run `composer require --dev drupal/core-dev` locally
+# Playwright testing
+npm run test:e2e
+npm run test:e2e:headed  # With visible browser
+```
 
-For more details, see the project's DEVELOPER_NOTES.md file.
+## Monitoring and Troubleshooting
+
+### Common Issues and Solutions
+
+**1. Security Scan Failures:**
+```bash
+# View security issues in GitHub Security tab
+# Update base images: Update Dockerfile FROM statements
+# Check for vulnerable dependencies: composer audit
+```
+
+**2. Image Immutability Failures:**
+```bash
+# Verify frontend build: cd web/themes/custom/arsapps_theme && npm run build
+# Check .gitignore: Ensure dist/ is not ignored
+# Verify Dockerfile: Check COPY statements for dist/ directories
+```
+
+**3. Health Check Failures:**
+```bash
+# Test locally: docker run --rm your-image /usr/local/bin/healthcheck.sh
+# Check logs: docker logs container-name
+# Verify PHP-FPM: docker exec container-name ps aux | grep php-fpm
+```
+
+**4. Code Quality Failures:**
+```bash
+# PHPCS issues: vendor/bin/phpcs --report=full
+# PHPStan issues: vendor/bin/phpstan analyse --level=0
+# ESLint issues: cd web/themes/custom/arsapps_theme && npm run lint
+```
+
+**5. Test Failures:**
+```bash
+# PHPUnit: vendor/bin/phpunit --testsuite=custom --verbose
+# Accessibility: Check reports in GitHub Actions artifacts
+# Playwright: npx playwright test --headed --debug
+```
+
+### Performance Optimization
+
+**Cache Management:**
+- GitHub Actions cache is automatically managed
+- Clear cache if builds become inconsistent: GitHub Settings → Actions → Caches
+- Use cache keys for reproducible builds
+
+**Build Optimization:**
+- Multi-stage Docker builds minimize image size
+- Layer caching optimizes build times
+- Parallel job execution reduces pipeline duration
+
+### Security Best Practices
+
+**Regular Maintenance:**
+- Weekly vulnerability scans run automatically
+- Update base images monthly or when vulnerabilities detected
+- Review security reports in GitHub Security tab
+- Monitor security compliance artifacts
+
+**Access Control:**
+- Use repository secrets for sensitive values
+- Implement branch protection rules
+- Require security scan passage for deployments
+- Enable signed commits for production tags
+
+## Integration with External Systems
+
+### Azure Container Registry Integration
+
+The workflows support seamless integration with Azure services:
+
+```yaml
+# Azure-specific configuration
+registry: your-acr-registry.azurecr.io
+secrets:
+  acr_username: ${{ secrets.ACR_USERNAME }}
+  acr_password: ${{ secrets.ACR_PASSWORD }}
+```
+
+### GitHub Security Integration
+
+Security results are automatically integrated with GitHub's security features:
+
+- **Security Tab**: Vulnerability findings appear in repository security tab
+- **Pull Request Comments**: Automated security summaries on PRs
+- **Security Alerts**: Notifications for critical vulnerabilities
+- **Dependency Insights**: Integration with GitHub's dependency graph
+
+### Monitoring and Alerting
+
+The pipeline integrates with monitoring systems:
+
+- **Azure Application Insights**: Container health and performance metrics
+- **GitHub Actions Insights**: Workflow performance and reliability metrics
+- **Security Monitoring**: Automated alerts for security violations
+
+## Advanced Configuration
+
+### Custom Security Policies
+
+To customize security scanning rules:
+
+```yaml
+# In image-security.yml
+- name: Run Trivy with custom policy
+  uses: aquasecurity/trivy-action@master
+  with:
+    severity: 'CRITICAL,HIGH'
+    ignore-unfixed: true
+    trivyignores: .trivyignore  # Custom ignore file
+```
+
+### Environment-Specific Testing
+
+Configure different test suites for different environments:
+
+```yaml
+# Environment-specific test configuration
+- name: Run production-specific tests
+  if: startsWith(github.ref, 'refs/tags/prod_')
+  run: npm run test:production
+```
+
+### Custom Health Checks
+
+Extend the health check script for application-specific validation:
+
+```bash
+# Add to docker/healthcheck.sh
+check_custom_functionality() {
+    # Your custom health checks here
+    log "Checking custom application functionality..."
+}
+```
+
+This comprehensive workflow system provides government-grade security, automated testing, and reliable deployment pipelines while maintaining developer productivity and system reliability.
+
+For detailed technical specifications, see the project's DEVELOPER_NOTES.md file.

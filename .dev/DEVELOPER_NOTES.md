@@ -847,40 +847,31 @@ jobs:
 - **Weekly Scheduled Scans**: Automated vulnerability detection for deployed images
 - **Pull Request Security Comments**: Automatic security summary in PR discussions
 
-**Vulnerability Management Process:**
+**Local Security Testing:**
 
 ```bash
 # Local vulnerability scanning
 docker run --rm -v $(pwd):/workspace aquasec/trivy image your-image:latest
 
-# Security compliance verification
-./verify_image_security.sh your-image:latest
+# Health check verification
+docker run --rm your-image:latest /usr/local/bin/healthcheck.sh
 ```
 
 **Security Compliance Standards:**
 
-The security pipeline ensures compliance with:
+The security pipeline ensures compliance with government and industry standards:
 
-- **NIST Cybersecurity Framework**: Container security controls
-- **CIS Docker Benchmark**: Container image security standards  
+- **NIST Cybersecurity Framework**: Container security controls implementation
+- **CIS Docker Benchmark**: Container image security standards compliance
 - **OWASP Container Security**: Top 10 container security risks mitigation
-- **Government Security Requirements**: Section 508 and government-grade security
+- **Section 508**: Government accessibility and security requirements
 
-**Security Artifact Categories:**
+**Security Monitoring and Maintenance:**
 
-- **Vulnerability Scan Results**: SARIF files with detailed findings
-- **Image Structure Verification**: Immutability and completeness reports
-- **Security Baseline Reports**: Docker security benchmark results
-- **Compliance Documentation**: Comprehensive security compliance reports
-
-**Best Practices for Container Security (2025):**
-
-- **Regular Base Image Updates**: Automated dependency updates and security patching
-- **Minimal Attack Surface**: Only essential components in production images
-- **Secrets Management**: External secret management integration (Azure Key Vault)
-- **Runtime Security**: Container runtime monitoring and anomaly detection
-- **Supply Chain Security**: SBOM (Software Bill of Materials) generation and verification
-- **Security Documentation**: Maintained security compliance documentation
+- **Automated Vulnerability Detection**: Weekly scheduled scans with immediate alerting
+- **Base Image Updates**: Monthly security patch cycles with automated testing
+- **Compliance Documentation**: Automated generation of audit-ready security reports
+- **SARIF Integration**: Security findings integrated with GitHub Security tab for visibility
 
 ---
 
@@ -1364,8 +1355,69 @@ Azure DevOps Pipelines with post-deployment script execution provides the most r
 
 ---
 
-## Prompt history index (optional)
+## Quick Reference Summary
 
-<!-- Optional: AI may add bullet summaries here to help orient future iterations -->
+### Essential Commands
+
+**Local Development:**
+```bash
+# Start DDEV environment
+ddev start && ddev drush status
+
+# Run code quality checks
+vendor/bin/phpcs && vendor/bin/phpstan analyse
+
+# Run tests
+vendor/bin/phpunit --testsuite=custom
+npm run test:e2e
+npm run test:accessibility
+```
+
+**Container Operations:**
+```bash
+# Build production image
+docker build -f docker/Dockerfile -t drupal-app:local .
+
+# Test health check
+docker run --rm drupal-app:local /usr/local/bin/healthcheck.sh
+
+# Security scan
+docker run --rm -v $(pwd):/workspace aquasec/trivy image drupal-app:local
+```
+
+**Deployment:**
+```bash
+# Stage deployment
+git push origin stage
+
+# Production deployment  
+git tag prod_v1.2.3 && git push origin prod_v1.2.3
+```
+
+### Key File Locations
+
+- **Docker**: `docker/Dockerfile`, `docker/healthcheck.sh`
+- **GitHub Actions**: `.github/workflows/` (stage-deploy.yml, image-security.yml, testing.yml)
+- **Configuration**: `phpcs.xml`, `phpstan.neon`, `phpunit.xml`, `playwright.config.js`
+- **Testing**: `tests/` (accessibility, playwright specs)
+- **Documentation**: `.github/workflows/README.md` (detailed workflow guide)
+
+### Security & Compliance
+
+- **File Permissions**: 640/750/770 security model
+- **User Context**: Non-root execution (deploy:www-data)
+- **Vulnerability Scanning**: Trivy + Grype with SARIF output
+- **Health Monitoring**: Comprehensive container health checks
+- **Compliance**: NIST, CIS, OWASP, Section 508 standards
+
+### Architecture Highlights
+
+- **Multi-stage Docker Builds**: Immutable production images
+- **DRY GitHub Actions**: Reusable workflows and composite actions
+- **Security-First Pipeline**: Mandatory security gates for all deployments
+- **Comprehensive Testing**: PHPUnit, accessibility (Section 508), E2E (Playwright)
+- **Government-Grade Security**: Container scanning, compliance reporting, audit trails
+
+This Drupal 11 project implements enterprise-grade security, testing, and deployment practices suitable for government and high-security environments while maintaining developer productivity.
 
 ---
