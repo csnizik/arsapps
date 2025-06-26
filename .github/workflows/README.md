@@ -249,22 +249,118 @@ npx playwright install
 
 ## Usage Examples
 
-### Basic Deployment
+### Git Workflow and Deployment Process
 
-**Stage Deployment:**
+This project follows a **Git Flow** branching model with security gates and pull request requirements:
+
+#### Development Workflow
+
+**1. Feature Development:**
 ```bash
+# Start from develop branch
 git checkout develop
-git commit -m "Your changes"
+git pull origin develop
+
+# Create feature branch
+git checkout -b feature/your-feature-name
+
+# Make changes and commit
+git add .
+git commit -m "feat: add new functionality"
+git push origin feature/your-feature-name
+```
+
+**2. Pull Request Process:**
+```bash
+# Create PR via GitHub UI: feature/your-feature-name → develop
+# This triggers: code-quality checks, testing pipeline, security scanning
+# Require: Code review approval, all checks pass
+# Merge: Squash and merge to develop
+```
+
+**3. Stage Deployment (Testing Environment):**
+```bash
+# After PR merge to develop, create stage release
+git checkout develop
+git pull origin develop
+
+# Merge develop to stage branch for deployment
+git checkout stage
+git merge develop
 git push origin stage
 # Triggers: code-quality → image-security → stage-deploy
 ```
 
-**Production Deployment:**
+**4. Production Deployment:**
 ```bash
-git tag prod_v1.2.3
+# After stage testing validation, create production release
+git checkout main
+git merge develop  # or merge via PR: develop → main
+
+# Create production tag
+git tag -a prod_v1.2.3 -m "Production release v1.2.3"
 git push origin prod_v1.2.3
-# Triggers: code-quality → image-security → production-deploy
+# Triggers: code-quality → image-security → production-deploy (enhanced security)
 ```
+
+#### Branch Protection and Requirements
+
+**Recommended Branch Protection Rules:**
+
+- **`main`**: Require PR reviews, require status checks, no direct pushes
+- **`develop`**: Require PR reviews, require status checks
+- **`stage`**: Fast-forward merges from develop only
+- **Feature branches**: Delete after merge
+
+**Required Status Checks:**
+- Code Quality (PHPCS, PHPStan, ESLint)
+- Security Scanning (vulnerability detection)
+- Testing Pipeline (PHPUnit, accessibility, Playwright)
+
+#### Hotfix Process
+
+**Critical Production Fixes:**
+```bash
+# Create hotfix from main
+git checkout main
+git checkout -b hotfix/critical-fix
+
+# Make fix and test locally
+git commit -m "fix: resolve critical security issue"
+git push origin hotfix/critical-fix
+
+# Create PR: hotfix/critical-fix → main
+# After approval and checks: merge and tag
+git tag -a prod_v1.2.4 -m "Hotfix release v1.2.4"
+git push origin prod_v1.2.4
+
+# Backport to develop
+git checkout develop
+git merge main
+git push origin develop
+```
+
+#### Branching Strategy Explained
+
+**Branch Purpose:**
+- **`main`**: Production-ready code, always deployable
+- **`develop`**: Integration branch for features, pre-production testing
+- **`stage`**: Deployment branch for staging environment testing
+- **`feature/*`**: Individual feature development branches
+- **`hotfix/*`**: Critical production fixes
+
+**Why This Workflow:**
+- **Security Gates**: Every code change goes through security scanning
+- **Quality Assurance**: All changes require code review and automated testing
+- **Deployment Safety**: Stage testing before production deployment
+- **Audit Trail**: Clear history of what was deployed when
+- **Rollback Capability**: Tagged releases enable quick rollbacks
+
+**Workflow Automation:**
+- **PR Creation**: Triggers code quality checks and security scanning
+- **Stage Deployment**: Automatic deployment to staging environment for testing
+- **Production Deployment**: Manual tagging triggers enhanced security verification
+- **Security Monitoring**: Weekly scans and vulnerability detection
 
 ### Running Individual Workflows
 
