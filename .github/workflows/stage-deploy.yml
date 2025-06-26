@@ -21,10 +21,15 @@ jobs:
       phpcs_standard: 'Drupal'
       custom_paths: 'web/modules/custom,web/themes/custom'
 
+  # Image security verification (runs for all deployments)
+  image-security:
+    uses: ./.github/workflows/image-security.yml
+    secrets: inherit
+
   # Stage deployment job
   stage-deploy:
     if: github.ref == 'refs/heads/stage'
-    needs: code-quality
+    needs: [code-quality, image-security]
     uses: ./.github/workflows/reusable-build.yml
     with:
       environment: 'staging'
@@ -39,7 +44,7 @@ jobs:
   # Production deployment job
   production-deploy:
     if: startsWith(github.ref, 'refs/tags/prod_')
-    needs: code-quality
+    needs: [code-quality, image-security]
     uses: ./.github/workflows/reusable-build.yml
     with:
       environment: 'production'
@@ -54,7 +59,7 @@ jobs:
   # Optional: Summary job to aggregate results
   deployment-summary:
     if: always() && (needs.stage-deploy.result != 'skipped' || needs.production-deploy.result != 'skipped')
-    needs: [code-quality, stage-deploy, production-deploy]
+    needs: [code-quality, image-security, stage-deploy, production-deploy]
     runs-on: ubuntu-latest
     steps:
     - name: Generate deployment summary
@@ -68,6 +73,17 @@ jobs:
           echo "✅ All coding standards checks passed" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ Code quality issues found - deployment blocked" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Image Security Results
+        echo "## Image Security" >> $GITHUB_STEP_SUMMARY
+        echo "**Status:** ${{ needs.image-security.result }}" >> $GITHUB_STEP_SUMMARY
+        if [ "${{ needs.image-security.result }}" == "success" ]; then
+          echo "✅ Image security verification and vulnerability scanning completed" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Security compliance report available in artifacts" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Image security issues found - deployment blocked" >> $GITHUB_STEP_SUMMARY
         fi
         echo "" >> $GITHUB_STEP_SUMMARY
         

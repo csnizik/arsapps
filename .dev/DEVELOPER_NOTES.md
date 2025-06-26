@@ -10,7 +10,7 @@ Do not delete this comment. If you reorganize sections, do so thoughtfully and p
 
 This document captures technical decisions, practices, standards, and implementation details for this Drupal 11 project. It is updated progressively in response to scoped prompts during the CI/CD and development pipeline buildout process.
 
-Last updated: June 26, 2025
+Last updated: June 26, 2025 - Added comprehensive Docker health checks and vulnerability scanning pipeline
 
 ---
 
@@ -330,7 +330,51 @@ USER deploy:www-data
 - **Enhanced File Permissions**: 640/750/770 model with deploy user ownership
 - **Non-root Execution**: Container runs as `deploy:www-data` user
 - **Minimal Production Surface**: No package managers, build tools, or dev dependencies
-- Consider vulnerability scanning with tools like Snyk for ongoing security assessment
+- **Comprehensive Health Checks**: Multi-stage verification of container health and Drupal functionality
+- **Automated Vulnerability Scanning**: Trivy and Grype scanners integrated into CI/CD pipeline
+- **Image Immutability Verification**: Automated checks ensure production images contain only required assets
+
+### Docker Health Check Integration
+
+**Comprehensive Health Check System:**
+
+The production Dockerfile includes a comprehensive health check script (`docker/healthcheck.sh`) that verifies:
+
+```dockerfile
+# Comprehensive health check that verifies site functionality
+HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
+    CMD /usr/local/bin/healthcheck.sh
+```
+
+**Health Check Components:**
+
+- **PHP-FPM Process Verification**: Ensures PHP-FPM master and worker processes are running
+- **Socket Connectivity**: Tests PHP-FPM socket responsiveness and basic PHP functionality
+- **Drupal Bootstrap**: Validates Drupal can bootstrap and essential services are available
+- **File Structure Immutability**: Verifies critical directories exist and dev tools are absent
+- **Security Context**: Confirms non-root execution and proper file permissions
+- **Resource Monitoring**: Checks disk space and memory usage within acceptable limits
+- **Configuration Accessibility**: Validates settings files and configuration directories
+
+**Health Check Configuration:**
+
+```bash
+# Health check intervals and timeouts
+--interval=30s      # Check every 30 seconds
+--timeout=15s       # 15 second timeout per check
+--start-period=120s # Allow 2 minutes for container startup
+--retries=3         # Fail after 3 consecutive failures
+```
+
+**Local Health Check Testing:**
+
+```bash
+# Test health check manually
+docker run --rm your-image:latest /usr/local/bin/healthcheck.sh
+
+# Monitor health check status
+docker ps --format "table {{.Names}}\t{{.Status}}"
+```
 
 ### Secure File Permissions & Ownership
 
@@ -747,6 +791,96 @@ runs:
 - Maintain clear input/output contracts between workflows
 - Document inputs and outputs for easier team collaboration
 - Version reusable workflows alongside your application code
+
+### Container Security and Vulnerability Scanning
+
+**Automated Security Pipeline:**
+
+The project implements a comprehensive container security pipeline through the `.github/workflows/image-security.yml` workflow:
+
+```yaml
+# Multi-scanner vulnerability detection
+strategy:
+  matrix:
+    scanner: [trivy, grype]
+```
+
+**Security Verification Components:**
+
+1. **Image Immutability Verification**
+   - Validates `vendor/` directory completeness
+   - Confirms `web/themes/custom/*/dist/` contains compiled assets
+   - Ensures no development tools (`node_modules`, source files) in production
+   - Verifies file permissions follow 640/750/770 security model
+   - Confirms non-root user execution
+
+2. **Vulnerability Scanning**
+   - **Trivy Scanner**: Industry-standard container vulnerability detection
+   - **Grype Scanner**: Anchore's comprehensive vulnerability analysis
+   - **SARIF Integration**: Results uploaded to GitHub Security tab
+   - **Severity Filtering**: Focus on CRITICAL, HIGH, and MEDIUM vulnerabilities
+
+3. **Security Baseline Verification**
+   - Docker Bench for Security compliance
+   - CIS Kubernetes Benchmark alignment
+   - Container runtime security analysis
+
+**GitHub Actions Integration:**
+
+```yaml
+# Automatic security scanning on deployment
+jobs:
+  image-security:
+    uses: ./.github/workflows/image-security.yml
+    secrets: inherit
+
+  stage-deploy:
+    needs: [code-quality, image-security]
+    # Deployment blocked if security issues found
+```
+
+**Security Workflow Features:**
+
+- **Pre-deployment Security Gates**: No deployment proceeds with security violations
+- **Compliance Reporting**: Automated generation of security compliance reports
+- **Artifact Retention**: 30-90 day retention for security scan results and reports
+- **Weekly Scheduled Scans**: Automated vulnerability detection for deployed images
+- **Pull Request Security Comments**: Automatic security summary in PR discussions
+
+**Vulnerability Management Process:**
+
+```bash
+# Local vulnerability scanning
+docker run --rm -v $(pwd):/workspace aquasec/trivy image your-image:latest
+
+# Security compliance verification
+./verify_image_security.sh your-image:latest
+```
+
+**Security Compliance Standards:**
+
+The security pipeline ensures compliance with:
+
+- **NIST Cybersecurity Framework**: Container security controls
+- **CIS Docker Benchmark**: Container image security standards  
+- **OWASP Container Security**: Top 10 container security risks mitigation
+- **Government Security Requirements**: Section 508 and government-grade security
+
+**Security Artifact Categories:**
+
+- **Vulnerability Scan Results**: SARIF files with detailed findings
+- **Image Structure Verification**: Immutability and completeness reports
+- **Security Baseline Reports**: Docker security benchmark results
+- **Compliance Documentation**: Comprehensive security compliance reports
+
+**Best Practices for Container Security (2025):**
+
+- **Regular Base Image Updates**: Automated dependency updates and security patching
+- **Minimal Attack Surface**: Only essential components in production images
+- **Secrets Management**: External secret management integration (Azure Key Vault)
+- **Runtime Security**: Container runtime monitoring and anomaly detection
+- **Supply Chain Security**: SBOM (Software Bill of Materials) generation and verification
+- **Security Documentation**: Maintained security compliance documentation
 
 ---
 

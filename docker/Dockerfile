@@ -39,9 +39,10 @@ RUN npm run build
 FROM drupal:11.1.5-php8.3-fpm-bookworm AS production
 WORKDIR /var/www/html
 
-# Install additional PHP extensions needed for Drupal before user creation
+# Install additional PHP extensions and tools needed for Drupal and healthcheck
 RUN apt-get update && apt-get install -y \
     libzip-dev \
+    curl \
     && docker-php-ext-install zip \
     && rm -rf /var/lib/apt/lists/*
 
@@ -87,6 +88,10 @@ USER deploy:www-data
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD php-fpm-healthcheck || exit 1
+# Copy custom healthcheck script
+COPY --chown=deploy:www-data docker/healthcheck.sh /usr/local/bin/healthcheck.sh
+RUN chmod +x /usr/local/bin/healthcheck.sh
+
+# Comprehensive health check that verifies site functionality
+HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
+    CMD /usr/local/bin/healthcheck.sh
