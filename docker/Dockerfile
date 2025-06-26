@@ -5,6 +5,14 @@
 FROM composer:2.7 AS composer_build
 WORKDIR /app
 
+# Install required PHP extensions for Drupal
+RUN apk add --no-cache \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd
+
 # Copy Composer files first for better layer caching
 COPY composer.json composer.lock ./
 
