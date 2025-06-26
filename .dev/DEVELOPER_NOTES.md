@@ -10,7 +10,7 @@ Do not delete this comment. If you reorganize sections, do so thoughtfully and p
 
 This document captures technical decisions, practices, standards, and implementation details for this Drupal 11 project. It is updated progressively in response to scoped prompts during the CI/CD and development pipeline buildout process.
 
-Last updated: June 26, 2025 - Updated Docker configuration and deployment pipeline
+Last updated: June 26, 2025 - Updated branching strategy and deployment pipeline to use main/develop workflow
 
 ---
 
@@ -92,6 +92,39 @@ These dependencies provide a secure, testable, and fully-featured foundation for
 ## Project structure and conventions
 
 <!-- AI appends here when prompted about project layout -->
+
+---
+
+## Branching Strategy
+
+This project follows a **main/develop** branching strategy for reliable deployments:
+
+### Branch Overview
+
+- **`main`** - Represents the tagged release that is on production
+- **`develop`** - Integration branch for new features and ongoing development
+- **`feature/*`** - Feature branches created from and merged back into `develop`
+
+### Workflow Process
+
+1. **Release Preparation**: When `main` is tagged for a release, the `develop` branch becomes an exact duplicate of `main`
+2. **Feature Development**: As work is done, feature branches are created from the `develop` branch
+3. **Feature Integration**: Feature branches are merged back into `develop` via pull requests
+4. **Release Process**: When a release is ready, `develop` is merged into `main` which triggers production deployment
+
+### Branch Protection Rules
+
+- **`main`**: Protected branch requiring pull request reviews and passing CI/CD checks
+- **`develop`**: Integration branch for feature testing and validation
+- **`feature/*`**: Short-lived branches for specific features or bug fixes
+
+### CI/CD Integration
+
+- **`main`** pushes trigger production deployment via `deploy.yml` workflow
+- **`develop`** pushes trigger development environment builds and testing
+- Pull requests to `main` or `develop` run full test suites including accessibility validation
+
+This strategy ensures stable production releases while allowing continuous development and testing of new features.
 
 ---
 
@@ -668,31 +701,19 @@ For complex scenarios requiring custom cache keys:
 
 To eliminate duplication between staging and production workflows, use GitHub's reusable workflow feature with environment-specific parameters:
 
-**Main Workflow (stage-deploy.yml):**
+**Main Workflow (deploy.yml):**
 
 ```yaml
-name: Stage and Production Deployment
+name: Deploy to Production
 
 on:
   push:
-    branches: [ stage ]
-    tags: [ 'prod_*' ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  stage-deploy:
-    if: github.ref == 'refs/heads/stage'
-    uses: ./.github/workflows/reusable-build.yml
-    with:
-      environment: 'staging'
-      registry: 'your-acr-registry.azurecr.io'
-      image_name: 'drupal-app'
-    secrets:
-      acr_username: ${{ secrets.ACR_USERNAME }}
-      acr_password: ${{ secrets.ACR_PASSWORD }}
-
   production-deploy:
-    if: startsWith(github.ref, 'refs/tags/prod_')
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/reusable-build.yml
     with:
       environment: 'production'
@@ -969,8 +990,8 @@ jobs:
 **Running Tests in GitHub Actions:**
 
 Tests run automatically on:
-- Push to `main`, `stage`, `develop` branches
-- Pull requests to `main`, `stage`
+- Push to `main`, `develop` branches
+- Pull requests to `main`, `develop`
 - Manual workflow dispatch
 
 **Test Artifact Access:**
@@ -1235,17 +1256,20 @@ docker run --rm drupal-app:local /usr/local/bin/healthcheck.sh
 
 **Deployment:**
 ```bash
-# Stage deployment
-git push origin stage
+# Development workflow
+git checkout develop
+git push origin develop
 
-# Production deployment  
-git tag prod_v1.2.3 && git push origin prod_v1.2.3
+# Production deployment
+git checkout main
+git merge develop
+git push origin main
 ```
 
 ### Key File Locations
 
 - **Docker**: `docker/Dockerfile`, `docker/healthcheck.sh`
-- **GitHub Actions**: `.github/workflows/` (stage-deploy.yml, testing.yml)
+- **GitHub Actions**: `.github/workflows/` (deploy.yml, testing.yml)
 - **Configuration**: `phpcs.xml`, `phpstan.neon`, `phpunit.xml`
 - **Testing**: `tests/` (accessibility)
 - **Documentation**: `.github/workflows/README.md` (detailed workflow guide)

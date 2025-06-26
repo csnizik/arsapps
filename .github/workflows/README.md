@@ -12,7 +12,7 @@ The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable wo
 
 ### Core Workflows
 
-- **`stage-deploy.yml`**: Main deployment workflow
+- **`deploy.yml`**: Main deployment workflow
 - **`reusable-build.yml`**: Shared build and deployment logic for all environments
 - **`code-quality.yml`**: Reusable workflow for PHPCS, PHPStan, and ESLint checks
 - **`testing.yml`**: Comprehensive testing pipeline (PHPUnit, accessibility)
@@ -26,7 +26,7 @@ The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable wo
 ```
 .github/
 ├── workflows/
-│   ├── stage-deploy.yml          # Main deployment workflow
+│   ├── deploy.yml               # Main deployment workflow
 │   ├── reusable-build.yml        # Shared build logic
 │   ├── code-quality.yml          # Code quality checks
 │   └── testing.yml               # Testing pipeline (PHPUnit, a11y)
@@ -44,7 +44,7 @@ All deployments go through mandatory quality verification:
 ```yaml
 jobs:
   code-quality:     # PHPCS, PHPStan, ESLint checks
-  stage-deploy:     # Only proceeds if quality gates pass
+  deploy:           # Only proceeds if quality gates pass
     needs: [code-quality]
 ```
 
@@ -72,20 +72,21 @@ HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
 
 ### Automatic Triggers
 
-**Stage Deployment:**
-- Push to `stage` branch
+**Development Deployment:**
+- Push to `develop` branch
 - Manual workflow dispatch
 
 **Production Deployment:**
+- Push to `main` branch
 - Git tags prefixed with `prod_*` (e.g., `prod_v1.2.3`)
 
 **Testing Pipeline:**
-- All pushes to `main`, `stage`, `develop`
-- All pull requests to `main`, `stage`
+- All pushes to `main`, `develop`
+- All pull requests to `main`, `develop`
 
 ### Environment-Specific Behavior
 
-**Staging Deployments:**
+**Development Deployments:**
 - Standard quality verification
 - Artifact retention: 30 days
 
@@ -98,16 +99,16 @@ HEALTHCHECK --interval=30s --timeout=15s --start-period=120s --retries=3 \
 
 ### Image Tags Generated
 
-**Stage Branch Builds:**
+**Develop Branch Builds:**
 ```
-your-registry.azurecr.io/drupal-app:stage
-your-registry.azurecr.io/drupal-app:stage-<commit-sha>
+your-registry.azurecr.io/drupal-app:develop
+your-registry.azurecr.io/drupal-app:develop-<commit-sha>
 ```
 
-**Production Tag Builds:**
+**Main Branch/Production Builds:**
 ```
-your-registry.azurecr.io/drupal-app:production
-your-registry.azurecr.io/drupal-app:prod-<commit-sha>
+your-registry.azurecr.io/drupal-app:main
+your-registry.azurecr.io/drupal-app:main-<commit-sha>
 your-registry.azurecr.io/drupal-app:prod_v1.2.3
 ```
 
@@ -197,7 +198,7 @@ npm ci
 
 ### Git Workflow and Deployment Process
 
-This project follows a **Git Flow** branching model with security gates and pull request requirements:
+This project follows a **main/develop** branching model with security gates and pull request requirements:
 
 #### Development Workflow
 
@@ -224,29 +225,26 @@ git push origin feature/your-feature-name
 # Merge: Squash and merge to develop
 ```
 
-**3. Stage Deployment (Testing Environment):**
+**3. Development Deployment (Testing Environment):**
 ```bash
-# After PR merge to develop, create stage release
+# After PR merge to develop, deployment is automatic
 git checkout develop
 git pull origin develop
-
-# Merge develop to stage branch for deployment
-git checkout stage
-git merge develop
-git push origin stage
-# Triggers: code-quality → stage-deploy
+git push origin develop
+# Triggers: code-quality → deploy (development environment)
 ```
 
 **4. Production Deployment:**
 ```bash
-# After stage testing validation, create production release
+# After develop testing validation, merge to main
 git checkout main
 git merge develop  # or merge via PR: develop → main
+git push origin main
+# Triggers: code-quality → deploy (production environment)
 
-# Create production tag
+# Create production tag (optional)
 git tag -a prod_v1.2.3 -m "Production release v1.2.3"
 git push origin prod_v1.2.3
-# Triggers: code-quality → production-deploy (enhanced quality checks)
 ```
 
 #### Branch Protection and Requirements
@@ -255,7 +253,6 @@ git push origin prod_v1.2.3
 
 - **`main`**: Require PR reviews, require status checks, no direct pushes
 - **`develop`**: Require PR reviews, require status checks
-- **`stage`**: Fast-forward merges from develop only
 - **Feature branches**: Delete after merge
 
 **Required Status Checks:**
@@ -288,22 +285,21 @@ git push origin develop
 #### Branching Strategy Explained
 
 **Branch Purpose:**
-- **`main`**: Production-ready code, always deployable
-- **`develop`**: Integration branch for features, pre-production testing
-- **`stage`**: Deployment branch for staging environment testing
-- **`feature/*`**: Individual feature development branches
+- **`main`**: Represents the tagged release that is on production
+- **`develop`**: When main is tagged for a release, develop branch is an exact duplicate of main. As work is done, feature branches are made from the develop branch and merged back into develop. When a release is ready, develop is merged into main which is tagged as a release
+- **`feature/*`**: Individual feature development branches created from develop
 - **`hotfix/*`**: Critical production fixes
 
 **Why This Workflow:**
 - **Quality Assurance**: All changes require code review and automated testing
-- **Deployment Safety**: Stage testing before production deployment
+- **Deployment Safety**: Develop branch testing before production deployment
 - **Audit Trail**: Clear history of what was deployed when
 - **Rollback Capability**: Tagged releases enable quick rollbacks
 
 **Workflow Automation:**
 - **PR Creation**: Triggers code quality checks and testing
-- **Stage Deployment**: Automatic deployment to staging environment for testing
-- **Production Deployment**: Manual tagging triggers enhanced quality verification
+- **Development Deployment**: Automatic deployment to development environment for testing
+- **Production Deployment**: Merge to main triggers production deployment
 
 ### Running Individual Workflows
 
@@ -311,6 +307,10 @@ git push origin develop
 ```bash
 # Via GitHub UI: Actions → Testing Pipeline → Run workflow
 gh workflow run testing.yml
+
+# Manual deployment workflow
+gh workflow run deploy.yml --branch develop  # For development deployment
+gh workflow run deploy.yml --branch main     # For production deployment
 ```
 
 ### Local Testing and Verification
