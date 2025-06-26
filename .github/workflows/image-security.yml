@@ -158,18 +158,34 @@ jobs:
           echo "--- Checking required directories ---"
           echo "First, let's see what's actually in the container:"
           run_in_container pwd
-          run_in_container ls -la /var/www/html/
-          echo "Now checking specific paths:"
-          check_path_exists "/var/www/html/vendor" || ((ERRORS++))
-          check_path_exists "/var/www/html/vendor/autoload.php" || ((ERRORS++))
-          check_path_exists "/var/www/html/web/themes/custom/arsapps_theme/dist" || ((ERRORS++))
-          check_path_exists "/var/www/html/web" || ((ERRORS++))
-          check_path_exists "/var/www/html/web/index.php" || ((ERRORS++))
-          check_path_exists "/var/www/html/web/core" || ((ERRORS++))
+          echo "Checking both possible locations:"
+          run_in_container ls -la /opt/drupal/ 2>/dev/null || echo "No /opt/drupal/"
+          run_in_container ls -la /var/www/html/ 2>/dev/null || echo "No /var/www/html/"
+          
+          # Detect actual install location
+          if run_in_container test -d "/var/www/html/vendor"; then
+            echo "Using /var/www/html as base path"
+            BASE_PATH="/var/www/html"
+          elif run_in_container test -d "/opt/drupal/vendor"; then
+            echo "Using /opt/drupal as base path"
+            BASE_PATH="/opt/drupal"
+          else
+            echo "ERROR: Cannot find vendor directory in either location"
+            ((ERRORS++))
+            BASE_PATH="/var/www/html"  # fallback
+          fi
+          
+          echo "Now checking specific paths with BASE_PATH=$BASE_PATH:"
+          check_path_exists "$BASE_PATH/vendor" || ((ERRORS++))
+          check_path_exists "$BASE_PATH/vendor/autoload.php" || ((ERRORS++))
+          check_path_exists "$BASE_PATH/web/themes/custom/arsapps_theme/dist" || ((ERRORS++))
+          check_path_exists "$BASE_PATH/web" || ((ERRORS++))
+          check_path_exists "$BASE_PATH/web/index.php" || ((ERRORS++))
+          check_path_exists "$BASE_PATH/web/core" || ((ERRORS++))
           
           echo "--- Checking compiled frontend assets ---"
           # Check if dist directory has content
-          DIST_FILES=$(run_in_container find /var/www/html/web/themes/custom/arsapps_theme/dist -type f | wc -l)
+          DIST_FILES=$(run_in_container find $BASE_PATH/web/themes/custom/arsapps_theme/dist -type f 2>/dev/null | wc -l)
           if [ "$DIST_FILES" -gt 0 ]; then
             echo "✓ Frontend assets compiled: $DIST_FILES files in dist/"
           else
@@ -178,16 +194,16 @@ jobs:
           fi
           
           echo "--- Checking immutability (dev tools absent) ---"
-          check_path_absent "/var/www/html/node_modules" || ((ERRORS++))
-          check_path_absent "/var/www/html/web/themes/custom/arsapps_theme/node_modules" || ((ERRORS++))
-          check_path_absent "/var/www/html/web/themes/custom/arsapps_theme/package.json" || ((ERRORS++))
-          check_path_absent "/var/www/html/web/themes/custom/arsapps_theme/webpack.config.js" || ((ERRORS++))
-          check_path_absent "/var/www/html/web/themes/custom/arsapps_theme/scss" || ((ERRORS++))
-          check_path_absent "/var/www/html/web/themes/custom/arsapps_theme/js" || ((ERRORS++))
+          check_path_absent "$BASE_PATH/node_modules" || ((ERRORS++))
+          check_path_absent "$BASE_PATH/web/themes/custom/arsapps_theme/node_modules" || ((ERRORS++))
+          check_path_absent "$BASE_PATH/web/themes/custom/arsapps_theme/package.json" || ((ERRORS++))
+          check_path_absent "$BASE_PATH/web/themes/custom/arsapps_theme/webpack.config.js" || ((ERRORS++))
+          check_path_absent "$BASE_PATH/web/themes/custom/arsapps_theme/scss" || ((ERRORS++))
+          check_path_absent "$BASE_PATH/web/themes/custom/arsapps_theme/js" || ((ERRORS++))
           
           echo "--- Checking file permissions ---"
           # Check key file permissions
-          INDEX_PERMS=$(run_in_container stat -c "%a" /var/www/html/web/index.php)
+          INDEX_PERMS=$(run_in_container stat -c "%a" $BASE_PATH/web/index.php)
           if [ "$INDEX_PERMS" = "640" ]; then
             echo "✓ index.php has correct permissions (640)"
           else
@@ -196,7 +212,7 @@ jobs:
           fi
           
           # Check directory permissions
-          WEB_DIR_PERMS=$(run_in_container stat -c "%a" /var/www/html/web)
+          WEB_DIR_PERMS=$(run_in_container stat -c "%a" $BASE_PATH/web)
           if [ "$WEB_DIR_PERMS" = "750" ]; then
             echo "✓ web/ directory has correct permissions (750)"
           else
