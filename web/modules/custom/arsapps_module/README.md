@@ -87,7 +87,3 @@ arsapps_module/
         └── Functional/
             └── ArsappsModuleTest.php
 ```
-
-## License
-
-This module is provided as-is for internal ARSApps development purposes.
