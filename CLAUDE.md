@@ -60,3 +60,5 @@
 - **Plugins**: Follow Drupal plugin conventions with attributes for definition
 
 When working in this codebase, prioritize adherence to Drupal patterns and conventions.
+
+Please review .dev/DEVELOPER_NOTES.md and update as needed.
