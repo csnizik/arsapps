@@ -2,9 +2,9 @@ name: Testing Pipeline
 
 on:
   push:
-    branches: [ main, stage, develop ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, stage ]
+    branches: [ main, develop ]
   workflow_dispatch:
 
 jobs:
