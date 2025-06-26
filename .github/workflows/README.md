@@ -2,6 +2,10 @@
 
 This directory contains comprehensive GitHub Actions workflows for automated CI/CD, security scanning, and testing of the Drupal 11 project. The system implements a multi-layered security approach with automated vulnerability scanning, image immutability verification, and comprehensive testing pipelines.
 
+## TL;DR
+
+- A workflow can be triggered manually from the console (this assumes the gh CLI is installed): `gh workflow run image-security.yml --ref develop`. Progress on running workflows can be monitored in the Actions tab of the repo on Github.
+
 ## Architecture Overview
 
 The workflow system uses a DRY (Don't Repeat Yourself) approach with reusable workflows and composite actions:
