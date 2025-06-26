@@ -18,13 +18,20 @@ RUN apk add --no-cache \
 COPY composer.json composer.lock ./
 
 # Install dependencies without dev packages, autoloader, or scripts
-RUN composer install --no-dev --no-autoloader --no-scripts --prefer-dist
+RUN composer install --no-dev --no-autoloader --no-scripts --prefer-dist \
+    && ls -la /app/ \
+    && echo "Checking if vendor directory exists:" \
+    && ls -la /app/vendor/ || echo "Vendor directory not found"
 
 # Copy all source code
 COPY . .
 
 # Complete Composer install with optimized autoloader
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader \
+    && echo "Final vendor directory check:" \
+    && ls -la /app/vendor/ \
+    && echo "Autoload file check:" \
+    && ls -la /app/vendor/autoload.php
 
 # Stage 2: Frontend Asset Compilation
 FROM node:22-alpine AS frontend_build
