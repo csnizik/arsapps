@@ -44,6 +44,70 @@ body {
   }
 }
 
+// Layout Builder enhancements for accessibility
+.layout-builder__section {
+  position: relative;
+  
+  &:focus {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+  
+  // Enhanced visual indicators for keyboard navigation
+  &[tabindex="0"]:focus-visible {
+    background-color: color.adjust($primary-color, $lightness: 95%);
+    box-shadow: 0 0 0 3px color.adjust($primary-color, $alpha: -0.7);
+  }
+}
+
+// Skip link improvements
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: $text-color;
+  color: $background-color;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: $border-radius;
+  z-index: 9999;
+  
+  &:focus {
+    top: 6px;
+  }
+}
+
+// Mobile menu enhancements
+.primary-menu {
+  transition: transform 0.3s ease;
+  
+  &.is-open {
+    transform: translateX(0);
+  }
+  
+  @media (max-width: 768px) {
+    transform: translateX(-100%);
+  }
+}
+
+.mobile-menu-toggle {
+  &.is-active {
+    .hamburger {
+      &::before {
+        transform: rotate(45deg);
+      }
+      
+      &::after {
+        transform: rotate(-45deg);
+      }
+      
+      span {
+        opacity: 0;
+      }
+    }
+  }
+}
+
 // Responsive design
 @media (max-width: 768px) {
   .container {
